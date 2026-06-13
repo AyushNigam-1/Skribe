@@ -35,7 +35,6 @@ if (!envParsed.success) {
   process.exit(1);
 }
 const env = envParsed.data;
-
 const isDev = env.NODE_ENV !== "production";
 
 export const logger = pino({
@@ -53,11 +52,16 @@ export const logger = pino({
     : undefined,
 });
 
-const startServer = async () => {
-  const port = Number(env.PORT);
+// 🚨 1. EXPORT APP AND HTTP SERVER AT THE TOP LEVEL
+export const app = express();
+export const httpServer = createServer(app);
 
+// 🚨 2. WRAP MIDDLEWARE AND DB SETUP IN AN ASYNC FUNCTION
+export const initServer = async () => {
   try {
-    await connectDB(env.MONGO_URI);
+    const activeMongoUri = process.env.MONGO_URI || env.MONGO_URI;
+
+    await connectDB(activeMongoUri);
     await redisClient.connect();
     logger.info("✅ Database and Redis connected successfully");
   } catch (err) {
@@ -65,11 +69,7 @@ const startServer = async () => {
     process.exit(1);
   }
 
-  const app = express();
-
   app.set("trust proxy", 1);
-
-  const httpServer = createServer(app);
   initSocket(httpServer);
 
   const server = graphqlServer();
@@ -134,10 +134,15 @@ const startServer = async () => {
     }),
   );
 
-  httpServer.listen(port, "0.0.0.0", () => {
-    logger.info(`🚀 HTTP & Socket.io Server started on port ${port} in ${env.NODE_ENV} mode`);
-  });
+  return app;
 };
 
-startServer();
-
+// 🚨 3. ONLY LISTEN ON THE PORT IF WE ARE NOT IN TEST MODE
+if (env.NODE_ENV !== "test") {
+  initServer().then(() => {
+    const port = Number(env.PORT);
+    httpServer.listen(port, "0.0.0.0", () => {
+      logger.info(`🚀 HTTP & Socket.io Server started on port ${port} in ${env.NODE_ENV} mode`);
+    });
+  });
+}

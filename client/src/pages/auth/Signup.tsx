@@ -40,7 +40,6 @@ const CreateAccount: React.FC = () => {
       email: data.email,
       password: data.password,
       name: data.name,
-      username: data.email.split("@")[0].toLowerCase().replace(/[^a-z0-9_]/g, ""),
     });
     setActiveAuthMethod(null);
 
