@@ -1,7 +1,7 @@
 import { GraphQLError } from "graphql";
-import User from "../../../models/User";
 import dotenv from "dotenv";
 import { Types } from "mongoose";
+import { UserRepository } from "../../../repositories/userRepository";
 
 dotenv.config();
 
@@ -32,32 +32,27 @@ const enforceRateLimit = async (
 };
 
 export const userMutations = {
-  toggleBookmark: async (
-    _: any,
-    { scriptId }: { scriptId: string },
-    context: any,
-  ) => {
+  toggleBookmark: async (_: any, { scriptId }: { scriptId: string }, context: any) => {
     const userId = context.user?.id;
-
     if (!userId) {
-      throw new GraphQLError("User not authenticated", {
-        extensions: { code: "UNAUTHENTICATED" },
-      });
+      throw new GraphQLError("User not authenticated", { extensions: { code: "UNAUTHENTICATED" } });
     }
 
     const userIdStr = userId.toString();
     await enforceRateLimit(context.redis, userIdStr, "bookmark", 30, 60);
 
-    const user = await User.findById(userId);
+    // 🚨 Use Repo
+    const user = await UserRepository.findById(userId);
     if (!user) throw new GraphQLError("User not found");
 
     const targetId = new Types.ObjectId(scriptId.trim());
     const isBookmarked = user.favourites?.some((id: any) => id.toString() === targetId.toString());
 
+    // 🚨 Use Repo
     if (isBookmarked) {
-      await User.findByIdAndUpdate(userId, { $pull: { favourites: targetId } });
+      await UserRepository.removeBookmark(userId, scriptId);
     } else {
-      await User.findByIdAndUpdate(userId, { $addToSet: { favourites: targetId } });
+      await UserRepository.addBookmark(userId, scriptId);
     }
 
     if (context.redis) {
@@ -68,87 +63,62 @@ export const userMutations = {
     return { status: true };
   },
 
-  updateUserProfileField: async (
-    _: any,
-    { key, value }: { key: string; value: string },
-    context: any,
-  ) => {
+  updateUserProfileField: async (_: any, { key, value }: { key: string; value: string }, context: any) => {
     const userId = context.user?.id;
     if (!userId) {
-      throw new GraphQLError("User not authenticated", {
-        extensions: { code: "UNAUTHENTICATED" },
-      });
+      throw new GraphQLError("User not authenticated", { extensions: { code: "UNAUTHENTICATED" } });
     }
 
     await enforceRateLimit(context.redis, userId, "update_profile", 20, 60);
 
-    // 🚨 Updated to use "name" instead of "name"
     const validStringFields = ["name", "bio"];
     const validArrayFields = ["languages", "interests"];
 
     let formattedValue: any = value;
 
     if (validArrayFields.includes(key)) {
-      formattedValue = value
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean);
+      formattedValue = value.split(",").map((item) => item.trim()).filter(Boolean);
     } else if (!validStringFields.includes(key)) {
-      throw new GraphQLError(
-        `Invalid field: ${key} cannot be updated directly.`,
-      );
+      throw new GraphQLError(`Invalid field: ${key} cannot be updated directly.`);
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { $set: { [key]: formattedValue } },
-      { new: true },
-    );
+    // 🚨 Use Repo
+    const updatedUser = await UserRepository.updateField(userId, { [key]: formattedValue });
 
     if (!updatedUser) throw new GraphQLError("User not found");
 
     return updatedUser;
   },
 
-  likeProfile: async (
-    _: any,
-    { profileId }: { profileId: string },
-    context: any,
-  ) => {
+  likeProfile: async (_: any, { profileId }: { profileId: string }, context: any) => {
     const userId = context.user?.id;
     if (!userId) {
-      throw new GraphQLError("User not authenticated", {
-        extensions: { code: "UNAUTHENTICATED" },
-      });
+      throw new GraphQLError("User not authenticated", { extensions: { code: "UNAUTHENTICATED" } });
     }
-    if (userId === profileId)
-      throw new GraphQLError("Cannot like your own profile");
+    if (userId === profileId) throw new GraphQLError("Cannot like your own profile");
 
     await enforceRateLimit(context.redis, userId, "like_profile", 30, 60);
 
-    const targetUser = await User.findById(profileId);
+    // 🚨 Use Repo
+    const targetUser = await UserRepository.findById(profileId);
     if (!targetUser) throw new GraphQLError("Profile not found");
 
     const hasLiked = targetUser.likes?.includes(userId) || false;
 
+    // 🚨 Use Repo
     if (hasLiked) {
-      await User.findByIdAndUpdate(profileId, { $pull: { likes: userId } });
+      await UserRepository.removeLike(profileId, userId);
     } else {
-      await User.findByIdAndUpdate(profileId, { $addToSet: { likes: userId } });
+      await UserRepository.addLike(profileId, userId);
     }
 
-    // 🚨 THE FIX: Bust the stale Redis cache!
     const cacheKey = `user:${profileId}:profile:v3`;
     await context.redis.del(cacheKey);
 
     return { status: true };
   },
 
-  viewProfile: async (
-    _: any,
-    { profileId }: { profileId: string },
-    context: any,
-  ) => {
+  viewProfile: async (_: any, { profileId }: { profileId: string }, context: any) => {
     const userId = context.user?.id;
 
     if (!userId || userId === profileId) {
@@ -157,13 +127,12 @@ export const userMutations = {
 
     await enforceRateLimit(context.redis, userId, "view_profile", 10, 60);
 
-    await User.findByIdAndUpdate(profileId, {
-      $addToSet: { views: userId },
-    });
+    // 🚨 Use Repo
+    await UserRepository.addView(profileId, userId);
 
     const cacheKey = `user:${profileId}:profile:v3`;
     await context.redis.del(cacheKey);
 
     return { status: true };
   }
-}
+};
