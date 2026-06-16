@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
-import Paragraph from "../../../models/Paragraph";
-import Script from "../../../models/Script";
 import { GraphQLError } from "graphql";
+import { ParagraphRepository } from "../../../repositories/paragraphRepository";
+import { ScriptRepository } from "../../../repositories/scriptRepository";
 
 interface MyContext {
   redis: any;
@@ -9,29 +9,15 @@ interface MyContext {
   req: any;
 }
 
-const enforceRateLimit = async (
-  redis: any,
-  identifier: string,
-  action: string,
-  limit: number,
-  windowSeconds: number,
-) => {
+const enforceRateLimit = async (redis: any, identifier: string, action: string, limit: number, windowSeconds: number) => {
   if (!redis) return;
-
   const key = `ratelimit:${action}:${identifier}`;
   const currentCount = await redis.incr(key);
-
-  if (currentCount === 1) {
-    await redis.expire(key, windowSeconds);
-  }
-
+  if (currentCount === 1) await redis.expire(key, windowSeconds);
   if (currentCount > limit) {
-    throw new GraphQLError(
-      `Too many requests for ${action}. Please try again later.`,
-      {
-        extensions: { code: "TOO_MANY_REQUESTS", http: { status: 429 } },
-      },
-    );
+    throw new GraphQLError(`Too many requests for ${action}. Please try again later.`, {
+      extensions: { code: "TOO_MANY_REQUESTS", http: { status: 429 } },
+    });
   }
 };
 
@@ -41,29 +27,16 @@ const toUnixString = (date: any) => {
 };
 
 export const paragraphQueries = {
-  getParagraphById: async (
-    _: any,
-    { paragraphId }: { paragraphId: string },
-    context: MyContext,
-  ) => {
-    const ip =
-      context.req?.ip || context.req?.socket?.remoteAddress || "unknown_ip";
+  getParagraphById: async (_: any, { paragraphId }: { paragraphId: string }, context: MyContext) => {
+    const ip = context.req?.ip || context.req?.socket?.remoteAddress || "unknown_ip";
     await enforceRateLimit(context.redis, ip, "get_paragraph", 120, 60);
 
     const cacheKey = `paragraph:${paragraphId}:v3`;
-
     const cachedParagraph = await context.redis.get(cacheKey);
-    if (cachedParagraph) {
-      return JSON.parse(cachedParagraph);
-    }
+    if (cachedParagraph) return JSON.parse(cachedParagraph);
 
-    const paragraph = await Paragraph.findById(paragraphId)
-      .populate("author")
-      .populate("comments.author")
-      .populate({
-        path: "script",
-        populate: [{ path: "collaborators.user" }, { path: "author" }],
-      });
+    // 🚨 REPOSITORY CALL
+    const paragraph = await ParagraphRepository.findByIdWithPopulate(paragraphId);
 
     if (!paragraph) throw new Error("Paragraph not found");
 
@@ -93,70 +66,42 @@ export const paragraphQueries = {
         ...c,
         createdAt: toUnixString(c.createdAt),
         updatedAt: toUnixString(c.updatedAt),
-        author: c.author
-          ? {
-            ...c.author,
-            createdAt: toUnixString(c.author.createdAt),
-            updatedAt: toUnixString(c.author.updatedAt),
-          }
-          : null,
+        author: c.author ? {
+          ...c.author,
+          createdAt: toUnixString(c.author.createdAt),
+          updatedAt: toUnixString(c.author.updatedAt),
+        } : null,
       }));
     }
 
     await context.redis.setEx(cacheKey, 3600, JSON.stringify(obj));
-
     return obj;
   },
-  getFilteredRequests: async (
-    _: any,
-    { scriptId, userId, status }: { scriptId: string; userId?: string; status?: string },
-    context: MyContext,
-  ) => {
-    const ip =
-      context.req?.ip || context.req?.socket?.remoteAddress || "unknown_ip";
+
+  getFilteredRequests: async (_: any, { scriptId, userId, status }: { scriptId: string; userId?: string; status?: string }, context: MyContext) => {
+    const ip = context.req?.ip || context.req?.socket?.remoteAddress || "unknown_ip";
     await enforceRateLimit(context.redis, ip, "get_filtered_requests", 60, 60);
 
-    // 🚨 Bumped to :v2 to automatically clear any broken cache!
     const cacheKey = `script:${scriptId}:reqs:${userId || "all"}:${status || "all"}:v2`;
-
     const cachedRequests = await context.redis.get(cacheKey);
-    if (cachedRequests) {
-      return JSON.parse(cachedRequests);
-    }
+    if (cachedRequests) return JSON.parse(cachedRequests);
 
-    const query: any = { script: scriptId };
-
-    if (userId) {
-      query.author = userId;
-    }
-
-    if (status) {
-      query.status = status;
-    }
-
-    const paragraphs = await Paragraph.find(query)
-      .populate("author")
-      .populate("comments.author") // 🚨 THE FIX 1: We must populate the comment authors!
-      .sort({ createdAt: -1 })
-      .lean();
+    // 🚨 REPOSITORY CALL
+    const paragraphs = await ParagraphRepository.findFilteredRequests(scriptId, userId, status);
 
     const formattedParagraphs = paragraphs.map((p: any) => ({
       ...p,
       id: p._id?.toString(),
-      // 🚨 THE FIX 2: Convert MongoDB ObjectIds to Strings for GraphQL
       likes: p.likes?.map((id: any) => id.toString()) || [],
       dislikes: p.dislikes?.map((id: any) => id.toString()) || [],
       createdAt: toUnixString(p.createdAt),
       updatedAt: toUnixString(p.updatedAt),
-      author: p.author
-        ? {
-          ...p.author,
-          id: p.author._id?.toString(),
-          createdAt: toUnixString(p.author.createdAt),
-          updatedAt: toUnixString(p.author.updatedAt),
-        }
-        : null,
-      // 🚨 THE FIX 3: Properly map through comments to format dates and populate their authors
+      author: p.author ? {
+        ...p.author,
+        id: p.author._id?.toString(),
+        createdAt: toUnixString(p.author.createdAt),
+        updatedAt: toUnixString(p.author.updatedAt),
+      } : null,
       comments: p.comments ? p.comments.map((c: any) => ({
         ...c,
         id: c._id?.toString(),
@@ -171,95 +116,57 @@ export const paragraphQueries = {
       })) : []
     }));
 
-    await context.redis.setEx(
-      cacheKey,
-      300,
-      JSON.stringify(formattedParagraphs),
-    );
-
+    await context.redis.setEx(cacheKey, 300, JSON.stringify(formattedParagraphs));
     return formattedParagraphs;
   },
-  getCombinedText: async (
-    _: any,
-    { scriptId }: { scriptId: string },
-    context: MyContext,
-  ) => {
-    const ip =
-      context.req?.ip || context.req?.socket?.remoteAddress || "unknown_ip";
+
+  getCombinedText: async (_: any, { scriptId }: { scriptId: string }, context: MyContext) => {
+    const ip = context.req?.ip || context.req?.socket?.remoteAddress || "unknown_ip";
     await enforceRateLimit(context.redis, ip, "get_combined_text", 120, 60);
 
     const cacheKey = `script:${scriptId}:combinedText`;
-
     const cachedText = await context.redis.get(cacheKey);
-    if (cachedText) {
-      return cachedText;
-    }
+    if (cachedText) return cachedText;
 
-    const script = await Script.findById(scriptId).lean();
+    // 🚨 REPOSITORY CALL
+    const script = await ScriptRepository.findByIdLean(scriptId);
     if (!script) throw new Error("Script not found");
 
     const text = script.combinedText || "";
-
     await context.redis.setEx(cacheKey, 3600, text);
-
     return text;
   },
 
-  getPendingParagraphs: async (
-    _: any,
-    { scriptId }: { scriptId: string },
-    context: MyContext,
-  ) => {
-    const ip =
-      context.req?.ip || context.req?.socket?.remoteAddress || "unknown_ip";
+  getPendingParagraphs: async (_: any, { scriptId }: { scriptId: string }, context: MyContext) => {
+    const ip = context.req?.ip || context.req?.socket?.remoteAddress || "unknown_ip";
     await enforceRateLimit(context.redis, ip, "get_pending_paragraphs", 60, 60);
 
     const cacheKey = `script:${scriptId}:pending:v3`;
-
     const cachedPending = await context.redis.get(cacheKey);
-    if (cachedPending) {
-      return JSON.parse(cachedPending);
-    }
+    if (cachedPending) return JSON.parse(cachedPending);
 
-    const paragraphs = await Paragraph.find({
-      script: scriptId,
-      status: "pending",
-    })
-      .populate("author")
-      .sort({ createdAt: -1 })
-      .lean();
+    // 🚨 REPOSITORY CALL
+    const paragraphs = await ParagraphRepository.findPendingByScript(scriptId);
 
     const formattedParagraphs = paragraphs.map((p: any) => ({
       ...p,
       id: p._id?.toString(),
       createdAt: toUnixString(p.createdAt),
       updatedAt: toUnixString(p.updatedAt),
-      author: p.author
-        ? {
-          ...p.author,
-          id: p.author._id?.toString(),
-          createdAt: toUnixString(p.author.createdAt),
-          updatedAt: toUnixString(p.author.updatedAt),
-        }
-        : null,
+      author: p.author ? {
+        ...p.author,
+        id: p.author._id?.toString(),
+        createdAt: toUnixString(p.author.createdAt),
+        updatedAt: toUnixString(p.author.updatedAt),
+      } : null,
     }));
 
-    await context.redis.setEx(
-      cacheKey,
-      300,
-      JSON.stringify(formattedParagraphs),
-    );
-
+    await context.redis.setEx(cacheKey, 300, JSON.stringify(formattedParagraphs));
     return formattedParagraphs;
   },
 
-  exportDocument: async (
-    _: any,
-    { scriptId, format }: { scriptId: string; format: string },
-    context: MyContext,
-  ) => {
-    const ip =
-      context.req?.ip || context.req?.socket?.remoteAddress || "unknown_ip";
+  exportDocument: async (_: any, { scriptId, format }: { scriptId: string; format: string }, context: MyContext) => {
+    const ip = context.req?.ip || context.req?.socket?.remoteAddress || "unknown_ip";
     await enforceRateLimit(context.redis, ip, "export_document", 10, 60);
 
     const cacheKey = `script:${scriptId}:exportData`;
@@ -270,9 +177,9 @@ export const paragraphQueries = {
     if (cachedScript) {
       script = JSON.parse(cachedScript);
     } else {
-      script = await Script.findById(scriptId).lean();
+      // 🚨 REPOSITORY CALL
+      script = await ScriptRepository.findByIdLean(scriptId);
       if (!script) throw new Error("Script not found");
-
       await context.redis.setEx(cacheKey, 3600, JSON.stringify(script));
     }
 

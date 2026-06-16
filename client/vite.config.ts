@@ -1,11 +1,16 @@
 import { sentryVitePlugin } from "@sentry/vite-plugin";
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
 
 export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'jsdom', // 🚨 Simulates a browser!
+    setupFiles: ['./src/setupTests.ts'], // Runs before every test
+  },
   css: {
     postcss: {
       plugins: [

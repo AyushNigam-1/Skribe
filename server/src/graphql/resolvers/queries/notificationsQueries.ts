@@ -1,4 +1,4 @@
-import Notification from "../../../models/Notification";
+import { NotificationRepository } from "../../../repositories/notificationRepository";
 
 export const notificationQueries = {
     getNotifications: async (_: any, { userId }: { userId: string }, context: any) => {
@@ -8,12 +8,12 @@ export const notificationQueries = {
         }
 
         try {
-            const notifications = await Notification.find({ recipient: userId }).sort({ createdAt: -1 })
-                .populate("sender", "id name");
+            // 🚨 REPOSITORY CALL
+            const notifications = await NotificationRepository.findUserNotifications(userId);
 
             if (!notifications) return [];
 
-            return notifications.map((notif) => {
+            return notifications.map((notif: any) => {
                 const obj: any = notif.toObject({ virtuals: true });
                 return {
                     ...obj,

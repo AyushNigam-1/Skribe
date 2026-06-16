@@ -89,7 +89,7 @@ export const scriptMutations = {
     });
 
     // 🚨 REPO CALL
-    await UserRepository.addScriptId(userId, script._id.toString());
+    await UserRepository.addScriptId(userId, String(script._id));
 
     await context.redis.del(`user:${userId}:scripts:owner:v3`);
     await context.redis.del(`user:${userId}:scripts:public:v3`);
@@ -101,7 +101,7 @@ export const scriptMutations = {
       } catch (err) { }
     }
 
-    return await ScriptRepository.findById(script._id).then(s => s?.populate("author"));
+    return await ScriptRepository.findById(String(script._id)).then(s => s?.populate("author"));
   },
 
   submitParagraph: async (_: any, { scriptId, text }: any, context: any) => {

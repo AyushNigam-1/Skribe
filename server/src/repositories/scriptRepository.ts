@@ -129,5 +129,44 @@ export const ScriptRepository = {
             { $pull: { collaborators: { user: userId, status: "PENDING" } } },
             { new: true }
         ).populate("author").populate("collaborators.user");
+    },
+    findByIdLean: async (id: string) => {
+        return await Script.findById(id).lean();
+    },
+    forceAcceptCollaboratorAndAddParagraph: async (scriptId: string, userId: string, paragraphId: string) => {
+        return await Script.findOneAndUpdate(
+            { _id: scriptId, "collaborators.user": userId },
+            {
+                $addToSet: { paragraphs: paragraphId },
+                $set: { "collaborators.$.status": "ACCEPTED" },
+            }
+        );
+    },
+
+    // For when a brand new user's paragraph gets approved
+    addAcceptedContributorAndAddParagraph: async (scriptId: string, userId: string, paragraphId: string) => {
+        return await Script.findByIdAndUpdate(scriptId, {
+            $addToSet: { paragraphs: paragraphId },
+            $push: {
+                collaborators: {
+                    user: userId,
+                    role: "CONTRIBUTOR",
+                    status: "ACCEPTED",
+                },
+            },
+        });
+    },
+
+    // For when the owner just writes their own paragraph
+    addParagraphId: async (scriptId: string, paragraphId: string) => {
+        return await Script.findByIdAndUpdate(scriptId, {
+            $addToSet: { paragraphs: paragraphId },
+        });
+    },
+
+    removeParagraphId: async (scriptId: string, paragraphId: string) => {
+        return await Script.findByIdAndUpdate(scriptId, {
+            $pull: { paragraphs: paragraphId },
+        });
     }
 };

@@ -1,14 +1,11 @@
-import Notification from "../../../models/Notification";
+import { NotificationRepository } from "../../../repositories/notificationRepository";
 
 export const notificationMutations = {
     markAllNotificationsRead: async (_: any, __: any, context: any) => {
         const userId = context.user?.id;
         if (!userId) return false;
 
-        await Notification.updateMany(
-            { recipient: userId, isRead: false },
-            { $set: { isRead: true } }
-        );
+        await NotificationRepository.markAllAsRead(userId);
         return true;
     },
 
@@ -16,11 +13,7 @@ export const notificationMutations = {
         const userId = context.user?.id;
         if (!userId) return false;
 
-        const result = await Notification.findOneAndDelete({
-            _id: id,
-            recipient: userId
-        });
-
+        const result = await NotificationRepository.deleteByIdAndRecipient(id, userId);
         return !!result;
     }
 };
