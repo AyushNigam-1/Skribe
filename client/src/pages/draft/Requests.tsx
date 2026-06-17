@@ -24,6 +24,8 @@ import Dropdown from "../../components/layout/Dropdown";
 import ContributeModal from "../../components/modal/ContributeModal";
 import { useGetFilteredRequestsQuery } from "../../graphql/generated/graphql";
 import { DropdownOption, ScriptDetailsContext } from "../../types";
+import EmptyState from "../../components/PlaceholderState";
+import PlaceholderState from "../../components/PlaceholderState";
 
 const statusOptions: DropdownOption[] = [
   { id: "all", name: "All Statuses" },
@@ -151,40 +153,32 @@ const Requests: React.FC = () => {
             <Loader2 className="size-8 shrink-0 animate-spin" />
           </motion.div>
         ) : error ? (
-          <div className="flex flex-col items-center justify-center min-h-[50dvh] text-center px-4">
-            <AlertCircle className="w-10 h-10 text-red-500 mb-4" />
-            <p className="text-red-400 font-mono text-sm max-w-md">
-              Error loading requests. Check if your backend resolver handles the "status" parameter correctly.
-            </p>
-            <button onClick={() => refetch()} className="mt-4 px-4 py-2 bg-white/5 rounded-lg text-white border border-white/10 hover:bg-white/10 transition-all">Retry</button>
-          </div>
+          <PlaceholderState
+            icon={AlertCircle}
+            title="Failed to load drafts"
+            description="We couldn't load this data right now. Please check your connection and try again."
+            action={
+              <button
+                onClick={() => refetch()}
+                className="px-6 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-bold transition-all duration-200 active:scale-95 text-sm sm:text-base"
+              >
+                Try Again
+              </button>
+            }
+          />
         ) : rawParagraphs.length === 0 && !isFiltering ? (
-          <motion.div
-            variants={itemVariants}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-col items-center justify-center px-4 sm:px-6 text-center min-h-[60dvh] md:min-h-[78dvh] space-y-4 sm:space-y-5 relative overflow-hidden font-mono"
-          >
-            <div className="bg-white/5 border border-white/20 p-3 sm:p-4 rounded-full shadow-sm relative z-10">
-              <Inbox className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-            </div>
-
-            <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-3 tracking-tight font-sans relative z-10">
-              No requests yet
-            </h3>
-
-            <p className="text-sm sm:text-base text-gray-400 max-w-xs sm:max-w-md relative z-10 leading-relaxed">
-              There are no requests right now. Be the first to submit a contribution!
-            </p>
-
-            <div className="relative z-10">
+          <EmptyState
+            icon={Inbox}
+            title="No requests yet"
+            description="There are no requests right now. Be the first to submit a contribution!"
+            action={
               <ContributeModal
                 scriptId={scriptId}
                 refetch={refetch}
                 variant="empty"
               />
-            </div>
-          </motion.div>
+            }
+          />
         ) : (
           <motion.div variants={containerVariants} initial="hidden" animate="visible" exit="exit" className="w-full space-y-4">
 
@@ -206,26 +200,12 @@ const Requests: React.FC = () => {
             </motion.div>
 
             {filteredParagraphs.length === 0 ? (
-              <motion.div
-                key="contributions-empty"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="flex flex-col items-center justify-center  text-center space-y-2 relative overflow-hidden font-sans w-full min-h-[60dvh]"
-              >
-                <div className="bg-white/5 border border-white/20 p-4 rounded-full shadow-sm relative z-10">
-                  <SearchX className="w-8 h-8 text-white" />
-                </div>
-
-                <h3 className="text-2xl font-bold text-white relative z-10">
-                  No results found
-                </h3>
-
-                <p className="text-gray-400 max-w-md relative z-10 text-sm">
-                  We couldn't find any results. Try adjusting your filters.
-                </p>
-              </motion.div>
+              <PlaceholderState
+                minHeight="min-h-[54dvh]"
+                icon={SearchX}
+                title="No results found"
+                description="We couldn't find any results. Try adjusting your filters."
+              />
             ) : (
               <motion.div variants={containerVariants} className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 pb-10">
                 <AnimatePresence mode="popLayout">

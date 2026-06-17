@@ -166,9 +166,9 @@ const Add = () => {
           <div className="flex min-h-full items-center justify-center p-3 sm:p-4 text-center">
             <DialogPanel
               transition
-              className="relative transform rounded-2xl md:rounded-3xl overflow-hidden bg-primary text-left shadow-2xl transition duration-300 ease-out data-[closed]:opacity-0 data-[closed]:translate-y-4 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 w-full max-w-2xl border border-white/10"
+              className="relative transform rounded-2xl md:rounded-3xl overflow-hidden bg-primary text-left shadow-2xl transition duration-300 ease-out data-[closed]:opacity-0 data-[closed]:translate-y-4 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 w-full max-w-2xl border border-white/10 p-5 md:p-6 md:space-y-6 space-y-5"
             >
-              <div className="flex justify-between p-5 md:p-6 items-center border-b border-white/5 bg-white/5">
+              <div className="flex justify-between items-center  ">
                 <h3 className="text-lg md:text-xl font-extrabold text-white tracking-tight font-sans">
                   New Draft
                 </h3>
@@ -179,9 +179,10 @@ const Add = () => {
                   <X className="size-5 md:size-6" />
                 </button>
               </div>
+              <div className="border-b border-white/10" />
               <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-col gap-5 md:gap-6 p-5 md:p-6"
+                className="flex flex-col gap-5 md:gap-6 "
               >
                 <div>
                   <label className={labelClass}>Title</label>

@@ -1,11 +1,13 @@
 import React, { useMemo, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { Users, Trophy, Medal, Filter, SearchX, Loader2, ListFilter } from "lucide-react";
+import { Users, Trophy, Medal, SearchX, Loader2, ListFilter } from "lucide-react";
 import Search from "../../components/layout/Search";
 import Dropdown from "../../components/layout/Dropdown";
 import { DropdownOption } from "../../types";
 import { GetScriptByIdQuery } from "../../graphql/generated/graphql";
+import PlaceholderState from "../../components/PlaceholderState";
+import ContributeModal from "../../components/modal/ContributeModal";
 
 interface Contributor {
   id: string;
@@ -21,12 +23,15 @@ const filterOptions: DropdownOption[] = [
 
 const Contributors: React.FC = () => {
 
-  const { data, loading } = useOutletContext<{
+  const { data, refetch, loading } = useOutletContext<{
     data?: GetScriptByIdQuery;
+    refetch: () => void;
     loading: boolean;
   }>();
-
   const paragraphs = data?.getScriptById?.paragraphs || [];
+  const scriptId = data?.getScriptById?.id;
+  const isArchived = data?.getScriptById?.visibility?.toLowerCase() === "archived";
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<DropdownOption>(
     filterOptions[0],
@@ -140,23 +145,16 @@ const Contributors: React.FC = () => {
       className="space-y-4 w-full mx-auto font-mono"
     >
       {paragraphs.length === 0 && (
-        <motion.div
-          variants={itemVariants}
-          className="flex flex-col items-center justify-center min-h-[60dvh] md:min-h-[78dvh] px-4 sm:px-6 text-center space-y-4 sm:space-y-5 relative overflow-hidden"
-        >
-          <div className="bg-white/5 border border-white/20 p-3 sm:p-4 rounded-full shadow-sm relative z-10">
-            <Users className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-          </div>
-
-          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-3 tracking-tight font-sans relative z-10">
-            No contributors yet
-          </h3>
-
-          <p className="text-sm sm:text-base text-gray-400 max-w-xs sm:max-w-md relative z-10 leading-relaxed">
-            This draft doesn't have any approved contributions right now.
-          </p>
-
-        </motion.div>
+        <PlaceholderState
+          icon={Users}
+          title="No contributors yet"
+          description="This draft doesn't have any approved contributions right now."
+          action={
+            !isArchived && (
+              <ContributeModal scriptId={scriptId} refetch={refetch} variant="empty" />
+            )
+          }
+        />
       )}
 
       {paragraphs.length > 0 && (
@@ -226,26 +224,12 @@ const Contributors: React.FC = () => {
               ))}
             </motion.div>
           ) : (
-            <motion.div
-              key="contributions-empty"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="flex flex-col items-center justify-center  text-center space-y-2 relative overflow-hidden font-sans w-full min-h-[60dvh]"
-            >
-              <div className="bg-white/5 border border-white/20 p-4 rounded-full shadow-sm relative z-10">
-                <SearchX className="w-8 h-8 text-white" />
-              </div>
-
-              <h3 className="text-2xl font-bold text-white relative z-10">
-                No results found
-              </h3>
-
-              <p className="text-gray-400 max-w-md relative z-10 text-sm">
-                We couldn't find any results. Try adjusting your filters.
-              </p>
-            </motion.div>
+            <PlaceholderState
+              minHeight="min-h-[54dvh]"
+              icon={SearchX}
+              title="No results found"
+              description="We couldn't find any results. Try adjusting your filters."
+            />
           )}
         </AnimatePresence>
       )}

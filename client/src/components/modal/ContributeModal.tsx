@@ -16,6 +16,7 @@ import {
   PenLine,
   Edit2,
   Save,
+  Pen,
 } from "lucide-react";
 import clsx from "clsx";
 import {
@@ -122,16 +123,16 @@ const ContributeModal = ({
       {variant === "empty" ? (
         <button
           onClick={openModal}
-          className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl transition-all duration-300 font-bold shadow-sm active:scale-95 font-sans"
+          className="flex items-center justify-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-gray-100 hover:bg-gray-200 border border-white/10 rounded-xl text-gray-800 text-sm md:text-base font-bold transition-all duration-300 shadow-sm active:scale-95 "
         >
-          <PlusCircle className="w-5 h-5" />
-          Start Contributing
+          <Plus className="w-5 h-5" />
+          Contribute
         </button>
       ) : variant === "edit" ? (
         <button
           onClick={openModal}
           title="Edit Contribution"
-          className="flex items-center gap-1.5 text-gray-400 p-2 bg-white/5 rounded-lg border border-white/10 transition-colors hover:text-white hover:bg-white/10"
+          className="flex items-center justify-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-gray-100 hover:bg-gray-200 border border-white/10 rounded-xl text-gray-800 text-sm md:text-base font-bold transition-all duration-300 shadow-sm active:scale-95"
         >
           <Edit2 size={18} />
         </button>
@@ -154,9 +155,9 @@ const ContributeModal = ({
           <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <DialogPanel
               transition
-              className="relative transform overflow-hidden rounded-2xl bg-primary text-left shadow-2xl transition duration-300 ease-out data-[closed]:opacity-0 data-[closed]:translate-y-4 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 sm:my-8 w-full max-w-5xl border border-white/10 "
+              className="relative transform overflow-hidden rounded-2xl bg-primary text-left shadow-2xl transition duration-300 ease-out data-[closed]:opacity-0 data-[closed]:translate-y-4 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95 sm:my-8 w-full max-w-5xl border border-white/10 p-5 md:p-6 md:space-y-6 space-y-5"
             >
-              <div className="flex justify-between items-center p-5 border-b border-white/10 shrink-0 bg-white/5">
+              <div className="flex justify-between items-center ">
                 <div>
                   <h3 className="text-white font-extrabold text-xl sm:text-2xl tracking-tight">
                     {mode === "create" ? "New Contribution" : "Edit Contribution"}
@@ -169,24 +170,21 @@ const ContributeModal = ({
                   <X className="size-5 md:size-6" />
                 </button>
               </div>
+              <div className="border-b border-white/10" />
 
-              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 p-5">
+              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 ">
                 <div className="flex flex-col">
                   <div className="flex items-center justify-between">
                     <label className={labelClass}>Content</label>
                     <button
                       type="button"
                       onClick={() => setIsPreview(!isPreview)}
-                      className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors active:scale-95 hover:text-white hover:bg-white/5"
-                      style={{
-                        color: isPreview ? "#f59e0b" : "#9ca3af",
-                        borderColor: isPreview ? "rgba(245, 158, 11, 0.2)" : "",
-                        backgroundColor: isPreview ? "rgba(245, 158, 11, 0.1)" : "",
-                      }}
+                      className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors active:scale-95 text-gray-400 "
+
                     >
                       {isPreview ? (
                         <>
-                          <PenLine className="w-3.5 h-3.5" /> Edit
+                          <Pen className="w-3.5 h-3.5" /> Edit
                         </>
                       ) : (
                         <>

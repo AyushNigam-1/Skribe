@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { ArrowLeft, Download, Check, FileText, Loader2 } from "lucide-react";
 import { motion, AnimatePresence, Transition } from "framer-motion";
 import { useGetScriptByIdQuery } from "../../graphql/generated/graphql";
+import PlaceholderState from "../../components/PlaceholderState";
 
 const smoothTransition: Transition = {
   duration: 0.7,
@@ -54,7 +55,11 @@ const ZenMode = () => {
     setIsDownloaded(true);
     setTimeout(() => setIsDownloaded(false), 2000);
   };
-
+  const zenEmptyVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: { opacity: 1, scale: 1, transition: { delay: 0.2, ...smoothTransition } },
+    exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
+  };
   return (
     <AnimatePresence mode="wait">
       {loading ? (
@@ -154,21 +159,12 @@ const ZenMode = () => {
                 ))}
               </div>
             ) : (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, ...smoothTransition }}
-                className="flex flex-col items-center justify-center gap-4 h-full text-center opacity-70 font-mono min-h-[88dvh]"
-              >
-                <FileText className="w-12 h-12 text-gray-600" />
-                <h3 className="text-xl font-bold text-gray-400 tracking-widest uppercase">
-                  A blank canvas
-                </h3>
-                <p className="text-gray-600 max-w-sm text-sm mx-auto">
-                  There are no approved contributions to read yet. Exit Zen Mode
-                  to start drafting.
-                </p>
-              </motion.div>
+              <PlaceholderState
+                minHeight="min-h-[75dvh]"
+                icon={FileText}
+                title="A blank canvas"
+                description="There are no approved contributions to read yet. Exit Zen Mode to start drafting."
+              />
             )}
           </div>
         </motion.div>

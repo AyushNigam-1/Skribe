@@ -3,10 +3,11 @@ import { Link, useOutletContext } from "react-router-dom";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { FileText, Loader2, SearchX } from "lucide-react";
+import { FileXCorner, Loader2, SearchX } from "lucide-react";
 import Search from "../../components/layout/Search";
 import ContributeModal from "../../components/modal/ContributeModal";
 import { GetScriptByIdQuery } from "../../graphql/generated/graphql";
+import PlaceholderState from "../../components/PlaceholderState";
 
 const highlightContent = (nodes: React.ReactNode, query: string): React.ReactNode => {
   if (!query.trim()) return nodes;
@@ -128,29 +129,16 @@ const Timeline = () => {
       className="space-y-4 w-full font-mono scrollbar-none"
     >
       {rawParagraphs.length === 0 && (
-        <motion.div
-          variants={itemVariants}
-          className="flex flex-col items-center justify-center px-4 sm:px-6 text-center min-h-[60dvh] md:min-h-[78dvh] space-y-4 relative overflow-hidden"
-        >
-          <div className="bg-white/5 border border-white/20 p-3 sm:p-4 rounded-full shadow-sm relative z-10">
-            <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-          </div>
-
-          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-3 tracking-tight font-sans relative z-10">
-            No contributions yet
-          </h3>
-
-          <p className="text-sm sm:text-base text-gray-400 max-w-xs sm:max-w-md relative z-10 leading-relaxed">
-            This draft is currently empty. Be the first to add content and shape
-            the draft!
-          </p>
-
-          {!isArchived && (
-            <div className="pt-2 sm:pt-4 relative z-10">
+        <PlaceholderState
+          icon={FileXCorner}
+          title="No contributions yet"
+          description="This draft is currently empty. Be the first to add content and shape the draft!"
+          action={
+            !isArchived && (
               <ContributeModal scriptId={scriptId} refetch={refetch} variant="empty" />
-            </div>
-          )}
-        </motion.div>
+            )
+          }
+        />
       )}
 
       {rawParagraphs.length > 0 && (
@@ -173,26 +161,12 @@ const Timeline = () => {
       <div className="flex flex-col gap-4">
         <AnimatePresence mode="popLayout">
           {processedParagraphs.length === 0 && rawParagraphs.length > 0 ? (
-            <motion.div
-              key="contributions-empty"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="flex flex-col items-center justify-center  text-center space-y-2 relative overflow-hidden font-sans w-full min-h-[60dvh]"
-            >
-              <div className="bg-white/5 border border-white/20 p-4 rounded-full shadow-sm relative z-10">
-                <SearchX className="w-8 h-8 text-white" />
-              </div>
-
-              <h3 className="text-2xl font-bold text-white relative z-10">
-                No results found
-              </h3>
-
-              <p className="text-gray-400 max-w-md relative z-10 text-sm">
-                We couldn't find any results. Try adjusting your filters.
-              </p>
-            </motion.div>
+            <PlaceholderState
+              minHeight="min-h-[54dvh]"
+              icon={SearchX}
+              title="No results found"
+              description="We couldn't find any results. Try adjusting your filters."
+            />
           ) : (
             processedParagraphs.map((p: any) => (
               <motion.div key={p.id} variants={itemVariants} layout>

@@ -3,7 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
   User, Languages, AlignLeft, Mail, Heart, Eye, MapPin, CalendarDays, AlertCircle, Loader2, Edit2, Check, FileText, X,
-  Lock
+  Lock,
+  FileXCorner
 } from "lucide-react";
 import { z } from "zod";
 
@@ -19,6 +20,7 @@ import { useUserStore } from "../../store/useAuthStore";
 import Add from "../../components/modal/AddDraft";
 import DraftCard from "../../components/card/DraftCard";
 import { toast } from "sonner";
+import PlaceholderState from "../../components/PlaceholderState";
 
 const profileSchemas = {
   name: z.string().min(2, "Name must be at least 2 characters").max(50, "Name cannot exceed 50 characters"),
@@ -156,7 +158,7 @@ const Profile = () => {
     }
   };
 
-  const { data: scriptsData, loading: scriptsLoading, error: scriptsError } = useGetUserScriptsQuery({
+  const { data: scriptsData, loading: scriptsLoading, error: scriptsError, refetch } = useGetUserScriptsQuery({
     variables: { userId: profileid || "" },
     skip: !profileid,
     fetchPolicy: "cache-and-network",
@@ -262,32 +264,20 @@ const Profile = () => {
             <Loader2 className="size-8 shrink-0 animate-spin" />
           </motion.div>
         ) : profileError ? (
-          <motion.div
-            key="auth-warning"
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="flex flex-col items-center justify-center w-full min-h-[96dvh] px-4"
-          >
-            <div className="flex flex-col items-center justify-center text-center max-w-md w-full">
-              <div className="bg-white/5 border border-white/10 p-5 rounded-full mb-6">
-                <Lock className="w-8 h-8 text-gray-500" />
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-2 font-sans tracking-tight">
-                Authentication Required
-              </h2>
-              <p className="text-gray-400 text-sm font-mono leading-relaxed mb-8 max-w-[280px]">
-                Please sign in to view and manage your contributions.
-              </p>
+          <PlaceholderState
+            icon={Lock}
+            title="Authentication Required"
+            description="Please sign in to view and manage your contributions."
+            action={
               <Link
                 to="/login"
                 className="flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-200 text-black rounded-xl transition-all duration-300 font-bold text-sm active:scale-95"
               >
                 Sign In to Continue
               </Link>
-            </div>
-          </motion.div>
+            }
+          />
+
         ) : (
           <motion.div key="profile-content" variants={pageVariants} initial="fadeInit" animate="fadeShow" exit="fadeExit" className="flex flex-col gap-6 w-full">
             <div className="flex flex-col lg:flex-row gap-4">
@@ -464,34 +454,31 @@ const Profile = () => {
               <div className="flex-1">
                 <AnimatePresence mode="wait">
                   {scriptsError ? (
-                    <motion.div key="scripts-error" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="flex flex-col items-center justify-center px-4 sm:px-6 text-center min-h-[40dvh] space-y-4 sm:space-y-5 relative overflow-hidden">
-                      <div className="bg-red-500/10 border border-red-500/20 p-3 sm:p-4 rounded-full shadow-sm relative z-10">
-                        <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
-                      </div>
-                      <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-3 tracking-tight font-sans relative z-10">
-                        Failed to load drafts
-                      </h3>
-                      <p className="text-sm sm:text-base text-gray-400 max-w-xs sm:max-w-md relative z-10 leading-relaxed">
-                        {scriptsError.message}
-                      </p>
-                    </motion.div>
+                    <PlaceholderState
+                      icon={AlertCircle}
+                      title="Failed to load drafts"
+                      description="We couldn't load this data right now. Please check your connection and try again."
+                      action={
+                        <button
+                          onClick={() => refetch()}
+                          className="px-6 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-bold transition-all duration-200 active:scale-95 text-sm sm:text-base"
+                        >
+                          Try Again
+                        </button>
+                      }
+                    />
                   ) : !hasScripts ? (
-                    <motion.div key="scripts-empty" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="flex flex-col items-center justify-center px-4 sm:px-6 text-center min-h-[40vh] space-y-4 sm:space-y-5 relative overflow-hidden font-mono">
-                      <div className="bg-white/5 border border-white/20 p-3 sm:p-4 rounded-full shadow-sm relative z-10">
-                        <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-                      </div>
-                      <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-3 tracking-tight font-sans relative z-10">
-                        No drafts yet
-                      </h3>
-                      <p className="text-sm sm:text-base text-gray-400 max-w-xs sm:max-w-md relative z-10 leading-relaxed">
-                        {isOwnProfile ? "You haven't created any drafts yet. Start your creative journey!" : "This user hasn't published any drafts yet."}
-                      </p>
-                      {isOwnProfile && (
-                        <div className="relative z-10 pt-2">
-                          <Add />
-                        </div>
-                      )}
-                    </motion.div>
+                    <PlaceholderState
+                      minHeight="min-h-[30dvh]"
+                      icon={FileXCorner}
+                      title="No drafts yet"
+                      description={
+                        isOwnProfile
+                          ? "You haven't created any drafts yet. Start your creative journey!"
+                          : "This user hasn't published any drafts yet."
+                      }
+                      action={isOwnProfile && <Add />}
+                    />
                   ) : (
                     <motion.div key="scripts-grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 font-sans">
                       <AnimatePresence mode="popLayout">

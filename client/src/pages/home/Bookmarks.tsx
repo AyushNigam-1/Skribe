@@ -8,7 +8,8 @@ import {
   SearchX,
   ListFilter,
   BookmarkX,
-  Loader2
+  Loader2,
+  Compass
 } from "lucide-react";
 import { useGetUserFavouritesQuery } from "../../graphql/generated/graphql";
 import Search from "../../components/layout/Search";
@@ -16,6 +17,7 @@ import Dropdown from "../../components/layout/Dropdown";
 import DraftCard from "../../components/card/DraftCard";
 import { useUserStore } from "../../store/useAuthStore";
 import { DropdownOption } from "../../types";
+import PlaceholderState from "../../components/PlaceholderState";
 
 const FILTER_OPTIONS = [
   { id: "all", name: "All Genres" },
@@ -34,7 +36,11 @@ const Bookmarks = () => {
   const [selectedFilter, setSelectedFilter] = useState<DropdownOption>(FILTER_OPTIONS[0]);
 
   const [showAuthWarning, setShowAuthWarning] = useState(false);
-
+  const emptyLibraryVariants: Variants = {
+    hidden: { opacity: 0, scale: 0.95, y: 10 },
+    visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { opacity: 0, scale: 0.95, y: 10, transition: { duration: 0.2 } }
+  };
   useEffect(() => {
     if (!currentUserId) {
       const timer = setTimeout(() => setShowAuthWarning(true), 800);
@@ -139,31 +145,19 @@ const Bookmarks = () => {
           ) :
 
             error ? (
-              <motion.div
-                key="error"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="flex flex-col items-center justify-center px-4 sm:px-6 text-center min-h-[96vh] space-y-4 sm:space-y-5 relative overflow-hidden"
-              >
-                <div className="bg-red-500/10 border border-red-500/20 p-3 sm:p-4 rounded-full shadow-sm relative z-10">
-                  <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
-                </div>
-                <h3 className="text-3xl font-extrabold text-white tracking-tight font-sans relative z-10">
-                  Failed to load drafts
-                </h3>
-                <p className="text-sm sm:text-base text-gray-400 max-w-xs sm:max-w-md relative z-10 leading-relaxed">
-                  We couldn't load this data right now. Please check your connection and try again.
-                </p>
-                <div className="relative z-10 pt-2">
+              <PlaceholderState
+                icon={AlertCircle}
+                title="Failed to load drafts"
+                description="We couldn't load this data right now. Please check your connection and try again."
+                action={
                   <button
                     onClick={() => refetch()}
                     className="px-6 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-bold transition-all duration-200 active:scale-95 text-sm sm:text-base"
                   >
                     Try Again
                   </button>
-                </div>
-              </motion.div>
+                }
+              />
             ) :
 
               (
@@ -207,48 +201,27 @@ const Bookmarks = () => {
                   )}
 
                   {!hasAnyBookmark && !isFiltering ? (
-                    <motion.div
-                      key="empty-library"
-                      initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
-                      className="flex flex-col items-center justify-center gap-4 text-center min-h-[96dvh]"
-                    >
-                      <div className="w-20 h-20 rounded-full bg-white/[0.02] border border-white/5 flex items-center justify-center shadow-inner">
-                        <BookmarkX className="w-10 h-10 text-gray-400" />
-                      </div>
-                      <h3 className="text-3xl font-extrabold text-white tracking-tight font-sans">
-                        No Bookmarks Yet
-                      </h3>
-                      <p className="text-gray-400 max-w-md text-base leading-relaxed relative z-10 font-mono">
-                        You haven't bookmarked any drafts yet. Start exploring to build your collection.
-                      </p>
-                      <Link
-                        to="/explore"
-                        className="flex items-center gap-2 px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl transition-all font-bold font-sans active:scale-95"
-                      >
-                        <Globe2 className="w-4 h-4" />
-                        Explore
-                      </Link>
-                    </motion.div>
+                    <PlaceholderState
+                      minHeight="min-h-[96dvh]"
+                      icon={BookmarkX}
+                      title="No bookmarks yet"
+                      description="You haven't bookmarked any drafts yet. Start exploring to build your collection."
+                      action={
+                        <Link
+                          to="/explore"
+                          className="flex items-center font-mono justify-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-gray-100 hover:bg-gray-200 border border-white/10 rounded-xl text-gray-800 text-sm md:text-base font-bold transition-all duration-300 shadow-sm active:scale-95 "
+                        >
+                          <Compass className="w-4 h-4" />
+                          Explore
+                        </Link>
+                      }
+                    />
                   ) : filteredFavourites.length === 0 ? (
-                    <motion.div
-                      key="no-search-results"
-                      initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
-                      className="flex flex-col gap-4 items-center justify-center py-24 text-center min-h-[80vh]"
-                    >
-                      <div className="w-20 h-20 rounded-full bg-white/[0.02] border border-white/5 flex items-center justify-center shadow-inner">
-                        <SearchX className="w-10 h-10 text-gray-400" />
-                      </div>
-                      <h3 className="text-3xl font-extrabold text-white tracking-tight font-sans">
-                        No Results Found
-                      </h3>
-                      <p className="text-gray-400 max-w-md text-base leading-relaxed relative z-10 font-mono">
-                        We couldn't find any result matching your current search filters. Try adjusting them!
-                      </p>
-                    </motion.div>
+                    <PlaceholderState
+                      icon={SearchX}
+                      title="No Results Found"
+                      description="We couldn't find any result matching your current search filters. Try adjusting them!"
+                    />
                   ) : (
                     <motion.div
                       variants={containerVariants}

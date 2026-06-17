@@ -6,6 +6,7 @@ import Add from "../../components/modal/AddDraft";
 import { useGetScriptsByGenresQuery } from "../../graphql/generated/graphql";
 import Genres from "../../components/layout/Genres";
 import DraftCard from "../../components/card/DraftCard";
+import PlaceholderState from "../../components/PlaceholderState";
 
 const Explore = () => {
   const [genres, setGenres] = useState<string[]>([]);
@@ -68,31 +69,19 @@ const Explore = () => {
 
             </motion.div>
           ) : error ? (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="flex flex-col items-center justify-center px-4 sm:px-6 text-center min-h-[96dvh] space-y-4 sm:space-y-5 relative overflow-hidden"
-            >
-              <div className="bg-red-500/10 border border-red-500/20 p-3 sm:p-4 rounded-full shadow-sm relative z-10">
-                <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
-              </div>
-              <h3 className="text-3xl font-extrabold text-white tracking-tight font-sans relative z-10">
-                Failed to load drafts
-              </h3>
-              <p className="text-sm sm:text-base text-gray-400 max-w-xs sm:max-w-md relative z-10 leading-relaxed">
-                We couldn't load this data right now. Please check your connection and try again.
-              </p>
-              <div className="relative z-10 pt-2">
+            <PlaceholderState
+              icon={AlertCircle}
+              title="Failed to load drafts"
+              description="We couldn't load this data right now. Please check your connection and try again."
+              action={
                 <button
                   onClick={() => refetch()}
                   className="px-6 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-bold transition-all duration-200 active:scale-95 text-sm sm:text-base"
                 >
                   Try Again
                 </button>
-              </div>
-            </motion.div>
+              }
+            />
           ) : (
             <motion.div
               key="content"
@@ -149,43 +138,19 @@ const Explore = () => {
               )}
               <div className="flex-1">
                 {!hasAnyScripts && !isFiltering ? (
-                  <motion.div
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="flex flex-col gap-4 items-center justify-center text-center relative overflow-hidden min-h-[96dvh]"
-                  >
-                    <div className="w-20 h-20 rounded-full bg-white/[0.02] border border-white/5 flex items-center justify-center shadow-inner">
-                      <FileExclamationPoint className="w-10 h-10 text-gray-400" />
-                    </div>
-                    <h3 className="text-3xl font-extrabold text-white tracking-tight font-sans relative z-10">
-                      No Drafts Yet
-                    </h3>
-                    <p className="text-gray-400 max-w-md text-base leading-relaxed relative z-10 font-mono">
-                      There are currently no drafts published on the platform. Be the first to start a story!
-                    </p>
-                    <div className="relative z-10">
-                      <Add />
-                    </div>
-                  </motion.div>
+                  <PlaceholderState
+                    minHeight="min-h-[96dvh]"
+                    icon={FileExclamationPoint}
+                    title="No Drafts Yet"
+                    description="There are currently no drafts published on the platform. Be the first to start a story!"
+                    action={<Add />}
+                  />
                 ) : !filteredScripts || filteredScripts.length === 0 ? (
-                  <motion.div
-                    key="no-search-results"
-                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="flex flex-col gap-4 items-center justify-center py-24 text-center min-h-[70vh]"
-                  >
-                    <div className="w-20 h-20 rounded-full bg-white/[0.02] border border-white/5 flex items-center justify-center shadow-inner">
-                      <SearchX className="w-10 h-10 text-gray-400" />
-                    </div>
-                    <h3 className="text-3xl font-extrabold text-white tracking-tight font-sans">
-                      No Results Found
-                    </h3>
-                    <p className="text-gray-400 max-w-md text-base leading-relaxed relative z-10 font-mono">
-                      We couldn't find any result matching your current search filters. Try adjusting them!
-                    </p>
-                  </motion.div>
+                  <PlaceholderState
+                    icon={SearchX}
+                    title="No Results Found"
+                    description="We couldn't find any result matching your current search filters. Try adjusting them!"
+                  />
                 ) : (
                   <motion.div
                     layout
