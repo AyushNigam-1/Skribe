@@ -20,10 +20,13 @@
         "noEmit": true,
         "jsx": "react-jsx",
         "types": [
-            "vite/client"
+            "vite/client",
+            "node"
         ]
     },
     "include": [
-        "src"
+        "src",
+        "playwright.config.ts",
+        "__tests__"
     ]
 }
