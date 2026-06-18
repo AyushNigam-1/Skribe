@@ -38,17 +38,6 @@ const MyContributions = () => {
   const { user } = useUserStore();
   const currentUserId = user?.id;
 
-  const [showAuthWarning, setShowAuthWarning] = useState(false);
-
-  useEffect(() => {
-    if (!currentUserId) {
-      const timer = setTimeout(() => setShowAuthWarning(true), 800);
-      return () => clearTimeout(timer);
-    } else {
-      setShowAuthWarning(false);
-    }
-  }, [currentUserId]);
-
   const { loading, error, data, refetch } = useGetUserContributionsQuery({
     variables: { userId: currentUserId || "" },
     skip: !currentUserId,
@@ -146,25 +135,10 @@ const MyContributions = () => {
     exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } },
   };
 
-  const PlaceholderStateVariants: Variants = {
-    hidden: { opacity: 0, scale: 0.95, y: 10 },
-    visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
-    exit: { opacity: 0, scale: 0.95, y: 10, transition: { duration: 0.2 } }
-  };
-
-  const searchEmptyVariants: Variants = {
-    hidden: { opacity: 0, scale: 0.95, y: 10 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" as const }
-    }
-  };
   return (
     <div className="w-full h-full text-white max-w-7xl mx-auto">
       <AnimatePresence mode="wait">
-        {(!currentUserId && !showAuthWarning) || loading ? (
+        {!currentUserId || loading ? (
           <motion.div
             key="loader"
             initial={{ opacity: 0 }}
@@ -174,33 +148,6 @@ const MyContributions = () => {
           >
             <Loader2 className="size-8 shrink-0 animate-spin" />
 
-          </motion.div>
-        ) : !currentUserId && showAuthWarning ? (
-          <motion.div
-            key="auth-warning"
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="flex flex-col items-center justify-center w-full min-h-[96dvh] px-4"
-          >
-            <div className="flex flex-col items-center justify-center text-center max-w-md w-full">
-              <div className="bg-white/5 border border-white/10 p-5 rounded-full mb-6">
-                <Lock className="w-8 h-8 text-gray-500" />
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-2 font-sans tracking-tight">
-                Authentication Required
-              </h2>
-              <p className="text-gray-400 text-sm font-mono leading-relaxed mb-8 max-w-[280px]">
-                Please sign in to view and manage your contributions.
-              </p>
-              <Link
-                to="/login"
-                className="flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-200 text-black rounded-xl transition-all duration-300 font-bold text-sm active:scale-95"
-              >
-                Sign In to Continue
-              </Link>
-            </div>
           </motion.div>
         ) : error ? (
           <PlaceholderState

@@ -35,21 +35,6 @@ const Bookmarks = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<DropdownOption>(FILTER_OPTIONS[0]);
 
-  const [showAuthWarning, setShowAuthWarning] = useState(false);
-  const emptyLibraryVariants: Variants = {
-    hidden: { opacity: 0, scale: 0.95, y: 10 },
-    visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
-    exit: { opacity: 0, scale: 0.95, y: 10, transition: { duration: 0.2 } }
-  };
-  useEffect(() => {
-    if (!currentUserId) {
-      const timer = setTimeout(() => setShowAuthWarning(true), 800);
-      return () => clearTimeout(timer);
-    } else {
-      setShowAuthWarning(false);
-    }
-  }, [currentUserId]);
-
   const { data, loading, error, refetch } = useGetUserFavouritesQuery({
     variables: { userId: currentUserId || "" },
     skip: !currentUserId,
@@ -103,7 +88,7 @@ const Bookmarks = () => {
     <div className="w-full max-w-7xl mx-auto h-full text-white pb-10">
       <AnimatePresence mode="wait">
 
-        {(!currentUserId && !showAuthWarning) || loading ? (
+        {!currentUserId || loading ? (
           <motion.div
             key="loader"
             initial={{ opacity: 0 }}
@@ -113,139 +98,108 @@ const Bookmarks = () => {
           >
             <Loader2 className="size-8 shrink-0 animate-spin" />
           </motion.div>
+        ) : error ? (
+          <PlaceholderState
+            icon={AlertCircle}
+            title="Failed to load drafts"
+            description="We couldn't load this data right now. Please check your connection and try again."
+            action={
+              <button
+                onClick={() => refetch()}
+                className="px-6 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-bold transition-all duration-200 active:scale-95 text-sm sm:text-base"
+              >
+                Try Again
+              </button>
+            }
+          />
         ) :
 
-          !currentUserId && showAuthWarning ? (
+          (
             <motion.div
-              key="auth-warning"
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="flex flex-col items-center justify-center w-full min-h-[96dvh] px-4"
+              key="content"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="w-full space-y-4"
             >
-              <div className="flex flex-col items-center justify-center text-center max-w-md w-full">
-                <div className="bg-white/5 border border-white/10 p-5 rounded-full mb-6">
-                  <Lock className="w-8 h-8 text-gray-500" />
-                </div>
-                <h2 className="text-2xl font-bold text-white mb-2 font-sans tracking-tight">
-                  Authentication Required
-                </h2>
-                <p className="text-gray-400 text-sm font-mono leading-relaxed mb-8 max-w-[280px]">
-                  Please sign in to view and manage your contributions.
-                </p>
-                <Link
-                  to="/login"
-                  className="flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-200 text-black rounded-xl transition-all duration-300 font-bold text-sm active:scale-95"
-                >
-                  Sign In to Continue
-                </Link>
-              </div>
-            </motion.div>
-          ) :
-
-            error ? (
-              <PlaceholderState
-                icon={AlertCircle}
-                title="Failed to load drafts"
-                description="We couldn't load this data right now. Please check your connection and try again."
-                action={
-                  <button
-                    onClick={() => refetch()}
-                    className="px-6 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-bold transition-all duration-200 active:scale-95 text-sm sm:text-base"
+              {(hasAnyBookmark || isFiltering) && (
+                <>
+                  <motion.div
+                    variants={itemVariants}
+                    className="grid grid-cols-[1fr_auto] gap-3 sm:flex sm:flex-row sm:items-center sm:justify-between sm:gap-4 w-full"
                   >
-                    Try Again
-                  </button>
-                }
-              />
-            ) :
+                    <h1 className="text-2xl sm:text-3xl font-extrabold font-sans tracking-tight self-center">
+                      Bookmarks
+                    </h1>
 
-              (
-                <motion.div
-                  key="content"
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="w-full space-y-4"
-                >
-                  {(hasAnyBookmark || isFiltering) && (
-                    <>
-                      <motion.div
-                        variants={itemVariants}
-                        className="grid grid-cols-[1fr_auto] gap-3 sm:flex sm:flex-row sm:items-center sm:justify-between sm:gap-4 w-full"
-                      >
-                        <h1 className="text-2xl sm:text-3xl font-extrabold font-sans tracking-tight self-center">
-                          Bookmarks
-                        </h1>
+                    <div className="contents sm:flex sm:flex-row sm:items-center sm:gap-3">
+                      <div className="col-span-2 order-last sm:order-none w-full sm:w-64">
+                        <Search value={searchQuery} setSearch={setSearchQuery} placeholder="Search your library..." />
+                      </div>
 
-                        <div className="contents sm:flex sm:flex-row sm:items-center sm:gap-3">
-                          <div className="col-span-2 order-last sm:order-none w-full sm:w-64">
-                            <Search value={searchQuery} setSearch={setSearchQuery} placeholder="Search your library..." />
-                          </div>
+                      <div className="shrink-0 sm:w-auto self-center">
+                        <Dropdown
+                          options={FILTER_OPTIONS}
+                          value={selectedFilter}
+                          onChange={setSelectedFilter}
+                          icon={ListFilter}
+                          collapseOnMobile={true}
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
 
-                          <div className="shrink-0 sm:w-auto self-center">
-                            <Dropdown
-                              options={FILTER_OPTIONS}
-                              value={selectedFilter}
-                              onChange={setSelectedFilter}
-                              icon={ListFilter}
-                              collapseOnMobile={true}
-                            />
-                          </div>
-                        </div>
-                      </motion.div>
+                  <motion.hr variants={itemVariants} className="border-b-0.5 border-white/5" />
+                </>
+              )}
 
-                      <motion.hr variants={itemVariants} className="border-b-0.5 border-white/5" />
-                    </>
-                  )}
-
-                  {!hasAnyBookmark && !isFiltering ? (
-                    <PlaceholderState
-                      minHeight="min-h-[96dvh]"
-                      icon={BookmarkX}
-                      title="No bookmarks yet"
-                      description="You haven't bookmarked any drafts yet. Start exploring to build your collection."
-                      action={
-                        <Link
-                          to="/explore"
-                          className="flex items-center font-mono justify-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-gray-100 hover:bg-gray-200 border border-white/10 rounded-xl text-gray-800 text-sm md:text-base font-bold transition-all duration-300 shadow-sm active:scale-95 "
-                        >
-                          <Compass className="w-4 h-4" />
-                          Explore
-                        </Link>
-                      }
-                    />
-                  ) : filteredFavourites.length === 0 ? (
-                    <PlaceholderState
-                      icon={SearchX}
-                      title="No Results Found"
-                      description="We couldn't find any result matching your current search filters. Try adjusting them!"
-                    />
-                  ) : (
-                    <motion.div
-                      variants={containerVariants}
-                      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2"
+              {!hasAnyBookmark && !isFiltering ? (
+                <PlaceholderState
+                  minHeight="min-h-[96dvh]"
+                  icon={BookmarkX}
+                  title="No bookmarks yet"
+                  description="You haven't bookmarked any drafts yet. Start exploring to build your collection."
+                  action={
+                    <Link
+                      to="/explore"
+                      className="flex items-center font-mono justify-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-gray-100 hover:bg-gray-200 border border-white/10 rounded-xl text-gray-800 text-sm md:text-base font-bold transition-all duration-300 shadow-sm active:scale-95 "
                     >
-                      <AnimatePresence mode="popLayout">
-                        {filteredFavourites.map((script) => (
-                          <motion.div
-                            layout
-                            variants={itemVariants}
-                            initial="hidden"
-                            animate="visible"
-                            exit="exit"
-                            key={script.id}
-                            className="h-full"
-                          >
-                            <DraftCard script={script} />
-                          </motion.div>
-                        ))}
-                      </AnimatePresence>
-                    </motion.div>
-                  )}
+                      <Compass className="w-4 h-4" />
+                      Explore
+                    </Link>
+                  }
+                />
+              ) : filteredFavourites.length === 0 ? (
+                <PlaceholderState
+                  icon={SearchX}
+                  title="No Results Found"
+                  description="We couldn't find any result matching your current search filters. Try adjusting them!"
+                />
+              ) : (
+                <motion.div
+                  variants={containerVariants}
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2"
+                >
+                  <AnimatePresence mode="popLayout">
+                    {filteredFavourites.map((script) => (
+                      <motion.div
+                        layout
+                        variants={itemVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        key={script.id}
+                        className="h-full"
+                      >
+                        <DraftCard script={script} />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </motion.div>
               )}
+            </motion.div>
+          )}
       </AnimatePresence>
     </div>
   );
