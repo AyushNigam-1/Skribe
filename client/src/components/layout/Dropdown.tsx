@@ -93,6 +93,7 @@ const Dropdown: React.FC<DropdownProps> = ({
                 <ListboxOption
                   key={option.id}
                   value={option}
+                  data-testid={`dropdown-option-${option.name.replace(/\s+/g, '-')}`}
                   className={clsx(
                     "group relative flex cursor-pointer select-none items-center rounded-lg py-2.5 pl-3 pr-9 text-sm font-medium transition-colors duration-200",
                     "text-gray-400",

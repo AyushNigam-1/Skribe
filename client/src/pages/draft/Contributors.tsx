@@ -131,7 +131,7 @@ const Contributors: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center w-full min-h-[70dvh]">
+      <div data-testid="contributors-loader" className="flex items-center justify-center w-full min-h-[70dvh]">
         <Loader2 className="size-8 shrink-0 animate-spin" />
       </div>
     );
@@ -147,6 +147,7 @@ const Contributors: React.FC = () => {
       {paragraphs.length === 0 && (
         <PlaceholderState
           icon={Users}
+          data-testid="empty-state-no-contributors"
           title="No contributors yet"
           description="This draft doesn't have any approved contributions right now."
           action={
@@ -162,21 +163,24 @@ const Contributors: React.FC = () => {
           variants={itemVariants}
           className="flex items-center justify-between gap-3 py-2 relative z-20 w-full"
         >
-          <Search
-            value={searchQuery}
-            setSearch={setSearchQuery}
-            placeholder="Search users..."
-            className="flex-1 min-w-0 sm:max-w-60"
-          />
-
-          <Dropdown
-            options={filterOptions}
-            value={selectedFilter}
-            onChange={setSelectedFilter}
-            icon={ListFilter}
-            className="w-auto shrink-0"
-            collapseOnMobile={true}
-          />
+          <div data-testid="contributors-search" className="flex-1 min-w-0 sm:max-w-60">
+            <Search
+              value={searchQuery}
+              setSearch={setSearchQuery}
+              placeholder="Search users..."
+              className="flex-1 min-w-0 sm:max-w-60"
+            />
+          </div>
+          <div data-testid="contributors-dropdown" className="w-auto shrink-0">
+            <Dropdown
+              options={filterOptions}
+              value={selectedFilter}
+              onChange={setSelectedFilter}
+              icon={ListFilter}
+              className="w-auto shrink-0"
+              collapseOnMobile={true}
+            />
+          </div>
         </motion.div>
       )}
 
@@ -194,7 +198,7 @@ const Contributors: React.FC = () => {
               {contributorsLeaderboard.map((contributor, index) => (
                 <motion.div variants={itemVariants} key={contributor.name}>
                   <Link
-                    // --- UPDATED ROUTE ---
+                    data-testid={`contributor-card-${contributor.id}`}
                     to={`/profile/${contributor.id}`}
                     className="group flex items-center justify-between bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-white/5 hover:border-white/30 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300"
                   >
@@ -204,10 +208,10 @@ const Contributors: React.FC = () => {
                       </div>
 
                       <div className="flex flex-col min-w-0">
-                        <h5 className="text-white font-bold text-lg truncate transition-colors font-sans">
+                        <h5 className="text-white font-bold text-lg truncate transition-colors font-sans" data-testid={`contributor-name-${contributor.id}`}>
                           {contributor.name}
                         </h5>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-0.5">
+                        <p data-testid={`contributor-count-${contributor.id}`} className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-0.5">
                           {contributor.count}{" "}
                           {contributor.count === 1
                             ? "Contribution"
@@ -225,6 +229,7 @@ const Contributors: React.FC = () => {
             </motion.div>
           ) : (
             <PlaceholderState
+              data-testid="empty-state-no-results"
               minHeight="min-h-[54dvh]"
               icon={SearchX}
               title="No results found"

@@ -70,7 +70,7 @@ const MemberActions = ({
     <div className="flex items-center gap-2">
 
       <div className="hidden sm:flex items-center gap-3">
-        <div className="">
+        <div data-testid={`role-dropdown-${member.user.id}`}>
           <Dropdown
             options={ROLE_OPTIONS}
             value={currentRoleOption}
@@ -80,6 +80,7 @@ const MemberActions = ({
         </div>
 
         <button
+          data-testid={`remove-member-btn-${member.user.id}`}
           onClick={() => triggerRemoveMemberModal(member.user.id, member.user.name, isSelf)}
           className="p-2.5 text-xs font-bold uppercase tracking-widest bg-white/5 text-red-400 hover:text-red-300 hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 rounded-xl flex items-center gap-2 transition-all active:scale-95 shrink-0"
         >
@@ -285,7 +286,7 @@ const DraftSettings: React.FC = () => {
 
   if (!isEditorOrOwner) {
     return (
-      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="flex flex-col items-center justify-center py-20 px-4 text-center border border-white/10 rounded-2xl bg-white/5 backdrop-blur-xl shadow-lg font-mono">
+      <motion.div data-testid="access-denied-state" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="flex flex-col items-center justify-center py-20 px-4 text-center border border-white/10 rounded-2xl bg-white/5 backdrop-blur-xl shadow-lg font-mono">
         <Lock className="w-8 h-8 text-gray-500 mb-4" />
         <h3 className="text-lg font-bold text-white mb-2">Access Denied</h3>
         <p className="text-gray-400 text-sm max-w-sm">Only the author and designated editors can modify these settings.</p>
@@ -322,7 +323,7 @@ const DraftSettings: React.FC = () => {
             const Icon = option.icon;
             const isActive = visibility === option.id;
             return (
-              <label key={option.id} className={`flex gap-2 justify-between items-center p-4 rounded-2xl border cursor-pointer transition-all duration-300 shadow-sm group ${isActive ? option.activeClasses.container : "bg-white/5 border-white/10 hover:border-white/20"}`}>
+              <label data-testid={`visibility-option-${option.id}`} key={option.id} className={`flex gap-2 justify-between items-center p-4 rounded-2xl border cursor-pointer transition-all duration-300 shadow-sm group ${isActive ? option.activeClasses.container : "bg-white/5 border-white/10 hover:border-white/20"}`}>
                 <input type="radio" name="visibility" value={option.id} checked={isActive} onChange={() => handleVisibilityChange(option.id as VisibilityType)} className="sr-only" />
                 <div className="flex flex-col">
                   <span className={`font-bold text-lg font-sans tracking-tight ${isActive ? option.activeClasses.textIcon : "text-gray-300"}`}>{option.title}</span>
@@ -344,11 +345,11 @@ const DraftSettings: React.FC = () => {
         <div className="p-4 sm:p-6">
 
           <div className="flex items-center gap-2 mb-6 w-full">
-            <div className="flex-1 sm:flex-none sm:w-48 md:w-56">
+            <div className="flex-1 sm:flex-none sm:w-48 md:w-56" data-testid="members-search-wrapper">
               <Search value={searchQuery} setSearch={setSearchQuery} placeholder="Search members..." />
             </div>
 
-            <div className="flex items-center gap-2 shrink-0 ml-auto">
+            <div className="flex items-center gap-2 shrink-0 ml-auto" data-testid="members-filter-dropdown">
               <Dropdown options={FILTER_OPTIONS} value={selectedFilter} onChange={setSelectedFilter} icon={ListFilter} collapseOnMobile={true} />
               <InviteCollaborator scriptId={script!.id} />
             </div>
@@ -363,7 +364,7 @@ const DraftSettings: React.FC = () => {
             ) : (
               <AnimatePresence mode="popLayout">
                 {allMembers.map((member) => (
-                  <motion.div key={member.user.id} layout initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} className="flex items-center justify-between gap-3 sm:gap-4 p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/[0.07] transition-colors">
+                  <motion.div key={member.user.id} data-testid={`member-card-${member.user.id}`} layout initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} className="flex items-center justify-between gap-3 sm:gap-4 p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/[0.07] transition-colors">
 
                     <div className="flex items-center gap-3 overflow-hidden">
                       <div className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white font-bold shrink-0">{member.user.name.charAt(0).toUpperCase()}</div>
@@ -420,6 +421,7 @@ const DraftSettings: React.FC = () => {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.15 }}
+                      data-testid="clear-content-btn"
                       onClick={() => setIsConfirmingClearContent(true)}
                       className="px-6 py-2.5 border border-red-900/50 text-red-500 hover:bg-red-950/40 hover:border-red-500/50 rounded-xl font-bold transition-all text-sm shadow-sm active:scale-95 w-full md:w-auto"
                     >
@@ -441,6 +443,7 @@ const DraftSettings: React.FC = () => {
                         Cancel
                       </button>
                       <button
+                        data-testid="confirm-clear-btn"
                         onClick={handleClearContent}
                         disabled={isClearing}
                         className="flex-1 md:flex-none justify-center flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 shadow-lg text-sm active:scale-95 whitespace-nowrap"
@@ -471,6 +474,7 @@ const DraftSettings: React.FC = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.15 }}
+                        data-testid="kick-all-btn"
                         onClick={() => setIsConfirmingKickAll(true)}
                         className="px-6 py-2.5 border border-red-900/50 text-red-500 hover:bg-red-950/40 hover:border-red-500/50 rounded-xl font-bold transition-all text-sm shadow-sm active:scale-95 w-full md:w-auto"
                       >
@@ -492,6 +496,7 @@ const DraftSettings: React.FC = () => {
                           Cancel
                         </button>
                         <button
+                          data-testid="confirm-kick-btn"
                           onClick={handleKickAll}
                           disabled={isKicking}
                           className="flex-1 md:flex-none justify-center flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 shadow-lg text-sm active:scale-95 whitespace-nowrap"
@@ -522,6 +527,7 @@ const DraftSettings: React.FC = () => {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.15 }}
+                      data-testid="delete-draft-btn"
                       onClick={() => setIsConfirmingDelete(true)}
                       className="px-6 py-2.5 border border-red-900/50 text-red-500 hover:bg-red-950/40 hover:border-red-500/50 rounded-xl font-bold transition-all text-sm shadow-sm active:scale-95 w-full md:w-auto"
                     >
@@ -529,6 +535,7 @@ const DraftSettings: React.FC = () => {
                     </motion.button>
                   ) : (
                     <motion.div
+
                       key="confirm-delete"
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -543,6 +550,7 @@ const DraftSettings: React.FC = () => {
                         Cancel
                       </button>
                       <button
+                        data-testid="confirm-delete-btn"
                         onClick={handleDelete}
                         disabled={isDeleting}
                         className="flex-1 md:flex-none justify-center flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 shadow-lg text-sm active:scale-95 whitespace-nowrap"

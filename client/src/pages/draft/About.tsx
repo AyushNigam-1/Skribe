@@ -43,10 +43,11 @@ const fieldVariants = {
 const cardClass = "bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col hover:border-white/20 transition-colors gap-2 sm:gap-3";
 const headerClass = "flex items-center gap-2 sm:gap-2.5  font-semibold text-gray-500 ";
 
-const EditingBadge = ({ isEditing }: { isEditing: boolean }) => (
+const EditingBadge = ({ isEditing, field }: { isEditing: boolean; field?: string }) => (
   <AnimatePresence>
     {isEditing && (
       <motion.span
+        data-testid={`editing-badge-${field}`}
         initial={{ opacity: 0, x: -8, filter: "blur(2px)" }}
         animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
         exit={{ opacity: 0, x: -8, filter: "blur(2px)" }}
@@ -60,12 +61,12 @@ const EditingBadge = ({ isEditing }: { isEditing: boolean }) => (
 );
 
 const ReadOnlyCard = ({ icon: Icon, label, value, isCapitalized = false }: { icon: any, label: string, value: string | number, isCapitalized?: boolean }) => (
-  <motion.div variants={itemVariants} className={cardClass}>
+  <motion.div data-testid={`readonly-card-${label.toLowerCase()}`} variants={itemVariants} className={cardClass}>
     <h3 className={headerClass}>
       <Icon className="size-4" />
       {label}
     </h3>
-    <p className={`text-gray-300 font-bold font-sans text-xl ${isCapitalized ? "capitalize" : ""}`}>
+    <p data-testid={`readonly-value-${label.toLowerCase()}`} className={`text-gray-300 font-bold font-sans text-xl ${isCapitalized ? "capitalize" : ""}`}>
       {value}
     </p>
   </motion.div>
@@ -76,6 +77,7 @@ const EditControls = ({ field, editingField, isUpdating, onEdit, onCancel, onSav
     <AnimatePresence mode="wait" initial={false}>
       {editingField !== field ? (
         <motion.button
+          data-testid={`edit-btn-${field}`}
           key="edit"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }}
           onClick={() => onEdit(field)}
@@ -85,16 +87,16 @@ const EditControls = ({ field, editingField, isUpdating, onEdit, onCancel, onSav
         </motion.button>
       ) : (
         <motion.div key="actions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.1 }} className="flex items-center gap-3">
-          <button onClick={onCancel} disabled={isUpdating} className="text-gray-500 hover:text-gray-200 transition-colors disabled:opacity-50 outline-none" title="Cancel">
+          <button data-testid={`cancel-btn-${field}`} onClick={onCancel} disabled={isUpdating} className="text-gray-500 hover:text-gray-200 transition-colors disabled:opacity-50 outline-none" title="Cancel">
             <X className="w-4 h-4 shrink-0" />
           </button>
-          <button onClick={() => onSave(field)} disabled={isUpdating} className="text-green-500 hover:text-green-400 transition-colors disabled:opacity-50 outline-none" title="Save changes">
+          <button data-testid={`save-btn-${field}`} onClick={() => onSave(field)} disabled={isUpdating} className="text-green-500 hover:text-green-400 transition-colors disabled:opacity-50 outline-none" title="Save changes">
             {isUpdating ? <Loader2 className="size-8 shrink-0 animate-spin" /> : <Check className="w-4 h-4 shrink-0 stroke-[3]" />}
           </button>
         </motion.div>
       )}
     </AnimatePresence>
-  </div>
+  </div >
 );
 
 const EditableCard = ({
@@ -110,7 +112,7 @@ const EditableCard = ({
           <Icon className="size-4" />
           {label}
           {isArray && <span className="ml-1 px-1.5 py-0.5 rounded-md bg-black/20 text-[10px] text-gray-500 normal-case tracking-normal">max {MAX_TAGS}</span>}
-          <EditingBadge isEditing={isEditing} />
+          <EditingBadge isEditing={isEditing} field={field} />
         </h3>
         {/* 🚨 UPDATED: Only show EditControls if the user is Author OR Editor */}
         {isAuthorized && <EditControls field={field} {...editControlProps} />}
@@ -120,6 +122,7 @@ const EditableCard = ({
         <AnimatePresence mode="popLayout">
           {isEditing ? (
             <motion.div
+              data-testid={`editable-input-${field}`}
               key={`${field}-edit`}
               variants={fieldVariants} initial="hidden" animate="visible" exit="exit" transition={fieldTransition}
               ref={editRef}
@@ -133,14 +136,14 @@ const EditableCard = ({
           ) : (
             <motion.div
               key={`${field}-view`}
-              variants={fieldVariants} initial="hidden" animate="visible" exit="exit" transition={fieldTransition}
+              variants={fieldVariants} data-testid={`editable-view-${field}`} initial="hidden" animate="visible" exit="exit" transition={fieldTransition}
               className="flex gap-2 flex-wrap border border-transparent w-full"
             >
               {arrayValue?.length
                 ? arrayValue.slice(0, MAX_TAGS).map((item: string, i: number) => (
-                  <span key={i} className="px-2.5 sm:px-3 py-1 bg-white/5 text-gray-300 rounded-md text-xs sm:text-sm font-semibold border border-white/10 font-sans">{item}</span>
+                  <span key={i} data-testid={`array-item-${field}-${i}`} className="px-2.5 sm:px-3 py-1 bg-white/5 text-gray-300 rounded-md text-xs sm:text-sm font-semibold border border-white/10 font-sans">{item}</span>
                 ))
-                : <span className="text-gray-500 italic text-sm sm:text-base font-sans">None</span>
+                : <span data-testid={`empty-array-${field}`} className="text-gray-500 italic text-sm sm:text-base font-sans">None</span>
               }
             </motion.div>
           )}
@@ -148,8 +151,10 @@ const EditableCard = ({
       ) : (
         <div
           ref={isEditing ? editRef : undefined}
+          key={`${field}-${isEditing ? 'edit' : 'view'}`}
           contentEditable={isEditing}
           suppressContentEditableWarning
+          data-testid={isEditing ? `editable-input-${field}` : `editable-view-${field}`}
           onKeyDown={(e) => handleKeyDown(e, field)}
           className={`text-gray-300 font-bold font-sans text-xl outline-none whitespace-pre-wrap break-words w-full transition-all duration-300 ${textClassName || "font-semibold"}`}
         >

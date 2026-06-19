@@ -155,10 +155,12 @@ const Requests: React.FC = () => {
         ) : error ? (
           <PlaceholderState
             icon={AlertCircle}
+            data-testid="error-state"
             title="Failed to load drafts"
             description="We couldn't load this data right now. Please check your connection and try again."
             action={
               <button
+                data-testid="try-again-button"
                 onClick={() => refetch()}
                 className="px-6 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-bold transition-all duration-200 active:scale-95 text-sm sm:text-base"
               >
@@ -168,6 +170,7 @@ const Requests: React.FC = () => {
           />
         ) : rawParagraphs.length === 0 && !isFiltering ? (
           <EmptyState
+            data-testid="empty-state-no-requests"
             icon={Inbox}
             title="No requests yet"
             description="There are no requests right now. Be the first to submit a contribution!"
@@ -183,12 +186,13 @@ const Requests: React.FC = () => {
           <motion.div variants={containerVariants} initial="hidden" animate="visible" exit="exit" className="w-full space-y-4">
 
             <motion.div variants={itemVariants} className="flex flex-row items-center py-2 justify-between w-full max-w-7xl mx-auto gap-2 sm:gap-4">
-              <Search
-                value={searchQuery}
-                setSearch={handleSearchChange}
-                placeholder={userId ? `Filtering by user...` : "Search requests..."}
-                className="flex-1 min-w-0 sm:max-w-60"
-              />
+              <div data-testid="requests-search-wrapper" className="flex-1 min-w-0 sm:max-w-60">
+                <Search
+                  value={searchQuery}
+                  setSearch={handleSearchChange}
+                  placeholder={userId ? `Filtering by user...` : "Search requests..."}
+                />
+              </div>
               <Dropdown
                 options={statusOptions}
                 value={selectedStatus}
@@ -201,6 +205,7 @@ const Requests: React.FC = () => {
 
             {filteredParagraphs.length === 0 ? (
               <PlaceholderState
+                data-testid="empty-state-no-results"
                 minHeight="min-h-[54dvh]"
                 icon={SearchX}
                 title="No results found"
@@ -217,6 +222,7 @@ const Requests: React.FC = () => {
                         layout
                         key={req?.id}
                         variants={itemVariants}
+                        data-testid={`request-card-${req?.id}`}
                         initial="hidden"
                         animate="visible"
                         exit="exit"
@@ -243,9 +249,17 @@ const Requests: React.FC = () => {
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>{req?.text}</ReactMarkdown>
                         </div>
                         <div className="flex items-center gap-6 text-gray-500 text-xs font-mono mt-auto pt-2">
-                          <span className="flex items-center gap-1.5"><ThumbsUp size={14} /> {req?.likes?.length || 0}</span>
-                          <span className="flex items-center gap-1.5"><ThumbsDown size={14} /> {req?.dislikes?.length || 0}</span>
-                          <span className="flex items-center gap-1.5 ml-auto"><MessageSquare size={14} /> {req?.comments?.length || 0}</span>
+                          <span data-testid="likes-count" className="flex items-center gap-1.5">
+                            <ThumbsUp size={14} /> {req?.likes?.length || 0}
+                          </span>
+
+                          <span data-testid="dislikes-count" className="flex items-center gap-1.5">
+                            <ThumbsDown size={14} /> {req?.dislikes?.length || 0}
+                          </span>
+
+                          <span data-testid="comments-count" className="flex items-center gap-1.5 ml-auto">
+                            <MessageSquare size={14} /> {req?.comments?.length || 0}
+                          </span>
                         </div>
                       </motion.div>
                     );

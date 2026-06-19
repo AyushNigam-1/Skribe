@@ -8,6 +8,7 @@ interface EmptyStateProps {
     action?: ReactNode;
     className?: string;
     minHeight?: string; // Bring this back so you can tweak it per-page if needed
+    'data-testid'?: string;
 }
 const variants: Variants = {
     hidden: { opacity: 0, y: 10 },
@@ -21,9 +22,11 @@ const PlaceholderState: React.FC<EmptyStateProps> = ({
     action,
     className = "",
     minHeight = "min-h-[66dvh]",
+    'data-testid': dataTestId
 }) => {
     return (
         <motion.div
+            data-testid={dataTestId}
             variants={variants}
             className={`flex-1 w-full flex flex-col items-center justify-center text-center ${minHeight} gap-3 md:gap-5 overflow-hidden ${className}`}
         >

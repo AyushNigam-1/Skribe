@@ -69,6 +69,7 @@ const ZenMode = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
+          data-testid="zen-loader"
           className="w-full min-h-[96dvh] flex-1 flex items-center justify-center"
         >
           <Loader2 className="size-8 shrink-0 animate-spin" />
@@ -84,6 +85,7 @@ const ZenMode = () => {
         >
           <div className="sticky top-0 z-50 flex justify-between items-center border-b border-white/5 pb-4 bg-[#0A0A14]">
             <button
+              data-testid="zen-back-btn"
               onClick={() => navigate(-1)}
               className="p-3 rounded-full text-gray-500 hover:bg-white/5 hover:text-white transition-all"
               title="Exit Zen Mode"
@@ -96,6 +98,7 @@ const ZenMode = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, ...smoothTransition }}
               className="text-gray-300 font-bold text-lg tracking-widest uppercase font-mono select-none"
+              data-testid="zen-title"
             >
               {script?.title || "Untitled Draft"}
             </motion.h4>
@@ -125,6 +128,7 @@ const ZenMode = () => {
                     initial={{ scale: 0.5, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.5, opacity: 0 }}
+                    data-testid="zen-download-btn"
                   >
                     <Download className="w-5 h-5" />
                   </motion.div>
@@ -143,6 +147,7 @@ const ZenMode = () => {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5, ...smoothTransition }}
+                    data-testid={`zen-paragraph-${para.id}`}
                   >
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
@@ -162,14 +167,16 @@ const ZenMode = () => {
               <PlaceholderState
                 minHeight="min-h-[75dvh]"
                 icon={FileText}
+                data-testid="zen-empty-state"
                 title="A blank canvas"
                 description="There are no approved contributions to read yet. Exit Zen Mode to start drafting."
               />
             )}
           </div>
         </motion.div>
-      )}
-    </AnimatePresence>
+      )
+      }
+    </AnimatePresence >
   );
 };
 
