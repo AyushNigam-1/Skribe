@@ -9,3 +9,12 @@ export const connectDB = async (uri: string): Promise<void> => {
     process.exit(1);
   }
 };
+
+export const disconnectDB = async (): Promise<void> => {
+  try {
+    await mongoose.disconnect();
+    console.log('✅ Disconnected from MongoDB');
+  } catch (error) {
+    console.error('❌ MongoDB disconnection error:', error);
+  }
+};

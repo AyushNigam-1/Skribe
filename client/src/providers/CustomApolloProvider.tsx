@@ -45,7 +45,9 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
 const client = new ApolloClient({
   link: from([errorLink, httpLink]),
-  cache: new InMemoryCache({}),
+  cache: new InMemoryCache({
+    addTypename: false,
+  }),
 });
 
 export const CustomApolloProvider: React.FC<{ children: React.ReactNode }> = ({
