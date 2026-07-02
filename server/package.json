@@ -45,6 +45,7 @@
   "devDependencies": {
     "@pact-foundation/pact": "^17.0.1",
     "@testcontainers/mongodb": "^12.0.4",
+    "@testcontainers/redis": "^12.0.4",
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.8",

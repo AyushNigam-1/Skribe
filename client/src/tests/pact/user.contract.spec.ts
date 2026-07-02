@@ -11,6 +11,7 @@ import {
     GET_USER_FAVOURITES,
     SEARCH_USERS,
 } from "../../graphql/query/userQueries";
+import { print } from "graphql";
 
 const { string, integer, eachLike, like } = MatchersV3;
 
@@ -23,7 +24,7 @@ const provider = new PactV3({
 describe("GraphQL User Contracts", () => {
     it("generates contracts for all User queries", async () => {
         await provider.addInteraction({
-            states: [{ description: "a user with ID user-123 exists" }],
+            states: [{ description: "a user with ID 60c72b2f9b1d8b001c8e4a01 exists" }],
             uponReceiving: "a request for a user profile",
             withRequest: {
                 method: "POST",
@@ -31,8 +32,8 @@ describe("GraphQL User Contracts", () => {
                 headers: { "Content-Type": "application/json" },
                 body: {
                     operationName: "GetUserProfile",
-                    query: GET_USER_PROFILE.loc?.source.body,
-                    variables: { id: "user-123" },
+                    query: print(GET_USER_PROFILE),
+                    variables: { id: "60c72b2f9b1d8b001c8e4a01" },
                 },
             },
             willRespondWith: {
@@ -41,17 +42,17 @@ describe("GraphQL User Contracts", () => {
                 body: {
                     data: {
                         getUserProfile: like({
-                            id: string("user-123"),
+                            id: string("60c72b2f9b1d8b001c8e4a01"),
                             name: string("Jane Doe"),
                             username: string("janedoe99"),
                             email: string("jane@example.com"),
                             bio: string("Sci-Fi writer"),
                             languages: eachLike("English"),
                             favourites: eachLike("script-xyz"),
-                            likes: integer(42),
-                            followers: integer(100),
-                            follows: integer(50),
-                            views: integer(1200),
+                            likes: [],
+                            followers: [],
+                            follows: [],
+                            views: [],
                         }),
                     },
                 },
@@ -59,7 +60,7 @@ describe("GraphQL User Contracts", () => {
         });
 
         await provider.addInteraction({
-            states: [{ description: "user-123 has authored scripts" }],
+            states: [{ description: "60c72b2f9b1d8b001c8e4a01 has authored scripts" }],
             uponReceiving: "a request for user scripts",
             withRequest: {
                 method: "POST",
@@ -67,8 +68,8 @@ describe("GraphQL User Contracts", () => {
                 headers: { "Content-Type": "application/json" },
                 body: {
                     operationName: "GetUserScripts",
-                    query: GET_USER_SCRIPTS.loc?.source.body,
-                    variables: { userId: "user-123" },
+                    query: print(GET_USER_SCRIPTS),
+                    variables: { userId: "60c72b2f9b1d8b001c8e4a01" },
                 },
             },
             willRespondWith: {
@@ -77,7 +78,7 @@ describe("GraphQL User Contracts", () => {
                 body: {
                     data: {
                         getUserScripts: eachLike({
-                            id: string("script-1"),
+                            id: string("60c72b2f9b1d8b001c8e4a03"),
                             title: string("The Quantum Draft"),
                             visibility: string("Public"),
                             description: string("A time travel story."),
@@ -86,7 +87,7 @@ describe("GraphQL User Contracts", () => {
                             createdAt: string("1704067200000"),
                             updatedAt: string("1704153600000"),
                             author: like({
-                                id: string("user-123"),
+                                id: string("60c72b2f9b1d8b001c8e4a01"),
                                 name: string("Jane Doe"),
                             }),
                         }),
@@ -104,7 +105,7 @@ describe("GraphQL User Contracts", () => {
                 headers: { "Content-Type": "application/json" },
                 body: {
                     operationName: "SearchUsers",
-                    query: SEARCH_USERS.loc?.source.body,
+                    query: print(SEARCH_USERS),
                     variables: { query: "jane" },
                 },
             },
@@ -114,7 +115,7 @@ describe("GraphQL User Contracts", () => {
                 body: {
                     data: {
                         searchUsers: eachLike({
-                            id: string("user-123"),
+                            id: string("60c72b2f9b1d8b001c8e4a01"),
                             name: string("Jane Doe"),
                             username: string("janedoe99"),
                         }),
@@ -124,7 +125,7 @@ describe("GraphQL User Contracts", () => {
         });
 
         await provider.addInteraction({
-            states: [{ description: "user-123 has contributions" }],
+            states: [{ description: "60c72b2f9b1d8b001c8e4a01 has contributions" }],
             uponReceiving: "a request for user contributions",
             withRequest: {
                 method: "POST",
@@ -132,8 +133,8 @@ describe("GraphQL User Contracts", () => {
                 headers: { "Content-Type": "application/json" },
                 body: {
                     operationName: "GetUserContributions",
-                    query: GET_USER_CONTRIBUTIONS.loc?.source.body,
-                    variables: { userId: "user-123" },
+                    query: print(GET_USER_CONTRIBUTIONS),
+                    variables: { userId: "60c72b2f9b1d8b001c8e4a01" },
                 },
             },
             willRespondWith: {
@@ -142,14 +143,14 @@ describe("GraphQL User Contracts", () => {
                 body: {
                     data: {
                         getUserContributions: eachLike({
-                            id: string("contrib-1"),
+                            id: string("60c72b2f9b1d8b001c8e4a05"),
                             status: string("APPROVED"),
                             text: string("This is a brilliant paragraph added to scene 3."),
-                            likes: eachLike("user-456"),
+                            likes: eachLike("60c72b2f9b1d8b001c8e4a02"),
                             dislikes: [],
                             createdAt: string("1704153600000"),
                             script: like({
-                                id: string("script-1"),
+                                id: string("60c72b2f9b1d8b001c8e4a03"),
                                 title: string("The Quantum Draft"),
                             }),
                             comments: eachLike({
@@ -164,7 +165,7 @@ describe("GraphQL User Contracts", () => {
         });
 
         await provider.addInteraction({
-            states: [{ description: "user-123 has favourite scripts" }],
+            states: [{ description: "60c72b2f9b1d8b001c8e4a01 has favourite scripts" }],
             uponReceiving: "a request for user favourites",
             withRequest: {
                 method: "POST",
@@ -172,8 +173,8 @@ describe("GraphQL User Contracts", () => {
                 headers: { "Content-Type": "application/json" },
                 body: {
                     operationName: "GetUserFavourites",
-                    query: GET_USER_FAVOURITES.loc?.source.body,
-                    variables: { userId: "user-123" },
+                    query: print(GET_USER_FAVOURITES),
+                    variables: { userId: "60c72b2f9b1d8b001c8e4a01" },
                 },
             },
             willRespondWith: {
@@ -182,7 +183,7 @@ describe("GraphQL User Contracts", () => {
                 body: {
                     data: {
                         getUserFavourites: eachLike({
-                            id: string("script-99"),
+                            id: string("60c72b2f9b1d8b001c8e4a04"),
                             title: string("A Masterpiece"),
                             visibility: string("Public"),
                             description: string("An inspiring tale."),
@@ -191,7 +192,7 @@ describe("GraphQL User Contracts", () => {
                             createdAt: string("1703000000000"),
                             updatedAt: string("1704000000000"),
                             author: like({
-                                id: string("user-456"),
+                                id: string("60c72b2f9b1d8b001c8e4a02"),
                                 name: string("Alice Writer"),
                             }),
                         }),
@@ -211,11 +212,11 @@ describe("GraphQL User Contracts", () => {
                 }),
             });
 
-            await client.query({ query: GET_USER_PROFILE, variables: { id: "user-123" } });
-            await client.query({ query: GET_USER_SCRIPTS, variables: { userId: "user-123" } });
+            await client.query({ query: GET_USER_PROFILE, variables: { id: "60c72b2f9b1d8b001c8e4a01" } });
+            await client.query({ query: GET_USER_SCRIPTS, variables: { userId: "60c72b2f9b1d8b001c8e4a01" } });
             await client.query({ query: SEARCH_USERS, variables: { query: "jane" } });
-            await client.query({ query: GET_USER_CONTRIBUTIONS, variables: { userId: "user-123" } });
-            await client.query({ query: GET_USER_FAVOURITES, variables: { userId: "user-123" } });
+            await client.query({ query: GET_USER_CONTRIBUTIONS, variables: { userId: "60c72b2f9b1d8b001c8e4a01" } });
+            await client.query({ query: GET_USER_FAVOURITES, variables: { userId: "60c72b2f9b1d8b001c8e4a01" } });
 
             expect(true).toBe(true);
         });

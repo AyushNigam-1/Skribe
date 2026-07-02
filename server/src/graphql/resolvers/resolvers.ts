@@ -1,6 +1,6 @@
 import { userQueries } from "./queries/userQueries";
-import { userMutations } from "./mutations/userMutations";
 import { scriptQueries } from "./queries/scriptQueries";
+import { userMutations } from "./mutations/userMutations";
 import { scriptMutations } from "./mutations/scriptMutations";
 import { paragraphQueries } from "./queries/paragraphQueries";
 import { paragraphMutations } from "./mutations/paragraphMutations";
