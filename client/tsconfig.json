@@ -27,6 +27,7 @@
     "include": [
         "src",
         "playwright.config.ts",
-        "__tests__"
+        "__tests__",
+        "../server/src/tests/pact/pace_server.ts"
     ]
 }

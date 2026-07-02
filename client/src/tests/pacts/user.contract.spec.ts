@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeAll } from "vitest";
-import { PactV3, MatchersV3 } from "@pact-foundation/pact";
-import { ApolloClient, InMemoryCache, HttpLink, gql } from "@apollo/client";
 import fetch from "cross-fetch";
-import path from "path";
-
+import { print } from "graphql";
+import { provider } from './pactSetup';
+import { describe, it, expect } from "vitest";
+import { MatchersV3 } from "@pact-foundation/pact";
+import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
 import {
     GET_USER_PROFILE,
     GET_USER_SCRIPTS,
@@ -11,15 +11,9 @@ import {
     GET_USER_FAVOURITES,
     SEARCH_USERS,
 } from "../../graphql/query/userQueries";
-import { print } from "graphql";
 
-const { string, integer, eachLike, like } = MatchersV3;
+const { string, eachLike, like } = MatchersV3;
 
-const provider = new PactV3({
-    consumer: "ScriptDrafts-Frontend",
-    provider: "ScriptDrafts-GraphQL-API",
-    dir: path.resolve(process.cwd(), "tests/pact/contracts"),
-});
 
 describe("GraphQL User Contracts", () => {
     it("generates contracts for all User queries", async () => {

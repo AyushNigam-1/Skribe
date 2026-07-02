@@ -1,5 +1,5 @@
-import { PactV3 } from '@pact-foundation/pact';
 import { ApolloClient, HttpLink, InMemoryCache, gql } from '@apollo/client/core';
+import { provider } from './pactSetup';
 import fetch from 'node-fetch';
 import { describe, it } from 'vitest';
 import { print } from 'graphql';
@@ -15,11 +15,6 @@ const TEST_USER_ID = '60c72b2f9b1d8b001c8e4a01';
 const TEST_SCRIPT_ID = '60c72b2f9b1d8b001c8e4a03';
 const TEST_CONTRIB_ID = '60c72b2f9b1d8b001c8e4a05';
 
-const provider = new PactV3({
-    consumer: 'ScriptDrafts-Frontend',
-    provider: 'ScriptDrafts-GraphQL-API',
-    dir: './tests/pact/contracts',
-});
 
 describe('GraphQL Script Contracts', () => {
     it('generates contracts for all Script queries', async () => {

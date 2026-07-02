@@ -8,7 +8,9 @@
     "build": "tsc",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:pact": "vitest run src/__test__/pacts",
+    "pact:publish": "npx pact-broker publish ./pacts --broker-base-url=http://localhost:9292 --consumer-app-version=1.0.2"
   },
   "keywords": [],
   "author": "",
