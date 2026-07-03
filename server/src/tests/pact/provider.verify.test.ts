@@ -1,8 +1,8 @@
 import path from 'path';
-import { Verifier } from '@pact-foundation/pact';
+import { LogLevel, Verifier } from '@pact-foundation/pact';
 import { afterAll, beforeAll, describe, it } from 'vitest';
 import { startTestServer, stopTestServer } from './pace_server';
-import { pactStateHandlers } from './stateHandler';
+import { pactStateHandlers } from './states/stateHandler';
 
 describe('Pact Verification', () => {
     let serverUrl: string;
@@ -18,13 +18,17 @@ describe('Pact Verification', () => {
     it('validates the expectations of the Frontend', async () => {
 
         const opts = {
-            provider: "ScriptDrafts-GraphQL-API",
-            providerBaseUrl: "http://localhost:4000/graphql",
-            pactBrokerUrl: "http://localhost:9292",
-            publishVerificationResult: true,
-            providerVersion: "1.0.0",
+            provider: 'ScriptDrafts-GraphQL-API',
+            providerBaseUrl: `${serverUrl}/graphql`,
+
+            pactUrls: [
+                path.resolve(process.cwd(), 'src/tests/pact/ScriptDrafts-Frontend-ScriptDrafts-GraphQL-API.json')
+            ],
+            logLevel: 'debug' as LogLevel,
+
+            // 👇 3. Inject the external file here
             stateHandlers: pactStateHandlers,
-        }
+        };
 
         const verifier = new Verifier(opts);
         await verifier.verifyProvider();

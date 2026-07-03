@@ -4,195 +4,17 @@
   },
   "interactions": [
     {
-      "description": "a request for a specific script",
+      "description": "a request for user notifications",
       "providerStates": [
         {
-          "name": "a script with ID 60c72b2f9b1d8b001c8e4a03 exists"
+          "name": "user 60c72b2f9b1d8b001c8e4a01 has notifications"
         }
       ],
       "request": {
         "body": {
-          "operationName": "GetScriptById",
-          "query": "query GetScriptById($id: ID!) {\n  getScriptById(id: $id) {\n    id\n    title\n    visibility\n    languages\n    genres\n    description\n    createdAt\n    combinedText\n    likes\n    dislikes\n    author {\n      id\n      name\n    }\n    collaborators {\n      role\n      user {\n        id\n        name\n      }\n    }\n    paragraphs {\n      id\n      text\n      status\n      likes\n      dislikes\n      createdAt\n      author {\n        id\n        name\n      }\n      comments {\n        author {\n          id\n          name\n        }\n        text\n        createdAt\n      }\n    }\n  }\n}",
+          "operationName": "GetNotifications",
+          "query": "query GetNotifications($userId: ID!) {\n  getNotifications(userId: $userId) {\n    id\n    type\n    message\n    draftTitle\n    link\n    isRead\n    createdAt\n    sender {\n      id\n      name\n    }\n  }\n}",
           "variables": {
-            "id": "60c72b2f9b1d8b001c8e4a03"
-          }
-        },
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "method": "POST",
-        "path": "/graphql"
-      },
-      "response": {
-        "body": {
-          "data": {
-            "getScriptById": {
-              "author": {
-                "id": "60c72b2f9b1d8b001c8e4a01",
-                "name": "Jane Doe"
-              },
-              "collaborators": [],
-              "combinedText": "This is a brilliant paragraph added to scene 3.",
-              "createdAt": "1704067200000",
-              "description": "A time travel story.",
-              "dislikes": [],
-              "genres": [
-                "Sci-Fi"
-              ],
-              "id": "60c72b2f9b1d8b001c8e4a03",
-              "languages": [
-                "English"
-              ],
-              "likes": [],
-              "paragraphs": [
-                {
-                  "author": {
-                    "id": "60c72b2f9b1d8b001c8e4a01",
-                    "name": "Jane Doe"
-                  },
-                  "comments": [],
-                  "createdAt": "1704153600000",
-                  "dislikes": [],
-                  "id": "60c72b2f9b1d8b001c8e4a05",
-                  "likes": [],
-                  "status": "approved",
-                  "text": "This is a brilliant paragraph added to scene 3."
-                }
-              ],
-              "title": "The Quantum Draft",
-              "visibility": "Public"
-            }
-          }
-        },
-        "headers": {
-          "Content-Type": "application/json; charset=utf-8"
-        },
-        "status": 200
-      }
-    },
-    {
-      "description": "a request for scripts by genre",
-      "providerStates": [
-        {
-          "name": "scripts with genre Sci-Fi exist"
-        }
-      ],
-      "request": {
-        "body": {
-          "operationName": "GetScriptsByGenres",
-          "query": "query GetScriptsByGenres($genres: [String!]!) {\n  getScriptsByGenres(genres: $genres) {\n    id\n    title\n    genres\n    description\n    likes\n    languages\n    dislikes\n    createdAt\n    author {\n      name\n    }\n  }\n}",
-          "variables": {
-            "genres": [
-              "Sci-Fi"
-            ]
-          }
-        },
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "method": "POST",
-        "path": "/graphql"
-      },
-      "response": {
-        "body": {
-          "data": {
-            "getScriptsByGenres": [
-              {
-                "author": {
-                  "name": "Jane Doe"
-                },
-                "createdAt": "1704067200000",
-                "description": "A time travel story.",
-                "dislikes": [],
-                "genres": [
-                  "Sci-Fi"
-                ],
-                "id": "60c72b2f9b1d8b001c8e4a03",
-                "languages": [
-                  "English"
-                ],
-                "likes": [],
-                "title": "The Quantum Draft"
-              }
-            ]
-          }
-        },
-        "headers": {
-          "Content-Type": "application/json; charset=utf-8"
-        },
-        "status": 200
-      }
-    },
-    {
-      "description": "a request for script contributors",
-      "providerStates": [
-        {
-          "name": "script 60c72b2f9b1d8b001c8e4a03 has contributors"
-        }
-      ],
-      "request": {
-        "body": {
-          "operationName": "GetScriptContributors",
-          "query": "query GetScriptContributors($scriptId: ID!) {\n  getScriptContributors(scriptId: $scriptId) {\n    contributors {\n      userId\n      details {\n        name\n        paragraphs {\n          id\n          text\n          status\n          createdAt\n          likes\n          dislikes\n          author {\n            name\n          }\n          comments {\n            author {\n              name\n            }\n            text\n            createdAt\n          }\n        }\n      }\n    }\n  }\n}",
-          "variables": {
-            "scriptId": "60c72b2f9b1d8b001c8e4a03"
-          }
-        },
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "method": "POST",
-        "path": "/graphql"
-      },
-      "response": {
-        "body": {
-          "data": {
-            "getScriptContributors": {
-              "contributors": [
-                {
-                  "details": {
-                    "name": "Jane Doe",
-                    "paragraphs": [
-                      {
-                        "author": {
-                          "name": "Jane Doe"
-                        },
-                        "comments": [],
-                        "createdAt": "1704153600000",
-                        "dislikes": [],
-                        "id": "60c72b2f9b1d8b001c8e4a05",
-                        "likes": [],
-                        "status": "approved",
-                        "text": "This is a brilliant paragraph added to scene 3."
-                      }
-                    ]
-                  },
-                  "userId": "60c72b2f9b1d8b001c8e4a01"
-                }
-              ]
-            }
-          }
-        },
-        "headers": {
-          "Content-Type": "application/json; charset=utf-8"
-        },
-        "status": 200
-      }
-    },
-    {
-      "description": "a request for specific user contributions in a script",
-      "providerStates": [
-        {
-          "name": "user 60c72b2f9b1d8b001c8e4a01 has contributions in script 60c72b2f9b1d8b001c8e4a03"
-        }
-      ],
-      "request": {
-        "body": {
-          "operationName": "GetUserContributionsByScript",
-          "query": "query GetUserContributionsByScript($userId: ID!, $scriptId: ID!) {\n  getUserContributionsByScript(userId: $userId, scriptId: $scriptId) {\n    id\n    text\n    status\n    createdAt\n    likes\n    dislikes\n    script {\n      id\n      title\n    }\n    author {\n      id\n      name\n    }\n    comments {\n      text\n      createdAt\n      author {\n        name\n      }\n    }\n  }\n}",
-          "variables": {
-            "scriptId": "60c72b2f9b1d8b001c8e4a03",
             "userId": "60c72b2f9b1d8b001c8e4a01"
           }
         },
@@ -205,29 +27,101 @@
       "response": {
         "body": {
           "data": {
-            "getUserContributionsByScript": [
+            "getNotifications": [
               {
-                "author": {
-                  "id": "60c72b2f9b1d8b001c8e4a01",
-                  "name": "Jane Doe"
-                },
-                "comments": [],
                 "createdAt": "1704153600000",
-                "dislikes": [],
-                "id": "60c72b2f9b1d8b001c8e4a05",
-                "likes": [],
-                "script": {
-                  "id": "60c72b2f9b1d8b001c8e4a03",
-                  "title": "The Quantum Draft"
+                "draftTitle": "The Quantum Draft",
+                "id": "60c72b2f9b1d8b001c8e4a06",
+                "isRead": false,
+                "link": "/scripts/60c72b2f9b1d8b001c8e4a03",
+                "message": "You have a new comment.",
+                "sender": {
+                  "id": "60c72b2f9b1d8b001c8e4a02",
+                  "name": "Alice Writer"
                 },
-                "status": "approved",
-                "text": "This is a brilliant paragraph added to scene 3."
+                "type": "comment"
               }
             ]
           }
         },
         "headers": {
           "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.data.getNotifications[0].createdAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getNotifications[0].draftTitle": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getNotifications[0].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getNotifications[0].isRead": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getNotifications[0].link": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getNotifications[0].message": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getNotifications[0].sender.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getNotifications[0].sender.name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getNotifications[0].type": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
         },
         "status": 200
       }

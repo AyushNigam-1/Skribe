@@ -58,6 +58,10 @@ export const startTestServer = async (port: number = 4000): Promise<string> => {
     apolloServer = new ApolloServer<MyContext>({
         typeDefs,
         resolvers,
+        formatError: (formattedError, error) => {
+            console.error('🔥 RAW GRAPHQL ERROR:', error);
+            return formattedError;
+        },
     });
 
     await apolloServer.start();

@@ -143,7 +143,7 @@ export const scriptQueries = {
       const authorId = String(author.id || author._id);
 
       if (!authorMap.has(authorId)) {
-        authorMap.set(authorId, { name: author, paragraphs: [] });
+        authorMap.set(authorId, { name: author.name, paragraphs: [] });
       }
 
       authorMap.get(authorId).paragraphs.push(p);
