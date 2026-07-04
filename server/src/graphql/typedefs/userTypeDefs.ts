@@ -11,7 +11,6 @@ export const userTypeDefs = gql`
     languages: [String]
     bio: String
     favourites: [ID]
-    interests: [String]
     contibutions: [ID]
     likes: [ID]
     followers: [ID]

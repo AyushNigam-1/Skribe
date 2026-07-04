@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import Bookmarks from "../pages/home/Bookmarks"; // Adjust this path if your test is in a different folder
-import { useGetUserFavouritesQuery } from "../graphql/generated/graphql";
-import { useUserStore } from "../store/useAuthStore";
+import Bookmarks from "../../pages/home/Bookmarks"; // Adjust this path if your test is in a different folder
+import { useGetUserFavouritesQuery } from "../../graphql/generated/graphql";
+import { useUserStore } from "../../store/useAuthStore";
 
 // 1. Mock the GraphQL Hook
 vi.mock("../graphql/generated/graphql", () => ({

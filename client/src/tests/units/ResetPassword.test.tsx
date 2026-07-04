@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import ResetPassword from "../pages/auth/ResetPassword";
+import ResetPassword from "../../pages/auth/ResetPassword";
 
 // 1. Mock React Router
 const mockNavigate = vi.fn();
@@ -45,7 +45,7 @@ vi.mock("framer-motion", async () => {
     };
 });
 
-import { authClient } from "../lib/authClient";
+import { authClient } from "../../lib/authClient";
 import { toast } from "sonner";
 
 const mockResetApi = authClient.resetPassword as any;

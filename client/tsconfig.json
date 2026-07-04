@@ -28,6 +28,7 @@
         "src",
         "playwright.config.ts",
         "__tests__",
-        "../server/src/tests/pact/pace_server.ts"
+        "../server/src/tests/pact/pact_server.ts",
+        "../server/src/tests/pact/states/paragraphMutationStates.ts"
     ]
 }

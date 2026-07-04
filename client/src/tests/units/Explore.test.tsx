@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import Explore from "../pages/home/Explore";
-import { useGetScriptsByGenresQuery } from "../graphql/generated/graphql";
+import Explore from "../../pages/home/Explore";
+import { useGetScriptsByGenresQuery } from "../../graphql/generated/graphql";
 import { MemoryRouter } from "react-router-dom";
 // import 
 // 1. Mock the GraphQL Hook

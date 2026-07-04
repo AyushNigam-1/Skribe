@@ -66,12 +66,11 @@ export const paragraphMutations = {
 
     await enforceRateLimit(context.redis, userId, "approve_paragraph", 60, 60);
 
-    // 🚨 REPO CALL
     const paragraph = await ParagraphRepository.updateStatus(paragraphId, "approved");
     if (!paragraph) throw new GraphQLError("Paragraph not found");
 
-    // 🚨 REPO CALL
-    const script = await ScriptRepository.findById(String(paragraph.script));
+    // paragraph.script is already the populated Script doc — use it directly
+    const script = paragraph.script as any;
     if (!script) throw new GraphQLError("Script not found");
 
     const paragraphAuthorId = paragraph.author.toString();
@@ -79,20 +78,19 @@ export const paragraphMutations = {
 
     const existingCollab = script.collaborators?.find((c: any) => c.user.toString() === paragraphAuthorId);
 
-    // 🚨 REPO CALLS replacing the raw Mongoose logic
     if (existingCollab) {
-      await ScriptRepository.forceAcceptCollaboratorAndAddParagraph(String(paragraph.script), paragraphAuthorId, String(paragraph._id));
+      await ScriptRepository.forceAcceptCollaboratorAndAddParagraph(String(script._id), paragraphAuthorId, String(paragraph._id));
     } else if (paragraphAuthorId !== scriptOwnerId) {
-      await ScriptRepository.addAcceptedContributorAndAddParagraph(String(paragraph.script), paragraphAuthorId, String(paragraph._id));
+      await ScriptRepository.addAcceptedContributorAndAddParagraph(String(script._id), paragraphAuthorId, String(paragraph._id));
     } else {
-      await ScriptRepository.addParagraphId(String(paragraph.script), String(paragraph._id));
+      await ScriptRepository.addParagraphId(String(script._id), String(paragraph._id));
     }
 
-    await invalidateParagraphCache(context.redis, paragraph.script.toString(), paragraphId);
+    await invalidateParagraphCache(context.redis, String(script._id), paragraphId);
 
     if (context.redis) {
       try {
-        const exactScriptKeys = await context.redis.keys(`*${paragraph.script.toString()}*`);
+        const exactScriptKeys = await context.redis.keys(`*${String(script._id)}*`);
         if (exactScriptKeys.length > 0) await context.redis.del(exactScriptKeys);
       } catch (err) { }
     }

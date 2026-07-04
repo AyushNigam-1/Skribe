@@ -72,7 +72,7 @@ export const userMutations = {
     await enforceRateLimit(context.redis, userId, "update_profile", 20, 60);
 
     const validStringFields = ["name", "bio"];
-    const validArrayFields = ["languages", "interests"];
+    const validArrayFields = ["languages"];
 
     let formattedValue: any = value;
 

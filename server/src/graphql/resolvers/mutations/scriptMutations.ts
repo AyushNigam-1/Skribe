@@ -204,10 +204,10 @@ export const scriptMutations = {
 
     await ParagraphRepository.deleteManyByScriptId(scriptId); // 🚨 REPO CALL
 
-    await ScriptRepository.updateFields(scriptId, { paragraphs: [], combinedText: "" }); // 🚨 REPO CALL
+    const updatedScript = await ScriptRepository.updateFields(scriptId, { paragraphs: [], combinedText: "" });
 
     await invalidateScriptCache(context.redis, scriptId);
-    return script;
+    return updatedScript;
   },
 
   removeAllCollaborators: async (_: any, { scriptId }: any, context: any) => {

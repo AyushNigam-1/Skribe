@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import Profile from "../pages/home/Profile"; // Adjust path if needed
-import { useUserStore } from "../store/useAuthStore";
+import Profile from "../../pages/home/Profile"; // Adjust path if needed
+import { useUserStore } from "../../store/useAuthStore";
 import * as routerDom from "react-router-dom";
 
 // 1. JSDOM Polyfill for innerText
@@ -76,7 +76,7 @@ vi.mock("../components/card/DraftCard", () => ({
     default: ({ script }: any) => <div data-testid="draft-card">{script.title}</div>,
 }));
 
-import { useGetUserProfileQuery, useGetUserScriptsQuery } from "../graphql/generated/graphql";
+import { useGetUserProfileQuery, useGetUserScriptsQuery } from "../../graphql/generated/graphql";
 
 const mockUseProfileQuery = useGetUserProfileQuery as any;
 const mockUseScriptsQuery = useGetUserScriptsQuery as any;

@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import ZenMode from "../pages/draft/ZenMode";
+import ZenMode from "../../pages/draft/ZenMode";
 
 // 1. Mock React Router
 const mockNavigate = vi.fn();

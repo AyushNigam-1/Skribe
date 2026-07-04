@@ -7,5 +7,5 @@ export const pactStateHandlers = {
     ...userStateHandlers,
     ...scriptStateHandlers,
     ...paragraphStateHandlers,
-    ...notificationStateHandlers
+    ...notificationStateHandlers,
 };

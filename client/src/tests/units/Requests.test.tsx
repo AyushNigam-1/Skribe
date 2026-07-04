@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import Requests from "../pages/draft/Requests";
+import Requests from "../../pages/draft/Requests";
 
 // 1. Mock React Router
 const mockNavigate = vi.fn();
@@ -23,7 +23,7 @@ const mockRefetch = vi.fn();
 vi.mock("../graphql/generated/graphql", () => ({
     useGetFilteredRequestsQuery: vi.fn(),
 }));
-import { useGetFilteredRequestsQuery } from "../graphql/generated/graphql";
+import { useGetFilteredRequestsQuery } from "../../graphql/generated/graphql";
 const mockUseGetFilteredRequests = useGetFilteredRequestsQuery as any;
 
 // 3. Mock React Markdown

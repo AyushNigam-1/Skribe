@@ -1,7 +1,7 @@
 import path from 'path';
 import { LogLevel, Verifier } from '@pact-foundation/pact';
 import { afterAll, beforeAll, describe, it } from 'vitest';
-import { startTestServer, stopTestServer } from './pace_server';
+import { startTestServer, stopTestServer } from './pact_server';
 import { pactStateHandlers } from './states/stateHandler';
 
 describe('Pact Verification', () => {

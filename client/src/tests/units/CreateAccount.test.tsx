@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import CreateAccount from "../pages/auth/Signup";  // Adjust path if needed
+import CreateAccount from "../../pages/auth/Signup";  // Adjust path if needed
 
 // 1. Mock React Router
 const mockNavigate = vi.fn();
@@ -55,8 +55,8 @@ vi.mock("framer-motion", async () => {
     };
 });
 
-import { authClient } from "../lib/authClient";
-import { posthog } from "../providers/PostHogProvider";
+import { authClient } from "../../lib/authClient";
+import { posthog } from "../../providers/PostHogProvider";
 import { toast } from "sonner";
 
 const mockEmailSignUp = authClient.signUp.email as any;

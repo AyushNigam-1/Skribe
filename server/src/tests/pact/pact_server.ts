@@ -74,7 +74,7 @@ export const startTestServer = async (port: number = 4000): Promise<string> => {
             context: async ({ req }) => {
                 return {
                     req,
-                    user: { id: '507f1f77bcf86cd799439011', role: 'ADMIN' },
+                    user: { id: '60c72b2f9b1d8b001c8e4a01', role: 'ADMIN' },
                     redis: redisClient,
                 };
             },

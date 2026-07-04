@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ForgotPassword from "../pages/auth/ForgotPassword";
+import ForgotPassword from "../../pages/auth/ForgotPassword";
 
 // Provide a stable environment variable for the redirect URL
 vi.stubEnv("VITE_CLIENT_URL", "http://localhost:5173");
@@ -36,7 +36,7 @@ vi.mock("framer-motion", async () => {
     };
 });
 
-import { authClient } from "../lib/authClient";
+import { authClient } from "../../lib/authClient";
 import { toast } from "sonner";
 
 const mockRequestReset = authClient.requestPasswordReset as any;

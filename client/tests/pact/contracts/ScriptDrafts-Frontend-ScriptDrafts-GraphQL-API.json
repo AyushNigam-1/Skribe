@@ -4,16 +4,135 @@
   },
   "interactions": [
     {
-      "description": "a request for user notifications",
+      "description": "a request for a user profile",
       "providerStates": [
         {
-          "name": "user 60c72b2f9b1d8b001c8e4a01 has notifications"
+          "name": "a user with ID 60c72b2f9b1d8b001c8e4a01 exists"
         }
       ],
       "request": {
         "body": {
-          "operationName": "GetNotifications",
-          "query": "query GetNotifications($userId: ID!) {\n  getNotifications(userId: $userId) {\n    id\n    type\n    message\n    draftTitle\n    link\n    isRead\n    createdAt\n    sender {\n      id\n      name\n    }\n  }\n}",
+          "operationName": "GetUserProfile",
+          "query": "query GetUserProfile($id: ID!) {\n  getUserProfile(id: $id) {\n    id\n    name\n    username\n    email\n    bio\n    languages\n    favourites\n    likes\n    followers\n    follows\n    views\n  }\n}",
+          "variables": {
+            "id": "60c72b2f9b1d8b001c8e4a01"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "method": "POST",
+        "path": "/graphql"
+      },
+      "response": {
+        "body": {
+          "data": {
+            "getUserProfile": {
+              "bio": "Sci-Fi writer",
+              "email": "jane@example.com",
+              "favourites": [
+                "script-xyz"
+              ],
+              "followers": [],
+              "follows": [],
+              "id": "60c72b2f9b1d8b001c8e4a01",
+              "languages": [
+                "English"
+              ],
+              "likes": [],
+              "name": "Jane Doe",
+              "username": "janedoe99",
+              "views": []
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.data.getUserProfile": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserProfile.bio": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserProfile.email": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserProfile.favourites": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.getUserProfile.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserProfile.languages": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.getUserProfile.name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserProfile.username": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request for user scripts",
+      "providerStates": [
+        {
+          "name": "60c72b2f9b1d8b001c8e4a01 has authored scripts"
+        }
+      ],
+      "request": {
+        "body": {
+          "operationName": "GetUserScripts",
+          "query": "query GetUserScripts($userId: ID!) {\n  getUserScripts(userId: $userId) {\n    id\n    title\n    visibility\n    description\n    languages\n    genres\n    createdAt\n    updatedAt\n    author {\n      id\n      name\n    }\n  }\n}",
           "variables": {
             "userId": "60c72b2f9b1d8b001c8e4a01"
           }
@@ -27,19 +146,24 @@
       "response": {
         "body": {
           "data": {
-            "getNotifications": [
+            "getUserScripts": [
               {
-                "createdAt": "1704153600000",
-                "draftTitle": "The Quantum Draft",
-                "id": "60c72b2f9b1d8b001c8e4a06",
-                "isRead": false,
-                "link": "/scripts/60c72b2f9b1d8b001c8e4a03",
-                "message": "You have a new comment.",
-                "sender": {
-                  "id": "60c72b2f9b1d8b001c8e4a02",
-                  "name": "Alice Writer"
+                "author": {
+                  "id": "60c72b2f9b1d8b001c8e4a01",
+                  "name": "Jane Doe"
                 },
-                "type": "comment"
+                "createdAt": "1704067200000",
+                "description": "A time travel story.",
+                "genres": [
+                  "Sci-Fi"
+                ],
+                "id": "60c72b2f9b1d8b001c8e4a03",
+                "languages": [
+                  "English"
+                ],
+                "title": "The Quantum Draft",
+                "updatedAt": "1704153600000",
+                "visibility": "Public"
               }
             ]
           }
@@ -49,7 +173,16 @@
         },
         "matchingRules": {
           "body": {
-            "$.data.getNotifications[0].createdAt": {
+            "$.data.getUserScripts": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.getUserScripts[*].author": {
               "combine": "AND",
               "matchers": [
                 {
@@ -57,7 +190,7 @@
                 }
               ]
             },
-            "$.data.getNotifications[0].draftTitle": {
+            "$.data.getUserScripts[*].author.id": {
               "combine": "AND",
               "matchers": [
                 {
@@ -65,7 +198,7 @@
                 }
               ]
             },
-            "$.data.getNotifications[0].id": {
+            "$.data.getUserScripts[*].author.name": {
               "combine": "AND",
               "matchers": [
                 {
@@ -73,7 +206,7 @@
                 }
               ]
             },
-            "$.data.getNotifications[0].isRead": {
+            "$.data.getUserScripts[*].createdAt": {
               "combine": "AND",
               "matchers": [
                 {
@@ -81,7 +214,7 @@
                 }
               ]
             },
-            "$.data.getNotifications[0].link": {
+            "$.data.getUserScripts[*].description": {
               "combine": "AND",
               "matchers": [
                 {
@@ -89,7 +222,16 @@
                 }
               ]
             },
-            "$.data.getNotifications[0].message": {
+            "$.data.getUserScripts[*].genres": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.getUserScripts[*].id": {
               "combine": "AND",
               "matchers": [
                 {
@@ -97,7 +239,16 @@
                 }
               ]
             },
-            "$.data.getNotifications[0].sender.id": {
+            "$.data.getUserScripts[*].languages": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.getUserScripts[*].title": {
               "combine": "AND",
               "matchers": [
                 {
@@ -105,7 +256,7 @@
                 }
               ]
             },
-            "$.data.getNotifications[0].sender.name": {
+            "$.data.getUserScripts[*].updatedAt": {
               "combine": "AND",
               "matchers": [
                 {
@@ -113,7 +264,685 @@
                 }
               ]
             },
-            "$.data.getNotifications[0].type": {
+            "$.data.getUserScripts[*].visibility": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request to search users",
+      "providerStates": [
+        {
+          "name": "users matching \"jane\" exist"
+        }
+      ],
+      "request": {
+        "body": {
+          "operationName": "SearchUsers",
+          "query": "query SearchUsers($query: String!) {\n  searchUsers(query: $query) {\n    id\n    name\n    username\n  }\n}",
+          "variables": {
+            "query": "jane"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "method": "POST",
+        "path": "/graphql"
+      },
+      "response": {
+        "body": {
+          "data": {
+            "searchUsers": [
+              {
+                "id": "60c72b2f9b1d8b001c8e4a01",
+                "name": "Jane Doe",
+                "username": "janedoe99"
+              }
+            ]
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.data.searchUsers": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.searchUsers[*].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.searchUsers[*].name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.searchUsers[*].username": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request for user contributions",
+      "providerStates": [
+        {
+          "name": "60c72b2f9b1d8b001c8e4a01 has contributions"
+        }
+      ],
+      "request": {
+        "body": {
+          "operationName": "GetUserContributions",
+          "query": "query GetUserContributions($userId: ID!) {\n  getUserContributions(userId: $userId) {\n    id\n    status\n    text\n    likes\n    dislikes\n    createdAt\n    script {\n      id\n      title\n    }\n    comments {\n      author {\n        name\n      }\n      text\n      createdAt\n    }\n  }\n}",
+          "variables": {
+            "userId": "60c72b2f9b1d8b001c8e4a01"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "method": "POST",
+        "path": "/graphql"
+      },
+      "response": {
+        "body": {
+          "data": {
+            "getUserContributions": [
+              {
+                "comments": [
+                  {
+                    "author": {
+                      "name": "Bob Editor"
+                    },
+                    "createdAt": "1704153700000",
+                    "text": "Great addition!"
+                  }
+                ],
+                "createdAt": "1704153600000",
+                "dislikes": [],
+                "id": "60c72b2f9b1d8b001c8e4a05",
+                "likes": [
+                  "60c72b2f9b1d8b001c8e4a02"
+                ],
+                "script": {
+                  "id": "60c72b2f9b1d8b001c8e4a03",
+                  "title": "The Quantum Draft"
+                },
+                "status": "APPROVED",
+                "text": "This is a brilliant paragraph added to scene 3."
+              }
+            ]
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.data.getUserContributions": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].comments": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].comments[*].author": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].comments[*].author.name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].comments[*].createdAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].comments[*].text": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].createdAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].likes": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].script": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].script.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].script.title": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].status": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserContributions[*].text": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request for user favourites",
+      "providerStates": [
+        {
+          "name": "60c72b2f9b1d8b001c8e4a01 has favourite scripts"
+        }
+      ],
+      "request": {
+        "body": {
+          "operationName": "GetUserFavourites",
+          "query": "query GetUserFavourites($userId: ID!) {\n  getUserFavourites(userId: $userId) {\n    id\n    title\n    visibility\n    description\n    languages\n    genres\n    createdAt\n    updatedAt\n    author {\n      id\n      name\n    }\n  }\n}",
+          "variables": {
+            "userId": "60c72b2f9b1d8b001c8e4a01"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "method": "POST",
+        "path": "/graphql"
+      },
+      "response": {
+        "body": {
+          "data": {
+            "getUserFavourites": [
+              {
+                "author": {
+                  "id": "60c72b2f9b1d8b001c8e4a02",
+                  "name": "Alice Writer"
+                },
+                "createdAt": "1703000000000",
+                "description": "An inspiring tale.",
+                "genres": [
+                  "Drama"
+                ],
+                "id": "60c72b2f9b1d8b001c8e4a04",
+                "languages": [
+                  "English"
+                ],
+                "title": "A Masterpiece",
+                "updatedAt": "1704000000000",
+                "visibility": "Public"
+              }
+            ]
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.data.getUserFavourites": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.getUserFavourites[*].author": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserFavourites[*].author.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserFavourites[*].author.name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserFavourites[*].createdAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserFavourites[*].description": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserFavourites[*].genres": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.getUserFavourites[*].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserFavourites[*].languages": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.getUserFavourites[*].title": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserFavourites[*].updatedAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.getUserFavourites[*].visibility": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request to update a profile field",
+      "providerStates": [
+        {
+          "name": "user 60c72b2f9b1d8b001c8e4a01 is authenticated"
+        }
+      ],
+      "request": {
+        "body": {
+          "operationName": "UpdateUserProfileField",
+          "query": "mutation UpdateUserProfileField($key: String!, $value: String!) {\n  updateUserProfileField(key: $key, value: $value) {\n    id\n    name\n    bio\n    languages\n  }\n}",
+          "variables": {
+            "key": "bio",
+            "value": "Updated bio description"
+          }
+        },
+        "headers": {
+          "Authorization": "Bearer mock-jwt-token-string",
+          "Content-Type": "application/json"
+        },
+        "method": "POST",
+        "path": "/graphql"
+      },
+      "response": {
+        "body": {
+          "data": {
+            "updateUserProfileField": {
+              "bio": "Updated bio description",
+              "id": "60c72b2f9b1d8b001c8e4a01",
+              "languages": [
+                "English"
+              ],
+              "name": "Jane Doe"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.data.updateUserProfileField.bio": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.updateUserProfileField.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.updateUserProfileField.languages": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.updateUserProfileField.name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request to like a profile",
+      "providerStates": [
+        {
+          "name": "user profile 60c72b2f9b1d8b001c8e4a02 exists to be liked"
+        }
+      ],
+      "request": {
+        "body": {
+          "operationName": "LikeProfile",
+          "query": "mutation LikeProfile($profileId: ID!) {\n  likeProfile(profileId: $profileId) {\n    status\n  }\n}",
+          "variables": {
+            "profileId": "60c72b2f9b1d8b001c8e4a02"
+          }
+        },
+        "headers": {
+          "Authorization": "Bearer mock-jwt-token-string",
+          "Content-Type": "application/json"
+        },
+        "method": "POST",
+        "path": "/graphql"
+      },
+      "response": {
+        "body": {
+          "data": {
+            "likeProfile": {
+              "status": true
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.data.likeProfile.status": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request to view a profile",
+      "providerStates": [
+        {
+          "name": "user profile 60c72b2f9b1d8b001c8e4a02 exists to be viewed"
+        }
+      ],
+      "request": {
+        "body": {
+          "operationName": "ViewProfile",
+          "query": "mutation ViewProfile($profileId: ID!) {\n  viewProfile(profileId: $profileId) {\n    status\n  }\n}",
+          "variables": {
+            "profileId": "60c72b2f9b1d8b001c8e4a02"
+          }
+        },
+        "headers": {
+          "Authorization": "Bearer mock-jwt-token-string",
+          "Content-Type": "application/json"
+        },
+        "method": "POST",
+        "path": "/graphql"
+      },
+      "response": {
+        "body": {
+          "data": {
+            "viewProfile": {
+              "status": true
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.data.viewProfile.status": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request to accept a script invitation",
+      "providerStates": [
+        {
+          "name": "user has a pending invitation for script 60c72b2f9b1d8b001c8e4a03"
+        }
+      ],
+      "request": {
+        "body": {
+          "operationName": "AcceptInvitation",
+          "query": "mutation AcceptInvitation($scriptId: ID!) {\n  acceptInvitation(scriptId: $scriptId) {\n    id\n  }\n}",
+          "variables": {
+            "scriptId": "60c72b2f9b1d8b001c8e4a03"
+          }
+        },
+        "headers": {
+          "Authorization": "Bearer mock-jwt-token-string",
+          "Content-Type": "application/json"
+        },
+        "method": "POST",
+        "path": "/graphql"
+      },
+      "response": {
+        "body": {
+          "data": {
+            "acceptInvitation": {
+              "id": "60c72b2f9b1d8b001c8e4a03"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.data.acceptInvitation.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request to decline a script invitation",
+      "providerStates": [
+        {
+          "name": "user has a pending invitation for script 60c72b2f9b1d8b001c8e4a03"
+        }
+      ],
+      "request": {
+        "body": {
+          "operationName": "DeclineInvitation",
+          "query": "mutation DeclineInvitation($scriptId: ID!) {\n  declineInvitation(scriptId: $scriptId) {\n    id\n  }\n}",
+          "variables": {
+            "scriptId": "60c72b2f9b1d8b001c8e4a03"
+          }
+        },
+        "headers": {
+          "Authorization": "Bearer mock-jwt-token-string",
+          "Content-Type": "application/json"
+        },
+        "method": "POST",
+        "path": "/graphql"
+      },
+      "response": {
+        "body": {
+          "data": {
+            "declineInvitation": {
+              "id": "60c72b2f9b1d8b001c8e4a03"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.data.declineInvitation.id": {
               "combine": "AND",
               "matchers": [
                 {

@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import Contribution from "../pages/draft/Contribution";
+import Contribution from "../../pages/draft/Contribution";
 
 // 1. Mock Global Window Methods
 const mockScrollTo = vi.fn();
@@ -86,10 +86,10 @@ vi.mock("../components/modal/DeleteConfirmModal", () => ({
         isOpen ? <button onClick={onConfirm} data-testid="confirm-delete-btn">Confirm Delete</button> : null,
 }));
 
-import { useGetParagraphByIdQuery, useGetScriptByIdQuery } from "../graphql/generated/graphql";
-import { useUserStore } from "../store/useAuthStore";
+import { useGetParagraphByIdQuery, useGetScriptByIdQuery } from "../../graphql/generated/graphql";
+import { useUserStore } from "../../store/useAuthStore";
 import { toast } from "sonner";
-import { posthog } from "../providers/PostHogProvider";
+import { posthog } from "../../providers/PostHogProvider";
 
 const mockUseGetParagraph = useGetParagraphByIdQuery as any;
 const mockUseGetScript = useGetScriptByIdQuery as any;

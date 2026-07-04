@@ -3,7 +3,7 @@ import { print } from "graphql";
 import { provider } from './pactSetup';
 import { describe, it, expect } from "vitest";
 import { MatchersV3 } from "@pact-foundation/pact";
-import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
+import { ApolloClient, InMemoryCache, HttpLink, gql } from "@apollo/client";
 import {
     GET_USER_PROFILE,
     GET_USER_SCRIPTS,
@@ -11,9 +11,20 @@ import {
     GET_USER_FAVOURITES,
     SEARCH_USERS,
 } from "../../graphql/query/userQueries";
+import {
+    UPDATE_USER_PROFILE_FIELD,
+    LIKE_PROFILE,
+    VIEW_PROFILE,
+    ACCEPT_INVITATION,
+    DECLINE_INVITATION
+} from '../../graphql/mutation/userMutations';
 
-const { string, eachLike, like } = MatchersV3;
+const { string, eachLike, like, boolean } = MatchersV3;
 
+const TEST_USER_ID = '60c72b2f9b1d8b001c8e4a01';
+const TEST_PROFILE_ID = '60c72b2f9b1d8b001c8e4a02';
+const TEST_SCRIPT_ID = '60c72b2f9b1d8b001c8e4a03';
+const MOCK_TOKEN = 'mock-jwt-token-string';
 
 describe("GraphQL User Contracts", () => {
     it("generates contracts for all User queries", async () => {
@@ -194,6 +205,152 @@ describe("GraphQL User Contracts", () => {
                 },
             },
         });
+        provider
+            .given(`user ${TEST_USER_ID} is authenticated`)
+            .uponReceiving('a request to update a profile field')
+            .withRequest({
+                method: 'POST',
+                path: '/graphql',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${MOCK_TOKEN}`
+                },
+                body: {
+                    operationName: 'UpdateUserProfileField',
+                    query: print(UPDATE_USER_PROFILE_FIELD),
+                    variables: { key: 'bio', value: 'Updated bio description' },
+                },
+            })
+            .willRespondWith({
+                status: 200,
+                headers: { 'Content-Type': 'application/json; charset=utf-8' },
+                body: {
+                    data: {
+                        updateUserProfileField: {
+                            id: string(TEST_USER_ID),
+                            name: string('Jane Doe'),
+                            bio: string('Updated bio description'),
+                            languages: eachLike('English'),
+                        }
+                    }
+                },
+            });
+
+        // 2. LIKE_PROFILE
+        provider
+            .given(`user profile ${TEST_PROFILE_ID} exists to be liked`)
+            .uponReceiving('a request to like a profile')
+            .withRequest({
+                method: 'POST',
+                path: '/graphql',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${MOCK_TOKEN}`
+                },
+                body: {
+                    operationName: 'LikeProfile',
+                    query: print(LIKE_PROFILE),
+                    variables: { profileId: TEST_PROFILE_ID },
+                },
+            })
+            .willRespondWith({
+                status: 200,
+                headers: { 'Content-Type': 'application/json; charset=utf-8' },
+                body: {
+                    data: {
+                        likeProfile: {
+                            status: boolean(true)
+                        }
+                    }
+                },
+            });
+
+        // 3. VIEW_PROFILE
+        provider
+            .given(`user profile ${TEST_PROFILE_ID} exists to be viewed`)
+            .uponReceiving('a request to view a profile')
+            .withRequest({
+                method: 'POST',
+                path: '/graphql',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${MOCK_TOKEN}`
+                },
+                body: {
+                    operationName: 'ViewProfile',
+                    query: print(VIEW_PROFILE),
+                    variables: { profileId: TEST_PROFILE_ID },
+                },
+            })
+            .willRespondWith({
+                status: 200,
+                headers: { 'Content-Type': 'application/json; charset=utf-8' },
+                body: {
+                    data: {
+                        viewProfile: {
+                            status: boolean(true)
+                        }
+                    }
+                },
+            });
+
+        // 4. ACCEPT_INVITATION
+        provider
+            .given(`user has a pending invitation for script ${TEST_SCRIPT_ID}`)
+            .uponReceiving('a request to accept a script invitation')
+            .withRequest({
+                method: 'POST',
+                path: '/graphql',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${MOCK_TOKEN}`
+                },
+                body: {
+                    operationName: 'AcceptInvitation',
+                    query: print(ACCEPT_INVITATION),
+                    variables: { scriptId: TEST_SCRIPT_ID },
+                },
+            })
+            .willRespondWith({
+                status: 200,
+                headers: { 'Content-Type': 'application/json; charset=utf-8' },
+                body: {
+                    data: {
+                        acceptInvitation: {
+                            id: string(TEST_SCRIPT_ID)
+                        }
+                    }
+                },
+            });
+
+        // 5. DECLINE_INVITATION
+        provider
+            .given(`user has a pending invitation for script ${TEST_SCRIPT_ID}`) // Reusing the same state
+            .uponReceiving('a request to decline a script invitation')
+            .withRequest({
+                method: 'POST',
+                path: '/graphql',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${MOCK_TOKEN}`
+                },
+                body: {
+                    operationName: 'DeclineInvitation',
+                    query: print(DECLINE_INVITATION),
+                    variables: { scriptId: TEST_SCRIPT_ID },
+                },
+            })
+            .willRespondWith({
+                status: 200,
+                headers: { 'Content-Type': 'application/json; charset=utf-8' },
+                body: {
+                    data: {
+                        declineInvitation: {
+                            id: string(TEST_SCRIPT_ID)
+                        }
+                    }
+                },
+            });
 
         await provider.executeTest(async (mockServer) => {
             const client = new ApolloClient({
@@ -205,7 +362,13 @@ describe("GraphQL User Contracts", () => {
                     addTypename: false,
                 }),
             });
+            const authContext = { headers: { Authorization: `Bearer ${MOCK_TOKEN}` } };
 
+            await client.mutate({ mutation: gql(print(UPDATE_USER_PROFILE_FIELD)), variables: { key: 'bio', value: 'Updated bio description' }, context: authContext });
+            await client.mutate({ mutation: gql(print(LIKE_PROFILE)), variables: { profileId: TEST_PROFILE_ID }, context: authContext });
+            await client.mutate({ mutation: gql(print(VIEW_PROFILE)), variables: { profileId: TEST_PROFILE_ID }, context: authContext });
+            await client.mutate({ mutation: gql(print(ACCEPT_INVITATION)), variables: { scriptId: TEST_SCRIPT_ID }, context: authContext });
+            await client.mutate({ mutation: gql(print(DECLINE_INVITATION)), variables: { scriptId: TEST_SCRIPT_ID }, context: authContext });
             await client.query({ query: GET_USER_PROFILE, variables: { id: "60c72b2f9b1d8b001c8e4a01" } });
             await client.query({ query: GET_USER_SCRIPTS, variables: { userId: "60c72b2f9b1d8b001c8e4a01" } });
             await client.query({ query: SEARCH_USERS, variables: { query: "jane" } });

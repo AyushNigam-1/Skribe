@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import DraftSettings from "../pages/draft/Settings";
+import DraftSettings from "../../pages/draft/Settings";
 
 // 1. Mock React Router
 const mockNavigate = vi.fn();

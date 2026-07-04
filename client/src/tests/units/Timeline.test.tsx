@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import Timeline from "../pages/draft/Timeline";
+import Timeline from "../../pages/draft/Timeline";
 
 // 1. Mock React Router
 let mockOutletData: any = { data: null, loading: false, refetch: vi.fn() };

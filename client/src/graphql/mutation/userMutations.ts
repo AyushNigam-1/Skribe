@@ -1,34 +1,5 @@
 import { gql } from "@apollo/client";
 
-export const REGISTER_MUTATION = gql`
-  mutation Register($name: String!, $email: String!, $password: String!) {
-    register(name: $name, email: $email, password: $password) {
-      id
-      name
-      email
-      token
-    }
-  }
-`;
-
-export const LOGIN_MUTATION = gql`
-  mutation Login($name: String!, $password: String!) {
-    login(name: $name, password: $password) {
-      id
-      name
-      email
-      token
-    }
-  }
-`;
-
-export const LOGOUT_MUTATION = gql`
-  mutation Logout {
-    logout
-  }
-`;
-
-
 export const UPDATE_USER_PROFILE_FIELD = gql`
   mutation UpdateUserProfileField($key: String!, $value: String!) {
     updateUserProfileField(key: $key, value: $value) {
@@ -36,7 +7,6 @@ export const UPDATE_USER_PROFILE_FIELD = gql`
       name
       bio
       languages
-      interests
     }
   }
 `;

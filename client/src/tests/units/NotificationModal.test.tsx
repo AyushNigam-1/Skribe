@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import NotificationModal from "../pages/home/Notifications"; // Adjust path if needed
-import { useUserStore } from "../store/useAuthStore";
+import NotificationModal from "../../pages/home/Notifications"; // Adjust path if needed
+import { useUserStore } from "../../store/useAuthStore";
 import { useApolloClient } from "@apollo/client";
 
 // 1. Mock Socket.io
@@ -62,7 +62,7 @@ vi.mock("../graphql/generated/graphql", () => ({
     useDeclineInvitationMutation: () => [mockDeclineInvite, { loading: false }],
 }));
 
-import { useGetNotificationsQuery } from "../graphql/generated/graphql";
+import { useGetNotificationsQuery } from "../../graphql/generated/graphql";
 const mockUseGetNotifications = useGetNotificationsQuery as any;
 
 // 6. Mock Zustand

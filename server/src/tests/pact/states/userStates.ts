@@ -1,44 +1,8 @@
 import User from '../../../models/User';
 import Script from '../../../models/Script';
 import Paragraph from '../../../models/Paragraph';
-
-export const TEST_USER_ID = '60c72b2f9b1d8b001c8e4a01';
-export const TEST_AUTHOR_ID = '60c72b2f9b1d8b001c8e4a02';
-export const TEST_SCRIPT_ID = '60c72b2f9b1d8b001c8e4a03';
-export const TEST_FAV_SCRIPT_ID = '60c72b2f9b1d8b001c8e4a04';
-export const TEST_CONTRIB_ID = '60c72b2f9b1d8b001c8e4a05';
-
-export const createJane = async () => {
-    return User.create({
-        _id: TEST_USER_ID,
-        name: 'Jane Doe',
-        username: 'janedoe99',
-        email: 'jane@example.com',
-        bio: 'Sci-Fi writer',
-        languages: ['English'],
-        favourites: [TEST_FAV_SCRIPT_ID],
-        likes: [],
-        followers: [],
-        follows: [],
-        views: [],
-    });
-};
-
-export const createAlice = async () => {
-    return User.create({
-        _id: TEST_AUTHOR_ID,
-        name: 'Alice Writer',
-        username: 'alicewriter',
-        email: 'alice@example.com',
-        bio: 'Drama writer',
-        languages: ['English'],
-        favourites: [],
-        likes: [],
-        followers: [],
-        follows: [],
-        views: []
-    });
-};
+import { TEST_AUTHOR_ID, TEST_CONTRIB_ID, TEST_FAV_SCRIPT_ID, TEST_PROFILE_ID, TEST_SCRIPT_ID, TEST_USER_ID } from '../utils/constants';
+import { createAlice, createJane } from '../utils/seedHelpers';
 
 export const userStateHandlers = {
     'a user with ID 60c72b2f9b1d8b001c8e4a01 exists': async () => {
@@ -143,6 +107,65 @@ export const userStateHandlers = {
             updatedAt: new Date(1704000000000)
         });
 
+        return 'State Setup complete';
+    },
+    'user 60c72b2f9b1d8b001c8e4a01 is authenticated': async () => {
+        await User.deleteMany({});
+        await createJane();
+        return 'State Setup complete';
+    },
+
+    'user profile 60c72b2f9b1d8b001c8e4a02 exists to be liked': async () => {
+        await User.deleteMany({});
+
+        await createJane();
+        await User.create({
+            _id: TEST_PROFILE_ID,
+            name: 'Target Profile',
+            email: 'target@example.com',
+            likes: [],
+            views: []
+        });
+        return 'State Setup complete';
+    },
+
+    'user profile 60c72b2f9b1d8b001c8e4a02 exists to be viewed': async () => {
+        await User.deleteMany({});
+
+        await createJane();
+        await User.create({
+            _id: TEST_PROFILE_ID,
+            name: 'Target Profile',
+            email: 'target@example.com',
+            likes: [],
+            views: [] // Controller pushes to this array
+        });
+        return 'State Setup complete';
+    },
+
+    'user has a pending invitation for script 60c72b2f9b1d8b001c8e4a03': async () => {
+        await User.deleteMany({});
+        await Script.deleteMany({});
+
+        await createJane();
+        await createAlice();
+
+        await Script.create({
+            _id: TEST_SCRIPT_ID,
+            title: 'The Quantum Draft',
+            visibility: 'Public',
+            author: TEST_AUTHOR_ID,
+            description: 'A script for testing invitations.',
+            languages: ['English'],
+            genres: ['Sci-Fi'],
+            collaborators: [
+                {
+                    user: TEST_USER_ID,
+                    role: 'EDITOR',
+                    status: 'PENDING'
+                }
+            ],
+        });
         return 'State Setup complete';
     }
 };

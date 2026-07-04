@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import Contributors from "../pages/draft/Contributors";
+import Contributors from "../../pages/draft/Contributors";
 
 // 1. Mock React Router's useOutletContext
 let mockOutletData: any = { data: null, loading: false };
