@@ -4,5 +4,5 @@ import path from 'path';
 export const provider = new PactV3({
     consumer: 'ScriptDrafts-Frontend',
     provider: 'ScriptDrafts-GraphQL-API',
-    dir: path.resolve(process.cwd(), 'tests/pact/contracts'),
+    dir: path.resolve(process.cwd(), 'pacts'),
 });

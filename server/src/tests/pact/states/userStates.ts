@@ -43,7 +43,8 @@ export const userStateHandlers = {
         await Script.deleteMany({});
         await Paragraph.deleteMany({});
 
-        await createJane();
+        await createAlice();
+        await createJane()
 
         return 'State Setup complete';
     },

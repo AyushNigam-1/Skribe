@@ -10,7 +10,7 @@
     "test": "vitest",
     "codegen": "graphql-codegen --config codegen.ts",
     "test:pact": "vitest run src/tests/pacts",
-    "pact:publish": "npx pact-broker publish src/tests/pacts  --broker-base-url=http://localhost:9292 --consumer-app-version=1.0.2"
+    "pact:publish": "pact-broker publish ./tests/pact/contracts --broker-base-url=http://localhost:9292 --consumer-app-version=$(git rev-parse HEAD) --branch=$(git rev-parse --abbrev-ref HEAD)"
   },
   "dependencies": {
     "@apollo/client": "^3.11.8",

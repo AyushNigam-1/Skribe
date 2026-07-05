@@ -1,17 +1,17 @@
-import express from 'express';
 import http from 'http';
 import cors from 'cors';
+import express from 'express';
 import { json } from 'body-parser';
 import { ApolloServer } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
-import { createClient, type RedisClientType } from 'redis';
-
 import { typeDefs } from '../../graphql/typedefs/typedefs';
+import { createClient, type RedisClientType } from 'redis';
+import { expressMiddleware } from '@apollo/server/express4';
 import { resolvers } from '../../graphql/resolvers/resolvers';
 import { connectDB, disconnectDB } from '../../database/database';
-
-import { MongoDBContainer, StartedMongoDBContainer } from '@testcontainers/mongodb';
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
+import { MongoDBContainer, StartedMongoDBContainer } from '@testcontainers/mongodb';
+
+
 
 interface MyContext {
     req: any;

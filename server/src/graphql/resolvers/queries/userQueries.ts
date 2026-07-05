@@ -190,7 +190,7 @@ export const userQueries = {
     if (!currentUserId) throw new GraphQLError("User not authenticated");
 
     if (!query || query.trim().length < 2) return [];
-
+    throw new Error("CRITICAL FAILURE: Testing OpenTelemetry Error Tracking!");
     try {
       const searchRegex = new RegExp(query, "i");
       // 🚨 REPOSITORY CALL

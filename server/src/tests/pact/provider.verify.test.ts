@@ -1,4 +1,4 @@
-import path from 'path';
+import '../../instrumentation';
 import { LogLevel, Verifier } from '@pact-foundation/pact';
 import { afterAll, beforeAll, describe, it } from 'vitest';
 import { startTestServer, stopTestServer } from './pact_server';
@@ -20,13 +20,12 @@ describe('Pact Verification', () => {
         const opts = {
             provider: 'ScriptDrafts-GraphQL-API',
             providerBaseUrl: `${serverUrl}/graphql`,
-
-            pactUrls: [
-                path.resolve(process.cwd(), 'src/tests/pact/ScriptDrafts-Frontend-ScriptDrafts-GraphQL-API.json')
+            pactBrokerUrl: 'http://localhost:9292',
+            consumerVersionSelectors: [
+                { mainBranch: true },
+                { latest: true }
             ],
             logLevel: 'debug' as LogLevel,
-
-            // 👇 3. Inject the external file here
             stateHandlers: pactStateHandlers,
         };
 
