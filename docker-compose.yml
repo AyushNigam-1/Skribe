@@ -31,12 +31,23 @@
 version: '3.8'
 
 services:
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
+  # jaeger:
+  #   image: jaegertracing/all-in-one:latest
+  #   environment:
+  #     - COLLECTOR_OTLP_ENABLED=true
+  #   ports:
+  #     - "16686:16686" # The Jaeger Web UI
+
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
     ports:
-      - "16686:16686" # The Jaeger Web UI
+      - "5080:5080" # The OpenObserve Web UI and Ingestion port
+    environment:
+      # Default credentials for local development
+      - ZO_ROOT_USER_EMAIL=root@example.com
+      - ZO_ROOT_USER_PASSWORD=Complexpass#123
+    volumes:
+      - ./o2_data:/data # Persists your traces locally
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
@@ -47,4 +58,5 @@ services:
       - "4317:4317" # OTLP gRPC port for your app to connect to
       - "4318:4318" # OTLP HTTP port for your app to connect to
     depends_on:
-      - jaeger
+      # - jaeger
+      - openobserve

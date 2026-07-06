@@ -13,10 +13,17 @@ processors:
 
 exporters:
   # 1. Export to our local Jaeger instance
-  otlp/jaeger:
-    endpoint: "jaeger:4317"
-    tls:
-      insecure: true
+  # otlp/jaeger:
+  #   endpoint: "jaeger:4317"
+  #   tls:
+  #     insecure: true
+  
+  otlphttp/openobserve:
+    # "default" is the default organization name in OpenObserve
+    endpoint: "http://openobserve:5080/api/default"
+    headers:
+      # Injects the Base64 Auth header
+      Authorization: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="
   
   # 2. Export to the terminal console (great for debugging)
   debug:
@@ -27,4 +34,9 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp/jaeger, debug] # Sending to both Jaeger AND the console!
+      exporters: [debug,otlphttp/openobserve] # Sending to both Jaeger AND the console!
+
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/openobserve]

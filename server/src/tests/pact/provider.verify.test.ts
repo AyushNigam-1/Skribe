@@ -1,4 +1,4 @@
-import '../../instrumentation';
+import '../../utils/instrumentation';
 import { LogLevel, Verifier } from '@pact-foundation/pact';
 import { afterAll, beforeAll, describe, it } from 'vitest';
 import { startTestServer, stopTestServer } from './pact_server';

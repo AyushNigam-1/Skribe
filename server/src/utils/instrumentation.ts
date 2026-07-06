@@ -1,8 +1,6 @@
-// src/instrumentation.ts
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
-// 👇 1. Import the SimpleSpanProcessor
 import { SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 import {
@@ -12,9 +10,14 @@ import {
 } from '@opentelemetry/semantic-conventions';
 import dotenv from 'dotenv';
 
+// 👇 1. Import the Logs SDK and Exporter
+import { SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
+import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
+
 dotenv.config();
 
-const traceExporter = new OTLPTraceExporter({ url: 'http://127.0.0.1:4318/v1/traces' });
+const traceExporter = new OTLPTraceExporter();
+const logExporter = new OTLPLogExporter(); // 👈 2. Initialize the Log Exporter
 
 const resource = resourceFromAttributes({
     [ATTR_SERVICE_NAME]: process.env.SERVICE_NAME || 'scriptdrafts-api',
@@ -25,6 +28,7 @@ const resource = resourceFromAttributes({
 const sdk = new NodeSDK({
     resource,
     spanProcessors: [new SimpleSpanProcessor(traceExporter)],
+    logRecordProcessor: new SimpleLogRecordProcessor({ exporter: logExporter }),
     instrumentations: [getNodeAutoInstrumentations({
         '@opentelemetry/instrumentation-fs': { enabled: false },
     })],
