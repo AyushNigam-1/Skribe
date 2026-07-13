@@ -28,6 +28,7 @@
     "@sentry/vite-plugin": "^5.1.1",
     "@tanstack/react-query": "^5.99.0",
     "@types/js-cookie": "^3.0.6",
+    "@types/supertest": "^7.2.0",
     "better-auth": "^1.5.5",
     "diff": "^7.0.0",
     "framer-motion": "^12.35.2",
@@ -51,6 +52,7 @@
     "remark-gfm": "^4.0.1",
     "socket.io-client": "^4.8.3",
     "sonner": "^2.0.7",
+    "supertest": "^7.2.2",
     "tailwind-scrollbar": "^3.1.0",
     "zod": "^4.3.6",
     "zustand": "^5.0.11"
