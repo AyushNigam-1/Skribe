@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 interface IUser extends Document {
-  _id: String,
   name: string;
   languages: string[];
   location: string;
@@ -24,7 +23,6 @@ interface IUser extends Document {
 
 const UserSchema: Schema = new Schema(
   {
-    _id: { type: String },
     name: { type: String },
     languages: { type: [String] },
     location: { type: String },

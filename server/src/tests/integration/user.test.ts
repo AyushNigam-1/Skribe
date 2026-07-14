@@ -1,13 +1,12 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import mongoose from "mongoose";
 import {
-    startTestInfrastructure,
-    stopTestInfrastructure,
-    clearDatabases,
-    executeGraphql
+  startTestInfrastructure,
+  stopTestInfrastructure,
+  clearDatabases,
+  executeGraphql
 } from "./helper";
-import User from "../../models/User"
-import { ScriptRepository } from "../../repositories/scriptRepository";
-import Paragraph from "../../models/Paragraph";
+import { createTestUser, createTestScript, createTestParagraph } from "./dbFactories";
 import { redisClient } from "../../database/redis";
 
 // Define the GraphQL queries exactly as the frontend would send them
@@ -39,86 +38,177 @@ const SEARCH_USERS = `
     }
   }
 `;
+const GET_USER_PROFILE = `
+  query GetUserProfile($id: ID!) {
+    getUserProfile(id: $id) {
+      id
+      name
+    }
+  }
+`;
+
+const GET_USER_FAVOURITES = `
+  query GetUserFavourites($userId: ID!) {
+    getUserFavourites(userId: $userId) {
+      id
+      title
+      visibility
+    }
+  }
+`;
 
 describe("User Queries - Edge Cases & Security Boundaries", () => {
-    // Spin up Docker containers before the suite runs
-    beforeAll(async () => {
-        await startTestInfrastructure();
-    }, 60000); // 60s timeout for initial image pull
+  beforeAll(async () => {
+    await startTestInfrastructure();
+  }, 60000);
 
-    afterAll(async () => {
-        await stopTestInfrastructure();
+  afterAll(async () => {
+    await stopTestInfrastructure();
+  });
+
+  beforeEach(async () => {
+    await clearDatabases();
+  });
+
+  // =========================================================================
+  // 1. DATA PRIVACY & VISIBILITY FILTERS
+  // =========================================================================
+  describe("getUserContributions", () => {
+    it("should actively filter out private script contributions when queried by an unauthenticated guest", async () => {
+      const author = await createTestUser({ name: "Bob" });
+
+      // 🚨 TS Fix: Cast _id as mongoose.Types.ObjectId
+      const authorId = author._id as mongoose.Types.ObjectId;
+
+      const publicScript = await createTestScript(authorId, { title: "Public", visibility: "Public" });
+      const privateScript = await createTestScript(authorId, { title: "Secret", visibility: "Private" });
+
+      await createTestParagraph(publicScript._id as mongoose.Types.ObjectId, authorId, { text: "Public paragraph" });
+      await createTestParagraph(privateScript._id as mongoose.Types.ObjectId, authorId, { text: "Secret paragraph" });
+
+      // 🚨 Relational Fix: Bind scripts to the user document
+      author.scripts.push(publicScript._id as mongoose.Types.ObjectId);
+      author.scripts.push(privateScript._id as mongoose.Types.ObjectId);
+      await author.save();
+
+      // 🚨 TS Fix: Use .id (which is a guaranteed string) for the GraphQL payload
+      const response = await executeGraphql(GET_USER_CONTRIBUTIONS, { userId: author.id });
+
+      const contributions = response.body.data.getUserContributions;
+      expect(contributions).toHaveLength(1);
+      expect(contributions[0].script.title).toBe("Public");
+      expect(contributions.some((c: any) => c.script.title === "Secret")).toBe(false);
     });
+  });
 
-    // Wipe MongoDB and Redis cleanly before every single test
-    beforeEach(async () => {
-        await clearDatabases();
+  // =========================================================================
+  // 2. CACHE SEGREGATION INTEGRITY
+  // =========================================================================
+  describe("getUserScripts", () => {
+    it("should safely cache public scripts in Redis without leaking private data into the public key", async () => {
+      const author = await createTestUser({ name: "Alice" });
+
+      // 🚨 TS Fix: Cast _id as mongoose.Types.ObjectId
+      const authorId = author._id as mongoose.Types.ObjectId;
+
+      const publicScript = await createTestScript(authorId, { title: "Public Draft", visibility: "Public" });
+      const privateScript = await createTestScript(authorId, { title: "Private Draft", visibility: "Private" });
+
+      // 🚨 Relational Fix: Bind scripts to the user document
+      author.scripts.push(publicScript._id as mongoose.Types.ObjectId);
+      author.scripts.push(privateScript._id as mongoose.Types.ObjectId);
+      await author.save();
+
+      // 🚨 TS Fix: Use .id for string transmission
+      const response = await executeGraphql(GET_USER_SCRIPTS, { userId: author.id });
+      const scripts = response.body.data.getUserScripts;
+
+      expect(scripts).toHaveLength(1);
+      expect(scripts[0].title).toBe("Public Draft");
+
+      // Verify Redis explicitly created the PUBLIC cache key and ONLY stored the public data
+      const publicCacheKey = `user:${author.id}:scripts:public:v3`;
+      const cachedData = await redisClient.get(publicCacheKey);
+
+      expect(cachedData).toBeDefined();
+      const parsedCache = JSON.parse(cachedData!);
+      expect(parsedCache).toHaveLength(1);
+      expect(parsedCache[0].title).toBe("Public Draft");
     });
+  });
 
-    // =========================================================================
-    // 1. DATA PRIVACY & VISIBILITY FILTERS
-    // =========================================================================
-    describe("getUserContributions", () => {
-        it("should actively filter out private script contributions when queried by an unauthenticated guest", async () => {
-            // 1. Seed MongoDB directly via Mongoose
-            const author = await User.create({ name: "Bob", email: "bob@test.com" });
+  // =========================================================================
+  // 3. AUTHENTICATION GATES
+  // =========================================================================
+  describe("searchUsers", () => {
+    it("should strictly reject searches with an explicit auth error if the request lacks a valid session", async () => {
+      const response = await executeGraphql(SEARCH_USERS, { query: "alice" });
 
-            const publicScript = await ScriptRepository.create({ title: "Public", visibility: "public", author: author._id });
-            const privateScript = await ScriptRepository.create({ title: "Secret", visibility: "private", author: author._id });
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors[0].message).toBe("User not authenticated");
+    });
+  });
 
-            await Paragraph.create({ text: "Public paragraph", script: publicScript._id, author: author._id });
-            await Paragraph.create({ text: "Secret paragraph", script: privateScript._id, author: author._id });
+  describe("getUserProfile - Not Found Handling", () => {
+    it("should gracefully return a GraphQL error when requesting a non-existent user profile", async () => {
+      // Generate a valid ObjectId that does not exist in the database
+      const fakeId = new mongoose.Types.ObjectId().toString();
 
-            // 2. Hit the real endpoint using Supertest (without session cookies)
-            const response = await executeGraphql(GET_USER_CONTRIBUTIONS, { userId: author._id.toString() });
+      const response = await executeGraphql(GET_USER_PROFILE, { id: fakeId });
 
-            // 3. Assert the GraphQL logic securely removed the private paragraph
-            const contributions = response.body.data.getUserContributions;
-            expect(contributions).toHaveLength(1);
-            expect(contributions[0].script.title).toBe("Public");
-            expect(contributions.some((c: any) => c.script.title === "Secret")).toBe(false);
+      // GraphQL still returns 200 OK for the HTTP request, but populates the errors array
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeDefined();
+
+      // Assert our specific error message is passed to the client
+      expect(response.body.errors[0].message).toBe("User not found");
+      expect(response.body.data).toBeNull();
+    });
+  });
+
+  // =========================================================================
+  // 5. MULTI-CONDITION ARRAY FILTERING
+  // =========================================================================
+  describe("getUserFavourites - Privacy and Archive Filters", () => {
+    describe("getUserFavourites - Privacy Filters", () => {
+      it("should actively drop favourite scripts if they are private, only returning public scripts", async () => {
+        const user = await createTestUser({ name: "Charlie" });
+        const author = await createTestUser({ name: "Dave" });
+
+        // Script 1: Public (Should be kept)
+        const validScript = await createTestScript(author._id as mongoose.Types.ObjectId, {
+          title: "Valid Script",
+          visibility: "Public"
         });
-    });
 
-    // =========================================================================
-    // 2. CACHE SEGREGATION INTEGRITY
-    // =========================================================================
-    describe("getUserScripts", () => {
-        it("should safely cache public scripts in Redis without leaking private data into the public key", async () => {
-            const author = await User.create({ name: "Alice", email: "alice@test.com" });
-            await ScriptRepository.create({ title: "Public Draft", visibility: "public", author: author._id });
-            await ScriptRepository.create({ title: "Private Draft", visibility: "private", author: author._id });
-
-            // Hit endpoint as an unauthenticated guest
-            const response = await executeGraphql(GET_USER_SCRIPTS, { userId: author._id.toString() });
-            const scripts = response.body.data.getUserScripts;
-
-            expect(scripts).toHaveLength(1);
-            expect(scripts[0].title).toBe("Public Draft");
-
-            // Verify Redis explicitly created the PUBLIC cache key and ONLY stored the public data
-            const publicCacheKey = `user:${author._id.toString()}:scripts:public:v3`;
-            const cachedData = await redisClient.get(publicCacheKey);
-
-            expect(cachedData).toBeDefined();
-            const parsedCache = JSON.parse(cachedData!);
-            expect(parsedCache).toHaveLength(1);
-            expect(parsedCache[0].title).toBe("Public Draft");
+        // Script 2: Private (Should be filtered out)
+        const privateScript = await createTestScript(author._id as mongoose.Types.ObjectId, {
+          title: "Private Script",
+          visibility: "Private"
         });
-    });
 
-    // =========================================================================
-    // 3. AUTHENTICATION GATES
-    // =========================================================================
-    describe("searchUsers", () => {
-        it("should strictly reject searches with an explicit auth error if the request lacks a valid session", async () => {
-            // Execute query with no session cookie
-            const response = await executeGraphql(SEARCH_USERS, { query: "alice" });
+        // Push both scripts into Charlie's favourites array
+        user.favourites.push(validScript._id as mongoose.Types.ObjectId);
+        user.favourites.push(privateScript._id as mongoose.Types.ObjectId);
+        await user.save();
 
-            // GraphQL always returns 200, but the errors array must contain our security bounce
-            expect(response.status).toBe(200);
-            expect(response.body.errors).toBeDefined();
-            expect(response.body.errors[0].message).toBe("User not authenticated");
-        });
+        // Hit the endpoint
+        const response = await executeGraphql(GET_USER_FAVOURITES, { userId: user.id });
+
+        if (response.body.errors) {
+          console.error("GraphQL Errors:", JSON.stringify(response.body.errors, null, 2));
+        }
+
+        const favourites = response.body.data.getUserFavourites;
+
+        // Assert the filtering logic worked: 2 total favourites -> 1 filtered out -> 1 remains
+        expect(favourites).toHaveLength(1);
+        expect(favourites[0].title).toBe("Valid Script");
+
+        // Explicitly ensure the private script didn't leak through
+        expect(favourites.some((f: any) => f.title === "Private Script")).toBe(false);
+      });
     });
+  })
 });

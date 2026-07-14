@@ -13,19 +13,29 @@ export const startTestInfrastructure = async () => {
     mongoContainer = await new MongoDBContainer("mongo:6.0").start();
     redisContainer = await new RedisContainer("redis:7.2").start();
 
-    // 2. Override environment variables BEFORE the server loads
-    process.env.MONGO_URI = mongoContainer.getConnectionString();
-    process.env.REDIS_URL = redisContainer.getConnectionUrl();
-    process.env.NODE_ENV = "test"; // Prevents the server from binding to a physical port
+    // 2. Format the connection string to bypass Docker DNS issues
+    let mongoUri = mongoContainer.getConnectionString();
 
-    // 3. Dynamically import your server and database connections
-    const serverModule = await import("../../main"); // Adjust path to your server.ts
+    // Replace localhost with 127.0.0.1 to avoid Node IPv6 resolution issues
+    mongoUri = mongoUri.replace("localhost", "127.0.0.1");
+
+    // Force Mongoose to connect directly to the mapped port, ignoring internal Replica Set hostnames
+    const separator = mongoUri.includes("?") ? "&" : "?";
+    mongoUri = `${mongoUri}${separator}directConnection=true`;
+
+    // 3. Override environment variables BEFORE the server loads
+    process.env.MONGO_URI = mongoUri;
+    process.env.REDIS_URL = redisContainer.getConnectionUrl().replace("localhost", "127.0.0.1");
+    process.env.NODE_ENV = "test";
+
+    // 4. Dynamically import your server and database connections
+    const serverModule = await import("../../main"); // Update to match your actual server entry point (main.ts)
     const redisModule = await import("../../database/redis");
 
     app = serverModule.app;
     redisClient = redisModule.redisClient;
 
-    // 4. Initialize the Express application
+    // 5. Initialize the Express application
     await serverModule.initServer();
 };
 

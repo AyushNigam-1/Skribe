@@ -129,7 +129,7 @@ export const paragraphQueries = {
     if (cachedText) return cachedText;
 
     // 🚨 REPOSITORY CALL
-    const script = await ScriptRepository.findByIdLean(scriptId);
+    const script = await ScriptRepository.findById(scriptId);
     if (!script) throw new Error("Script not found");
 
     const text = script.combinedText || "";
@@ -178,7 +178,7 @@ export const paragraphQueries = {
       script = JSON.parse(cachedScript);
     } else {
       // 🚨 REPOSITORY CALL
-      script = await ScriptRepository.findByIdLean(scriptId);
+      script = await ScriptRepository.findById(scriptId);
       if (!script) throw new Error("Script not found");
       await context.redis.setEx(cacheKey, 3600, JSON.stringify(script));
     }
