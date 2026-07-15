@@ -1,21 +1,21 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import MyContributions from "../../pages/home/Contributions";  // Adjust path if needed
+import MyContributions from "../../pages/home/Contributions";  
 import { useGetUserContributionsQuery } from "../../graphql/generated/graphql";
 import { useUserStore } from "../../store/useAuthStore";
 
-// 1. Mock the GraphQL Hook
+
 vi.mock("../graphql/generated/graphql", () => ({
     useGetUserContributionsQuery: vi.fn(),
 }));
 
-// 2. Mock the Zustand Auth Store
+
 vi.mock("../store/useAuthStore", () => ({
     useUserStore: vi.fn(),
 }));
 
-// 3. Mock Framer Motion
+
 vi.mock("framer-motion", async () => {
     const actual = await vi.importActual("framer-motion");
     return {
@@ -30,7 +30,7 @@ vi.mock("framer-motion", async () => {
     };
 });
 
-// 4. Mock Child Components
+
 vi.mock("../components/layout/Search", () => ({
     default: ({ value, setSearch }: any) => (
         <input
@@ -64,7 +64,7 @@ const mockUseUserStore = useUserStore as any;
 describe("MyContributions Component", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        // Default to a logged-in user
+        
         mockUseUserStore.mockReturnValue({ user: { id: "user-123" } });
     });
 
@@ -141,11 +141,11 @@ describe("MyContributions Component", () => {
         mockUseGetUserContributions.mockReturnValue({
             data: {
                 getUserContributions: [
-                    // Three contributions for Script A (1 approved, 1 pending, 1 rejected)
+                    
                     { id: "c1", status: "approved", createdAt: "1000", script: { id: "scriptA", title: "The Matrix" } },
                     { id: "c2", status: "pending", createdAt: "2000", script: { id: "scriptA", title: "The Matrix" } },
                     { id: "c3", status: "rejected", createdAt: "3000", script: { id: "scriptA", title: "The Matrix" } },
-                    // One contribution for Script B
+                    
                     { id: "c4", status: "approved", createdAt: "4000", script: { id: "scriptB", title: "Inception" } },
                 ],
             },
@@ -158,15 +158,15 @@ describe("MyContributions Component", () => {
             </MemoryRouter>
         );
 
-        // Verify titles render
+        
         expect(screen.getByText("The Matrix")).toBeInTheDocument();
         expect(screen.getByText("Inception")).toBeInTheDocument();
 
-        // The Matrix should have 3 total, Inception should have 1 total
+        
         expect(screen.getByText("3 TOTAL")).toBeInTheDocument();
         expect(screen.getByText("1 TOTAL")).toBeInTheDocument();
 
-        // Verify the "Rejected" pill only appears for The Matrix
+        
         expect(screen.getByText("Rejected")).toBeInTheDocument();
     });
 
@@ -198,11 +198,11 @@ describe("MyContributions Component", () => {
         mockUseGetUserContributions.mockReturnValue({
             data: {
                 getUserContributions: [
-                    // 3 for Matrix (Core)
+                    
                     { id: "c1", status: "approved", createdAt: "1000", script: { id: "scriptA", title: "The Matrix" } },
                     { id: "c2", status: "pending", createdAt: "2000", script: { id: "scriptA", title: "The Matrix" } },
                     { id: "c3", status: "rejected", createdAt: "3000", script: { id: "scriptA", title: "The Matrix" } },
-                    // 1 for Inception (Casual)
+                    
                     { id: "c4", status: "approved", createdAt: "4000", script: { id: "scriptB", title: "Inception" } },
                 ],
             },
@@ -218,7 +218,7 @@ describe("MyContributions Component", () => {
         const dropdown = screen.getByTestId("filter-dropdown");
         fireEvent.change(dropdown, { target: { value: "core" } });
 
-        // The Matrix should stay, Inception should be hidden
+        
         expect(screen.getByText("The Matrix")).toBeInTheDocument();
         expect(screen.queryByText("Inception")).not.toBeInTheDocument();
     });
@@ -227,10 +227,10 @@ describe("MyContributions Component", () => {
         mockUseGetUserContributions.mockReturnValue({
             data: {
                 getUserContributions: [
-                    // Mixed statuses for Matrix
+                    
                     { id: "c1", status: "approved", createdAt: "1000", script: { id: "scriptA", title: "The Matrix" } },
                     { id: "c2", status: "pending", createdAt: "2000", script: { id: "scriptA", title: "The Matrix" } },
-                    // Perfect status for Inception
+                    
                     { id: "c3", status: "approved", createdAt: "3000", script: { id: "scriptB", title: "Inception" } },
                 ],
             },
@@ -246,7 +246,7 @@ describe("MyContributions Component", () => {
         const dropdown = screen.getByTestId("filter-dropdown");
         fireEvent.change(dropdown, { target: { value: "perfect" } });
 
-        // Inception should stay, Matrix should be hidden
+        
         expect(screen.queryByText("The Matrix")).not.toBeInTheDocument();
         expect(screen.getByText("Inception")).toBeInTheDocument();
     });
@@ -255,7 +255,7 @@ describe("MyContributions Component", () => {
         mockUseGetUserContributions.mockReturnValue({
             data: {
                 getUserContributions: [
-                    // 1 contribution (Casual)
+                    
                     { id: "c1", status: "approved", createdAt: "1000", script: { id: "scriptA", title: "The Matrix" } },
                 ],
             },
@@ -268,7 +268,7 @@ describe("MyContributions Component", () => {
             </MemoryRouter>
         );
 
-        // Filter by Core (requires 3+)
+        
         const dropdown = screen.getByTestId("filter-dropdown");
         fireEvent.change(dropdown, { target: { value: "core" } });
 

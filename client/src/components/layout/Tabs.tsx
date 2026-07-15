@@ -77,7 +77,7 @@ const Tabs = ({
   }, [location.pathname, setTab, tabs]);
 
   return (
-    // Changed to font-sans and removed uppercase for a cleaner Github-style look
+    
     <nav className="flex items-center gap-1 overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none] font-mono text-sm font-bold uppercase tracking-widest w-full">
       {tabs.map((t) => {
         const Icon = t.icon;
@@ -107,11 +107,11 @@ const Tabs = ({
               />
               <span>{t.name}</span>
 
-              {/* Smooth Animated Bottom Border matching your screenshot */}
+              {
               {isActive && (
                 <motion.div
                   layoutId="activeTabIndicator"
-                  // Using #f78166 (coral/orange) from your screenshot, adjust if needed!
+                  
                   className="absolute left-0 right-0 bottom-0 h-[2px] bg-gray-100 rounded-t-full"
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />

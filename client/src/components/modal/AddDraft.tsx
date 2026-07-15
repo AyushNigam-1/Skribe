@@ -58,7 +58,7 @@ const languageOptions: Option[] = [
   { id: 7, name: "Korean" },
 ];
 
-// --- Zod Validation Schema ---
+
 const draftSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Title is too long"),
   description: z.string().min(1, "Description is required"),
@@ -75,7 +75,7 @@ const Add = () => {
 
   const [addScript, { loading }] = useMutation(ADD_SCRIPT);
 
-  // --- React Hook Form Setup ---
+  
   const {
     register,
     handleSubmit,
@@ -90,13 +90,13 @@ const Add = () => {
       description: "",
       genres: [],
       language: null,
-      visibility: visibilityOptions[0], // Default to Public
+      visibility: visibilityOptions[0], 
     },
   });
 
   const handleClose = () => {
     setOpen(false);
-    // Add a slight delay to reset so the form doesn't empty out while animating closed
+    
     setTimeout(() => {
       reset();
     }, 300);
@@ -134,7 +134,7 @@ const Add = () => {
     }
   };
 
-  // --- Responsive Theme Classes ---
+  
   const inputClass =
     "w-full px-3 py-2.5 md:px-4 md:py-3 rounded-xl border border-white/10 bg-white/5 text-gray-200 focus:bg-white/10 focus:border-white/30 focus:ring-1 focus:ring-white/20 transition-all outline-none placeholder:text-gray-500 text-sm font-mono shadow-inner font-medium disabled:opacity-50";
 
@@ -313,7 +313,7 @@ const Add = () => {
                   </div>
                 </div>
 
-                {/* Visibility (Controller for Headless UI) */}
+                {
                 <div>
                   <label className={labelClass}>Visibility</label>
                   <Controller
@@ -366,7 +366,7 @@ const Add = () => {
                   />
                 </div>
 
-                {/* Description */}
+                {
                 <div>
                   <label className={labelClass}>Description</label>
                   <textarea
@@ -389,7 +389,7 @@ const Add = () => {
 
                 <hr className="border-b border-white/5 hidden md:block" />
 
-                {/* Submit */}
+                {
                 <button
                   type="submit"
                   disabled={loading || !isValid}

@@ -239,7 +239,7 @@ describe("GraphQL User Contracts", () => {
                 },
             });
 
-        // 2. LIKE_PROFILE
+        
         provider
             .given(`user profile ${TEST_PROFILE_ID} exists to be liked`)
             .uponReceiving('a request to like a profile')
@@ -268,7 +268,7 @@ describe("GraphQL User Contracts", () => {
                 },
             });
 
-        // 3. VIEW_PROFILE
+        
         provider
             .given(`user profile ${TEST_PROFILE_ID} exists to be viewed`)
             .uponReceiving('a request to view a profile')
@@ -297,7 +297,7 @@ describe("GraphQL User Contracts", () => {
                 },
             });
 
-        // 4. ACCEPT_INVITATION
+        
         provider
             .given(`user has a pending invitation for script ${TEST_SCRIPT_ID}`)
             .uponReceiving('a request to accept a script invitation')
@@ -326,9 +326,9 @@ describe("GraphQL User Contracts", () => {
                 },
             });
 
-        // 5. DECLINE_INVITATION
+        
         provider
-            .given(`user has a pending invitation for script ${TEST_SCRIPT_ID}`) // Reusing the same state
+            .given(`user has a pending invitation for script ${TEST_SCRIPT_ID}`) 
             .uponReceiving('a request to decline a script invitation')
             .withRequest({
                 method: 'POST',

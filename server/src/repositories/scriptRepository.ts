@@ -143,7 +143,7 @@ export const ScriptRepository = {
         );
     },
 
-    // For when a brand new user's paragraph gets approved
+    
     addAcceptedContributorAndAddParagraph: async (scriptId: string, userId: string, paragraphId: string) => {
         return await Script.findByIdAndUpdate(scriptId, {
             $addToSet: { paragraphs: paragraphId },
@@ -157,7 +157,7 @@ export const ScriptRepository = {
         });
     },
 
-    // For when the owner just writes their own paragraph
+    
     addParagraphId: async (scriptId: string, paragraphId: string) => {
         return await Script.findByIdAndUpdate(scriptId, {
             $addToSet: { paragraphs: paragraphId },

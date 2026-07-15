@@ -18,7 +18,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login: React.FC = () => {
   const nav = useNavigate();
-  // 🚨 Track the specific loading state instead of a global boolean
+  
   const [activeAuthMethod, setActiveAuthMethod] = useState<"email" | "guest" | "google" | "github" | null>(null);
 
   const {
@@ -101,7 +101,7 @@ const Login: React.FC = () => {
       animate="visible"
       className="w-full max-w-[420px] mx-auto flex flex-col gap-8 p-8 sm:p-10 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl relative"
     >
-      {/* Header */}
+      {
       <motion.div variants={itemVariants} className="flex flex-col items-center text-center gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight font-mono">
@@ -113,7 +113,7 @@ const Login: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Social Logins */}
+      {
       <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3">
         <button
           type="button"
@@ -148,7 +148,7 @@ const Login: React.FC = () => {
         </button>
       </motion.div>
 
-      {/* Divider */}
+      {
       <motion.div variants={itemVariants} className="flex items-center gap-4">
         <hr className="flex-grow border-white/10" />
         <span className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-widest font-bold font-mono">
@@ -157,10 +157,10 @@ const Login: React.FC = () => {
         <hr className="flex-grow border-white/10" />
       </motion.div>
 
-      {/* Form */}
+      {
       <motion.form variants={itemVariants} onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
 
-        {/* Email Field */}
+        {
         <div className="flex flex-col gap-1.5 w-full">
           <label htmlFor="email" className="text-[10px] sm:text-xs font-mono text-gray-400 uppercase tracking-widest ml-1">
             Email Address
@@ -185,7 +185,7 @@ const Login: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        {/* Password Field */}
+        {
         <div className="flex flex-col gap-1.5 w-full">
           <div className="flex justify-between items-center ml-1">
             <label htmlFor="password" className="text-[10px] sm:text-xs font-mono text-gray-400 uppercase tracking-widest">
@@ -215,7 +215,7 @@ const Login: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        {/* Submit Button */}
+        {
         <button
           type="submit"
           disabled={isAnyLoading || !isValid}
@@ -232,7 +232,7 @@ const Login: React.FC = () => {
           {activeAuthMethod === "guest" ? <Loader2 className="size-5 animate-spin" /> : "Log in as Guest"}
         </button>
       </motion.form>
-      {/* Footer */}
+      {
       <motion.div variants={itemVariants} className="text-sm font-mono text-gray-500 text-center mt-2">
         <p>
           Don't have an account?{" "}

@@ -24,7 +24,7 @@ export const PostHogProvider: React.FC<{ children: React.ReactNode }> = ({
           posthog.identify(id, { name });
         }
       } catch {
-        // ignore parse errors
+        
       }
     }
   }, []);

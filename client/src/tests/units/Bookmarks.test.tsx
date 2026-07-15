@@ -1,21 +1,21 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import Bookmarks from "../../pages/home/Bookmarks"; // Adjust this path if your test is in a different folder
+import Bookmarks from "../../pages/home/Bookmarks"; 
 import { useGetUserFavouritesQuery } from "../../graphql/generated/graphql";
 import { useUserStore } from "../../store/useAuthStore";
 
-// 1. Mock the GraphQL Hook
+
 vi.mock("../graphql/generated/graphql", () => ({
     useGetUserFavouritesQuery: vi.fn(),
 }));
 
-// 2. Mock the Zustand Auth Store
+
 vi.mock("../store/useAuthStore", () => ({
     useUserStore: vi.fn(),
 }));
 
-// 3. Mock Framer Motion
+
 vi.mock("framer-motion", async () => {
     const actual = await vi.importActual("framer-motion");
     return {
@@ -30,7 +30,7 @@ vi.mock("framer-motion", async () => {
     };
 });
 
-// 4. Mock Child Components
+
 vi.mock("../components/card/DraftCard", () => ({
     default: ({ script }: any) => <div data-testid="draft-card">{script.title}</div>,
 }));
@@ -45,7 +45,7 @@ vi.mock("../components/layout/Search", () => ({
     ),
 }));
 
-// We mock the dropdown as a native <select> so we can easily test the onChange events
+
 vi.mock("../components/layout/Dropdown", () => ({
     default: ({ value, onChange, options }: any) => (
         <select
@@ -69,16 +69,16 @@ const mockUseUserStore = useUserStore as any;
 describe("Bookmarks Component", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        // Default to a logged-in user
+        
         mockUseUserStore.mockReturnValue({ user: { id: "user-123" } });
     });
 
     afterEach(() => {
-        vi.useRealTimers(); // Reset timers after tests
+        vi.useRealTimers(); 
     });
 
     it("should show the authentication warning if user is not logged in", () => {
-        // Enable fake timers to fast-forward the 800ms delay in your useEffect
+        
         vi.useFakeTimers();
         mockUseUserStore.mockReturnValue({ user: null });
 
@@ -92,7 +92,7 @@ describe("Bookmarks Component", () => {
             </MemoryRouter>
         );
 
-        // Fast-forward 800ms
+        
         act(() => {
             vi.advanceTimersByTime(800);
         });
@@ -163,15 +163,15 @@ describe("Bookmarks Component", () => {
             </MemoryRouter>
         );
 
-        // Both should render initially
+        
         expect(screen.getByText("Space Odyssey")).toBeInTheDocument();
         expect(screen.getByText("Magic Kingdom")).toBeInTheDocument();
 
-        // Type "magic" in the search box
+        
         const searchInput = screen.getByTestId("search-input");
         fireEvent.change(searchInput, { target: { value: "magic" } });
 
-        // "Space Odyssey" should disappear
+        
         expect(screen.queryByText("Space Odyssey")).not.toBeInTheDocument();
         expect(screen.getByText("Magic Kingdom")).toBeInTheDocument();
     });
@@ -193,7 +193,7 @@ describe("Bookmarks Component", () => {
             </MemoryRouter>
         );
 
-        // Change dropdown to 'Fantasy'
+        
         const dropdown = screen.getByTestId("genre-dropdown");
         fireEvent.change(dropdown, { target: { value: "fantasy" } });
 
@@ -217,7 +217,7 @@ describe("Bookmarks Component", () => {
             </MemoryRouter>
         );
 
-        // Change dropdown to 'Romance' (which doesn't exist in data)
+        
         const dropdown = screen.getByTestId("genre-dropdown");
         fireEvent.change(dropdown, { target: { value: "romance" } });
 

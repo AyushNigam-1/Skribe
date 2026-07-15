@@ -2,7 +2,7 @@ import Notification from "../../../models/Notification";
 import { GraphQLError } from "graphql";
 import { getIO } from "../../../utils/socket";
 
-// 🚨 IMPORT REPOSITORIES
+
 import { ParagraphRepository } from "../../../repositories/paragraphRepository";
 import { ScriptRepository } from "../../../repositories/scriptRepository";
 
@@ -69,7 +69,7 @@ export const paragraphMutations = {
     const paragraph = await ParagraphRepository.updateStatus(paragraphId, "approved");
     if (!paragraph) throw new GraphQLError("Paragraph not found");
 
-    // paragraph.script is already the populated Script doc — use it directly
+    
     const script = paragraph.script as any;
     if (!script) throw new GraphQLError("Script not found");
 
@@ -108,7 +108,7 @@ export const paragraphMutations = {
 
     await enforceRateLimit(context.redis, userId, "reject_paragraph", 60, 60);
 
-    // 🚨 REPO CALL
+    
     const paragraph: any = await ParagraphRepository.updateStatus(paragraphId, "rejected");
 
     if (paragraph) {
@@ -127,7 +127,7 @@ export const paragraphMutations = {
 
     await enforceRateLimit(context.redis, userId, "edit_paragraph", 30, 60);
 
-    // 🚨 REPO CALL
+    
     const paragraph = await ParagraphRepository.findByIdWithScript(paragraphId);
     if (!paragraph) throw new GraphQLError("Paragraph not found");
 
@@ -144,7 +144,7 @@ export const paragraphMutations = {
 
     if (!text || text.trim() === "") throw new GraphQLError("Paragraph text cannot be empty");
 
-    // 🚨 REPO CALL
+    
     const updatedParagraph = await ParagraphRepository.updateText(paragraphId, text);
     await invalidateParagraphCache(context.redis, script._id.toString(), paragraphId);
 
@@ -157,7 +157,7 @@ export const paragraphMutations = {
 
     await enforceRateLimit(context.redis, userId, "delete_paragraph", 20, 60);
 
-    // 🚨 REPO CALL
+    
     const paragraph = await ParagraphRepository.findByIdWithScript(paragraphId);
     if (!paragraph) throw new GraphQLError("Paragraph not found");
 
@@ -170,7 +170,7 @@ export const paragraphMutations = {
       throw new GraphQLError("Not authorized to delete this paragraph");
     }
 
-    // 🚨 REPO CALLS
+    
     await ParagraphRepository.deleteById(paragraphId);
     await ScriptRepository.removeParagraphId(script._id.toString(), paragraphId);
 
@@ -184,13 +184,13 @@ export const paragraphMutations = {
 
     await enforceRateLimit(context.redis, userId, "like_paragraph", 60, 60);
 
-    // 🚨 REPO CALL
+    
     const paragraph: any = await ParagraphRepository.findByIdWithScript(paragraphId);
     if (!paragraph) throw new GraphQLError("Paragraph not found");
 
     const hasLiked = paragraph.likes?.includes(userId) || false;
 
-    // 🚨 REPO CALLS
+    
     if (hasLiked) {
       await ParagraphRepository.removeLike(paragraphId, userId);
     } else {
@@ -210,13 +210,13 @@ export const paragraphMutations = {
 
     await enforceRateLimit(context.redis, userId, "dislike_paragraph", 60, 60);
 
-    // 🚨 REPO CALL
+    
     const paragraph = await ParagraphRepository.findByIdWithScript(paragraphId);
     if (!paragraph) throw new GraphQLError("Paragraph not found");
 
     const hasDisliked = paragraph.dislikes?.includes(userId) || false;
 
-    // 🚨 REPO CALLS
+    
     if (hasDisliked) {
       await ParagraphRepository.removeDislike(paragraphId, userId);
     } else {
@@ -235,7 +235,7 @@ export const paragraphMutations = {
 
     if (!text || text.trim() === "") throw new GraphQLError("Comment cannot be empty");
 
-    // 🚨 REPO CALL
+    
     const updatedParagraph: any = await ParagraphRepository.addComment(paragraphId, userId, text);
     if (!updatedParagraph) throw new GraphQLError("Paragraph not found");
 

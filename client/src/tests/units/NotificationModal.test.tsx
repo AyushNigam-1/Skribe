@@ -1,11 +1,11 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import NotificationModal from "../../pages/home/Notifications"; // Adjust path if needed
+import NotificationModal from "../../pages/home/Notifications"; 
 import { useUserStore } from "../../store/useAuthStore";
 import { useApolloClient } from "@apollo/client";
 
-// 1. Mock Socket.io
+
 const mockSocketOn = vi.fn();
 const mockSocketEmit = vi.fn();
 const mockSocketDisconnect = vi.fn();
@@ -18,14 +18,14 @@ vi.mock("socket.io-client", () => ({
     })),
 }));
 
-// 2. Mock Sonner
+
 vi.mock("sonner", () => ({
     toast: { promise: vi.fn() },
 }));
 
-// 3. Mock Headless UI Dialog
-// Headless UI portals things out of the DOM, which makes testing tricky.
-// We mock it to render directly inline so we can find the elements easily.
+
+
+
 vi.mock("@headlessui/react", () => ({
     Dialog: ({ open, children, onClose }: any) => (open ? <div data-testid="dialog">{children}</div> : null),
     DialogPanel: ({ children }: any) => <div>{children}</div>,
@@ -33,8 +33,8 @@ vi.mock("@headlessui/react", () => ({
     DialogBackdrop: () => null,
 }));
 
-// 4. Mock Apollo Client Cache
-// 4. Mock Apollo Client Cache (and preserve 'gql')
+
+
 const mockCacheUpdateQuery = vi.fn();
 vi.mock("@apollo/client", async () => {
     const actual = await vi.importActual("@apollo/client");
@@ -46,13 +46,13 @@ vi.mock("@apollo/client", async () => {
     };
 });
 
-// 5. Mock GraphQL Mutations and Queries
+
 const mockMarkAllRead = vi.fn();
 const mockDeleteNotification = vi.fn();
 const mockAcceptInvite = vi.fn();
 const mockDeclineInvite = vi.fn();
 
-// We need to provide dummy Document definitions since your component imports them for cache updates
+
 vi.mock("../graphql/generated/graphql", () => ({
     GetNotificationsDocument: {},
     useGetNotificationsQuery: vi.fn(),
@@ -65,7 +65,7 @@ vi.mock("../graphql/generated/graphql", () => ({
 import { useGetNotificationsQuery } from "../../graphql/generated/graphql";
 const mockUseGetNotifications = useGetNotificationsQuery as any;
 
-// 6. Mock Zustand
+
 vi.mock("../store/useAuthStore", () => {
     return {
         useUserStore: vi.fn(),
@@ -73,7 +73,7 @@ vi.mock("../store/useAuthStore", () => {
 });
 const mockUseUserStore = useUserStore as any;
 
-// 7. Mock Framer Motion
+
 vi.mock("framer-motion", async () => {
     const actual = await vi.importActual("framer-motion");
     return {
@@ -92,7 +92,7 @@ describe("NotificationModal Component", () => {
         vi.clearAllMocks();
         mockUseUserStore.mockReturnValue({ user: { id: "user-123" } });
 
-        // Default promise resolutions to prevent unhandled rejection warnings
+        
         mockAcceptInvite.mockResolvedValue({});
         mockDeclineInvite.mockResolvedValue({});
         mockDeleteNotification.mockResolvedValue({});
@@ -109,14 +109,14 @@ describe("NotificationModal Component", () => {
             </MemoryRouter>
         );
 
-        // Initial state: Modal is closed
+        
         expect(screen.queryByTestId("dialog")).not.toBeInTheDocument();
 
-        // Click the bell button
+        
         const bellBtn = screen.getByText("Notifications");
         fireEvent.click(bellBtn);
 
-        // Modal should be open
+        
         expect(screen.getByTestId("dialog")).toBeInTheDocument();
         expect(screen.getByText("All caught up!")).toBeInTheDocument();
     });
@@ -160,11 +160,11 @@ describe("NotificationModal Component", () => {
             </MemoryRouter>
         );
 
-        // Open modal
+        
         fireEvent.click(screen.getByText("Notifications"));
 
-        // Close modal (assuming the X button is the first button inside the modal dialog)
-        // We can find it by the close icon. The simplest way is to query buttons in the dialog.
+        
+        
         const closeBtn = screen.getByTestId("dialog").querySelector("button");
         fireEvent.click(closeBtn!);
 
@@ -192,12 +192,12 @@ describe("NotificationModal Component", () => {
         const acceptBtn = screen.getByText("Accept");
         fireEvent.click(acceptBtn);
 
-        // Should call the accept mutation with the extracted script ID
+        
         await waitFor(() => {
             expect(mockAcceptInvite).toHaveBeenCalledWith({ variables: { scriptId: "script-abc" } });
         });
 
-        // The UI should update to show "Accepted ✓"
+        
         expect(await screen.findByText("Accepted ✓")).toBeInTheDocument();
     });
 
@@ -219,7 +219,7 @@ describe("NotificationModal Component", () => {
 
         fireEvent.click(screen.getByText("Notifications"));
 
-        // Find the trash button (it has the title "Delete notification")
+        
         const deleteBtn = screen.getByTitle("Delete notification");
         fireEvent.click(deleteBtn);
 
@@ -239,7 +239,7 @@ describe("NotificationModal Component", () => {
             </MemoryRouter>
         );
 
-        // Verify Socket.io was initialized and 'setup' was emitted
+        
         expect(mockSocketEmit).toHaveBeenCalledWith("setup", "user-123");
         expect(mockSocketOn).toHaveBeenCalledWith("new notification", expect.any(Function));
     });

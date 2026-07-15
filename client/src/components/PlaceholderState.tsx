@@ -7,7 +7,7 @@ interface EmptyStateProps {
     description: string;
     action?: ReactNode;
     className?: string;
-    minHeight?: string; // Bring this back so you can tweak it per-page if needed
+    minHeight?: string; 
     'data-testid'?: string;
 }
 const variants: Variants = {
@@ -42,7 +42,7 @@ const PlaceholderState: React.FC<EmptyStateProps> = ({
                 {description}
             </p>
 
-            {/* If an action is passed down, it will render here */}
+            {
             {action && <div className="relative z-10">{action}</div>}
         </motion.div>
     );

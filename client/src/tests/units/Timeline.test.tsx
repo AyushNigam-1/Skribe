@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import Timeline from "../../pages/draft/Timeline";
 
-// 1. Mock React Router
+
 let mockOutletData: any = { data: null, loading: false, refetch: vi.fn() };
 
 vi.mock("react-router-dom", async () => {
@@ -14,7 +14,7 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
-// 2. Mock Framer Motion
+
 vi.mock("framer-motion", async () => {
     const actual = await vi.importActual("framer-motion");
     return {
@@ -28,8 +28,8 @@ vi.mock("framer-motion", async () => {
     };
 });
 
-// 3. Mock React Markdown
-// We specifically execute your custom "p" component so your `highlightContent` function runs!
+
+
 vi.mock("react-markdown", () => ({
     default: ({ children, components }: any) => {
         if (components && components.p) {
@@ -43,7 +43,7 @@ vi.mock("remark-gfm", () => ({
     default: vi.fn(),
 }));
 
-// 4. Mock Child Components
+
 vi.mock("../components/layout/Search", () => ({
     default: ({ value, setSearch, placeholder }: any) => (
         <input
@@ -102,7 +102,7 @@ describe("Timeline Component", () => {
         renderComponent();
 
         expect(screen.getByText("No contributions yet")).toBeInTheDocument();
-        // Because it's archived, the button should be gone
+        
         expect(screen.queryByTestId("contribute-btn")).not.toBeInTheDocument();
     });
 
@@ -124,11 +124,11 @@ describe("Timeline Component", () => {
 
         renderComponent();
 
-        // Both texts should be present
+        
         expect(screen.getByText("Oldest text")).toBeInTheDocument();
         expect(screen.getByText("Newest text")).toBeInTheDocument();
 
-        // Verify DOM order (Newest should render before Oldest due to sorting)
+        
         const links = screen.getAllByRole("link");
         expect(links[0]).toHaveTextContent("Bob");
         expect(links[1]).toHaveTextContent("Alice");
@@ -154,7 +154,7 @@ describe("Timeline Component", () => {
 
         const searchInput = screen.getByTestId("search-input");
 
-        // Type "Apple"
+        
         fireEvent.change(searchInput, { target: { value: "Apple" } });
 
         expect(screen.getByText("Alice")).toBeInTheDocument();
@@ -205,7 +205,7 @@ describe("Timeline Component", () => {
         const searchInput = screen.getByTestId("search-input");
         fireEvent.change(searchInput, { target: { value: "brown" } });
 
-        // The text "brown" should be wrapped in a <mark> tag by your highlightContent function
+        
         const highlightedElement = screen.getByText("brown");
         expect(highlightedElement.tagName).toBe("MARK");
         expect(highlightedElement).toHaveClass("bg-amber-500/40");

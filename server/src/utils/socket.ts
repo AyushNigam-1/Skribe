@@ -14,7 +14,7 @@ export const initSocket = (httpServer: any) => {
     io.on("connection", (socket) => {
         console.log("🔌 New Socket Connected:", socket.id);
 
-        // When the frontend connects, it tells the server who it is
+        
         socket.on("setup", (userId: string) => {
             socket.join(userId);
             console.log(`🟢 User ${userId} joined their personal notification room`);

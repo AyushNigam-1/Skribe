@@ -9,7 +9,7 @@ Ensure that any components created were actually used.
 
 Once all other tasks are complete, run any linter or prettier-like scripts found in the package.json, but ONLY on the files you have edited or created during this session. Do not run formatting or linting across the entire project's codebase.
 
-## Status
+
 
 Status to report in this phase:
 

@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import Login from "../../pages/auth/Signin"; // Adjust this path if needed
+import Login from "../../pages/auth/Signin"; 
 
-// 1. Mock React Router
+
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
@@ -13,7 +13,7 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
-// 2. Mock BetterAuth / authClient
+
 vi.mock("../lib/authClient", () => ({
     authClient: {
         signIn: {
@@ -23,7 +23,7 @@ vi.mock("../lib/authClient", () => ({
     },
 }));
 
-// 3. Mock PostHog Analytics
+
 vi.mock("../providers/PostHogProvider", () => ({
     posthog: {
         capture: vi.fn(),
@@ -31,7 +31,7 @@ vi.mock("../providers/PostHogProvider", () => ({
     },
 }));
 
-// 4. Mock Sonner Toasts
+
 vi.mock("sonner", () => ({
     toast: {
         success: vi.fn(),
@@ -39,7 +39,7 @@ vi.mock("sonner", () => ({
     },
 }));
 
-// 5. Mock Framer Motion
+
 vi.mock("framer-motion", async () => {
     const actual = await vi.importActual("framer-motion");
     return {
@@ -76,7 +76,7 @@ describe("Login Component", () => {
         expect(screen.getByPlaceholderText("you@example.com")).toBeInTheDocument();
         expect(screen.getByPlaceholderText("••••••••")).toBeInTheDocument();
 
-        // Check for buttons
+        
         expect(screen.getByText("Google")).toBeInTheDocument();
         expect(screen.getByText("Github")).toBeInTheDocument();
         expect(screen.getByText("Sign In")).toBeInTheDocument();
@@ -93,23 +93,23 @@ describe("Login Component", () => {
         const emailInput = screen.getByPlaceholderText("you@example.com");
         const passwordInput = screen.getByPlaceholderText("••••••••");
 
-        // Type invalid data
+        
         fireEvent.change(emailInput, { target: { value: "invalid-email" } });
-        fireEvent.change(passwordInput, { target: { value: "123" } }); // Too short
+        fireEvent.change(passwordInput, { target: { value: "123" } }); 
 
-        // Because react-hook-form runs asynchronously, we wait for errors to appear
+        
         await waitFor(() => {
             expect(screen.getByText("Please enter a valid email address")).toBeInTheDocument();
             expect(screen.getByText("Password must be at least 6 characters")).toBeInTheDocument();
         });
 
-        // Sign in button should be disabled due to invalid form state
+        
         const submitBtn = screen.getByText("Sign In");
         expect(submitBtn).toBeDisabled();
     });
 
     it("should successfully log in with email and track analytics", async () => {
-        // Mock a successful response from your auth client
+        
         mockEmailSignIn.mockResolvedValue({
             data: { user: { id: "user-123", name: "Test User" } },
             error: null,
@@ -121,35 +121,35 @@ describe("Login Component", () => {
             </MemoryRouter>
         );
 
-        // Fill out valid form data
+        
         fireEvent.change(screen.getByPlaceholderText("you@example.com"), { target: { value: "test@example.com" } });
         fireEvent.change(screen.getByPlaceholderText("••••••••"), { target: { value: "password123" } });
 
-        // The button might still be briefly disabled from the initial render, so wait for it to be enabled
+        
         const submitBtn = await screen.findByText("Sign In");
         await waitFor(() => expect(submitBtn).not.toBeDisabled());
 
         fireEvent.click(submitBtn);
 
-        // Verify exactly what happens after clicking submit
+        
         await waitFor(() => {
-            // 1. Auth client called with correct credentials
+            
             expect(mockEmailSignIn).toHaveBeenCalledWith({
                 email: "test@example.com",
                 password: "password123",
             });
-            // 2. PostHog identified the user and tracked the event
+            
             expect(posthog.identify).toHaveBeenCalledWith("user-123", { name: "Test User" });
             expect(posthog.capture).toHaveBeenCalledWith("user_logged_in", { login_method: "email" });
-            // 3. Success toast shown
+            
             expect(toast.success).toHaveBeenCalledWith("Welcome back!");
-            // 4. Navigated to explore page
+            
             expect(mockNavigate).toHaveBeenCalledWith("/explore");
         });
     });
 
     it("should handle email login failure and track the error", async () => {
-        // Mock a failed response
+        
         mockEmailSignIn.mockResolvedValue({
             data: null,
             error: { message: "Invalid credentials provided." },
@@ -171,7 +171,7 @@ describe("Login Component", () => {
         await waitFor(() => {
             expect(posthog.capture).toHaveBeenCalledWith("login_failed", { error_message: "Invalid credentials provided." });
             expect(toast.error).toHaveBeenCalledWith("Invalid credentials provided.");
-            expect(mockNavigate).not.toHaveBeenCalled(); // Should not navigate away
+            expect(mockNavigate).not.toHaveBeenCalled(); 
         });
     });
 

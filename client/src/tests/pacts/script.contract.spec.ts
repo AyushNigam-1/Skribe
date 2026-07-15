@@ -85,7 +85,7 @@ describe('GraphQL Script Contracts', () => {
                 },
             });
 
-        // 2. GET_SCRIPTS_BY_GENRES[cite: 7]
+        
         provider
             .given('scripts with genre Sci-Fi exist')
             .uponReceiving('a request for scripts by genre')
@@ -119,7 +119,7 @@ describe('GraphQL Script Contracts', () => {
                 },
             });
 
-        // 3. GET_SCRIPT_CONTRIBUTORS[cite: 7]
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} has contributors`)
             .uponReceiving('a request for script contributors')
@@ -160,7 +160,7 @@ describe('GraphQL Script Contracts', () => {
                 },
             });
 
-        // 4. GET_USER_CONTRIBUTIONS_BY_SCRIPT[cite: 7]
+        
         provider
             .given(`user ${TEST_USER_ID} has contributions in script ${TEST_SCRIPT_ID}`)
             .uponReceiving('a request for specific user contributions in a script')
@@ -194,11 +194,11 @@ describe('GraphQL Script Contracts', () => {
                 },
             });
 
-        // ==========================================
-        // MUTATIONS
-        // ==========================================
+        
+        
+        
 
-        // 1. ADD_SCRIPT[cite: 8]
+        
         provider
             .given('user is authenticated to create a script')
             .uponReceiving('a request to create a script')
@@ -229,7 +229,7 @@ describe('GraphQL Script Contracts', () => {
                 },
             });
 
-        // 2. SUBMIT_PARAGRAPH[cite: 8]
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} exists for paragraph submission`)
             .uponReceiving('a request to submit a paragraph')
@@ -248,7 +248,7 @@ describe('GraphQL Script Contracts', () => {
                 body: {
                     data: {
                         submitParagraph: {
-                            id: string(TEST_CONTRIB_ID), // Reused ID for consistency
+                            id: string(TEST_CONTRIB_ID), 
                             status: string('PENDING'),
                             text: string('This is a new paragraph.'),
                             createdAt: string('1704153600000')
@@ -257,7 +257,7 @@ describe('GraphQL Script Contracts', () => {
                 },
             });
 
-        // 3. APPROVE_PARAGRAPH[cite: 8]
+        
         provider
             .given(`paragraph ${TEST_CONTRIB_ID} exists to be approved`)
             .uponReceiving('a request to approve a paragraph')
@@ -267,7 +267,7 @@ describe('GraphQL Script Contracts', () => {
                 body: {
                     operationName: 'ApproveParagraph',
                     query: print(APPROVE_PARAGRAPH),
-                    variables: { paragraphId: TEST_CONTRIB_ID }, // Reused ID for consistency
+                    variables: { paragraphId: TEST_CONTRIB_ID }, 
                 },
             })
             .willRespondWith({
@@ -276,7 +276,7 @@ describe('GraphQL Script Contracts', () => {
                 body: { data: { approveParagraph: { status: boolean(true) } } },
             });
 
-        // 4. REJECT_PARAGRAPH[cite: 8]
+        
         provider
             .given(`paragraph ${TEST_CONTRIB_ID} exists to be rejected`)
             .uponReceiving('a request to reject a paragraph')
@@ -286,7 +286,7 @@ describe('GraphQL Script Contracts', () => {
                 body: {
                     operationName: 'RejectParagraph',
                     query: print(REJECT_PARAGRAPH),
-                    variables: { paragraphId: TEST_CONTRIB_ID }, // Reused ID for consistency
+                    variables: { paragraphId: TEST_CONTRIB_ID }, 
                 },
             })
             .willRespondWith({
@@ -295,7 +295,7 @@ describe('GraphQL Script Contracts', () => {
                 body: { data: { rejectParagraph: { status: boolean(true) } } },
             });
 
-        // 5. TOGGLE_BOOKMARK[cite: 8]
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} exists to be bookmarked`)
             .uponReceiving('a request to toggle a bookmark')
@@ -314,7 +314,7 @@ describe('GraphQL Script Contracts', () => {
                 body: { data: { markAsFavourite: { status: boolean(true) } } },
             });
 
-        // 6. DELETE_SCRIPT[cite: 8]
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} exists to be deleted`)
             .uponReceiving('a request to delete a script')
@@ -333,7 +333,7 @@ describe('GraphQL Script Contracts', () => {
                 body: { data: { deleteScript: { status: boolean(true) } } },
             });
 
-        // 7. LIKE_SCRIPT[cite: 8]
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} exists to be liked`)
             .uponReceiving('a request to like a script')
@@ -352,7 +352,7 @@ describe('GraphQL Script Contracts', () => {
                 body: { data: { likeScript: { status: boolean(true) } } },
             });
 
-        // 8. DISLIKE_SCRIPT[cite: 8]
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} exists to be disliked`)
             .uponReceiving('a request to dislike a script')
@@ -371,7 +371,7 @@ describe('GraphQL Script Contracts', () => {
                 body: { data: { dislikeScript: { status: boolean(true) } } },
             });
 
-        // 9. ADD_COLLABORATOR[cite: 8]
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} and target user alicewriter exist for collaboration`)
             .uponReceiving('a request to add a collaborator')
@@ -400,7 +400,7 @@ describe('GraphQL Script Contracts', () => {
                 },
             });
 
-        // 10. REMOVE_COLLABORATOR[cite: 8]
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} has collaborator ${TEST_TARGET_USER_ID}`)
             .uponReceiving('a request to remove a collaborator')
@@ -426,7 +426,7 @@ describe('GraphQL Script Contracts', () => {
                 },
             });
 
-        // 11. UPDATE_COLLABORATOR_ROLE[cite: 8]
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} has collaborator ${TEST_TARGET_USER_ID}`)
             .uponReceiving('a request to update a collaborator role')
@@ -455,7 +455,7 @@ describe('GraphQL Script Contracts', () => {
                 },
             });
 
-        // 12. UPDATE_SCRIPT[cite: 8]
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} exists to be updated`)
             .uponReceiving('a request to update script details')
@@ -485,7 +485,7 @@ describe('GraphQL Script Contracts', () => {
                 },
             });
 
-        // 13. REMOVE_ALL_PARAGRAPHS[cite: 8]
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} exists to clear paragraphs`)
             .uponReceiving('a request to remove all paragraphs')
@@ -511,7 +511,7 @@ describe('GraphQL Script Contracts', () => {
                 },
             });
 
-        // 14. REMOVE_ALL_COLLABORATORS[cite: 8]
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} exists to clear collaborators`)
             .uponReceiving('a request to remove all collaborators')
@@ -537,9 +537,9 @@ describe('GraphQL Script Contracts', () => {
                 },
             });
 
-        // ==========================================
-        // EXECUTION BLOCK (Runs all queued interactions)[cite: 7, 8]
-        // ==========================================
+        
+        
+        
         await provider.executeTest(async (mockServer) => {
             const client = new ApolloClient({
                 link: new HttpLink({ uri: mockServer.url + '/graphql', fetch: fetch as any }),
@@ -548,13 +548,13 @@ describe('GraphQL Script Contracts', () => {
 
             const authContext = { headers: { Authorization: `Bearer ${MOCK_TOKEN}` } };
 
-            // Execute Queries[cite: 7]
+            
             await client.query({ query: gql(print(GET_SCRIPT_BY_ID)), variables: { id: TEST_SCRIPT_ID } });
             await client.query({ query: gql(print(GET_SCRIPTS_BY_GENRES)), variables: { genres: ['Sci-Fi'] } });
             await client.query({ query: gql(print(GET_SCRIPT_CONTRIBUTORS)), variables: { scriptId: TEST_SCRIPT_ID } });
             await client.query({ query: gql(print(GET_USER_CONTRIBUTIONS_BY_SCRIPT)), variables: { userId: TEST_USER_ID, scriptId: TEST_SCRIPT_ID } });
 
-            // Execute Mutations[cite: 8]
+            
             await client.mutate({ mutation: gql(print(ADD_SCRIPT)), variables: { title: 'New Script', visibility: 'Public', languages: ['English'], genres: ['Sci-Fi'], description: 'A brand new story' }, context: authContext });
             await client.mutate({ mutation: gql(print(SUBMIT_PARAGRAPH)), variables: { scriptId: TEST_SCRIPT_ID, text: 'This is a new paragraph.' }, context: authContext });
             await client.mutate({ mutation: gql(print(APPROVE_PARAGRAPH)), variables: { paragraphId: TEST_CONTRIB_ID }, context: authContext });

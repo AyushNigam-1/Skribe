@@ -30,7 +30,7 @@ const Search: React.FC<SearchProps> = ({
       <input
         type="text"
         id="Search"
-        value={value} // 🚨 FIX: Input is now strictly controlled by the parent
+        value={value} 
         onChange={handleChange}
         placeholder={placeholder}
         className={clsx(
@@ -41,7 +41,7 @@ const Search: React.FC<SearchProps> = ({
       />
 
       <AnimatePresence>
-        {value && ( // 🚨 FIX: Now checks the parent's value to show/hide the X
+        {value && ( 
           <motion.button
             initial={{ opacity: 0, scale: 0.8, rotate: -45 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}

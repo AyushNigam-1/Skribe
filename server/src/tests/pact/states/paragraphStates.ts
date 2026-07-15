@@ -143,7 +143,7 @@ export const paragraphStateHandlers = {
         await setupBaseEntities();
         await Paragraph.create({
             _id: TEST_PARAGRAPH_ID,
-            author: TEST_USER_ID, // Jane owns it, so she can edit it!
+            author: TEST_USER_ID, 
             status: 'approved',
             text: 'Original text.',
             script: TEST_SCRIPT_ID,
@@ -155,7 +155,7 @@ export const paragraphStateHandlers = {
         await setupBaseEntities();
         await Paragraph.create({
             _id: TEST_PARAGRAPH_ID,
-            author: TEST_USER_ID, // Jane owns it, so she can delete it!
+            author: TEST_USER_ID, 
             status: 'approved',
             text: 'Original text.',
             script: TEST_SCRIPT_ID,
@@ -171,7 +171,7 @@ export const paragraphStateHandlers = {
             status: 'approved',
             text: 'Original text.',
             script: TEST_SCRIPT_ID,
-            likes: [], // Controller pushes to this array
+            likes: [], 
         });
         return 'State Setup complete';
     },
@@ -184,7 +184,7 @@ export const paragraphStateHandlers = {
             status: 'approved',
             text: 'Original text.',
             script: TEST_SCRIPT_ID,
-            dislikes: [], // Controller pushes to this array
+            dislikes: [], 
         });
         return 'State Setup complete';
     },
@@ -197,7 +197,7 @@ export const paragraphStateHandlers = {
             status: 'approved',
             text: 'Original text.',
             script: TEST_SCRIPT_ID,
-            comments: [], // Controller pushes the comment object here
+            comments: [], 
         });
         return 'State Setup complete';
     }

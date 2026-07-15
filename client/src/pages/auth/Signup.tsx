@@ -20,7 +20,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 const CreateAccount: React.FC = () => {
   const nav = useNavigate();
 
-  // 🚨 Track exactly which button is loading
+  
   const [activeAuthMethod, setActiveAuthMethod] = useState<"email" | "google" | "github" | null>(null);
 
   const {
@@ -162,7 +162,7 @@ const CreateAccount: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        {/* Email Field */}
+        {
         <div className="flex flex-col gap-1.5 w-full">
           <label htmlFor="email" className="text-[10px] sm:text-xs font-mono text-gray-400 uppercase tracking-widest ml-1">
             Email Address
@@ -187,7 +187,7 @@ const CreateAccount: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        {/* Password Field */}
+        {
         <div className="flex flex-col gap-1.5 w-full">
           <label htmlFor="password" className="text-[10px] sm:text-xs font-mono text-gray-400 uppercase tracking-widest ml-1">
             Password
@@ -212,7 +212,7 @@ const CreateAccount: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        {/* Submit Button */}
+        {
         <button
           type="submit"
           disabled={isAnyLoading || !isValid}
@@ -222,7 +222,7 @@ const CreateAccount: React.FC = () => {
         </button>
       </motion.form>
 
-      {/* Footer */}
+      {
       <motion.div variants={itemVariants} className="text-sm text-gray-500 text-center font-mono mt-2">
         <p>
           Already have an account?{" "}

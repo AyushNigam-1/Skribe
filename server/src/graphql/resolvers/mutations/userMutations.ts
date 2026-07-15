@@ -41,14 +41,14 @@ export const userMutations = {
     const userIdStr = userId.toString();
     await enforceRateLimit(context.redis, userIdStr, "bookmark", 30, 60);
 
-    // 🚨 Use Repo
+    
     const user = await UserRepository.findById(userId);
     if (!user) throw new GraphQLError("User not found");
 
     const targetId = new Types.ObjectId(scriptId.trim());
     const isBookmarked = user.favourites?.some((id: any) => id.toString() === targetId.toString());
 
-    // 🚨 Use Repo
+    
     if (isBookmarked) {
       await UserRepository.removeBookmark(userId, scriptId);
     } else {
@@ -82,7 +82,7 @@ export const userMutations = {
       throw new GraphQLError(`Invalid field: ${key} cannot be updated directly.`);
     }
 
-    // 🚨 Use Repo
+    
     const updatedUser = await UserRepository.updateField(userId, { [key]: formattedValue });
 
     if (!updatedUser) throw new GraphQLError("User not found");
@@ -99,13 +99,13 @@ export const userMutations = {
 
     await enforceRateLimit(context.redis, userId, "like_profile", 30, 60);
 
-    // 🚨 Use Repo
+    
     const targetUser = await UserRepository.findById(profileId);
     if (!targetUser) throw new GraphQLError("Profile not found");
 
     const hasLiked = targetUser.likes?.includes(userId) || false;
 
-    // 🚨 Use Repo
+    
     if (hasLiked) {
       await UserRepository.removeLike(profileId, userId);
     } else {
@@ -127,7 +127,7 @@ export const userMutations = {
 
     await enforceRateLimit(context.redis, userId, "view_profile", 10, 60);
 
-    // 🚨 Use Repo
+    
     await UserRepository.addView(profileId, userId);
 
     const cacheKey = `user:${profileId}:profile:v3`;

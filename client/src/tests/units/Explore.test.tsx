@@ -3,13 +3,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import Explore from "../../pages/home/Explore";
 import { useGetScriptsByGenresQuery } from "../../graphql/generated/graphql";
 import { MemoryRouter } from "react-router-dom";
-// import 
-// 1. Mock the GraphQL Hook
+
+
 vi.mock("../graphql/generated/graphql", () => ({
     useGetScriptsByGenresQuery: vi.fn(),
 }));
 
-// 2. Mock Framer Motion to bypass animations during testing
+
 vi.mock("framer-motion", async () => {
     const actual = await vi.importActual("framer-motion");
     return {
@@ -24,7 +24,7 @@ vi.mock("framer-motion", async () => {
     };
 });
 
-// 3. Mock Child Components to isolate the Explore component's logic
+
 vi.mock("../components/card/DraftCard", () => ({
     default: ({ script }: any) => <div data-testid="draft-card">{script.title}</div>,
 }));
@@ -48,7 +48,7 @@ vi.mock("../../components/layout/Genres", () => ({
     default: () => <div data-testid="genres-filter">Genres</div>,
 }));
 
-// Helper to easily cast our mocked hook
+
 const mockUseGetScripts = useGetScriptsByGenresQuery as any;
 
 describe("Explore Component", () => {
@@ -70,9 +70,9 @@ describe("Explore Component", () => {
             </MemoryRouter>
         );
 
-        // Check if the lucide-react loader is likely rendering via standard loading classes or just checking it doesn't crash
-        // Since we didn't mock lucide-react, the SVG will be in the DOM. We can check for a wrapper if needed.
-        // The easiest way is to ensure "Explore" heading is NOT there yet.
+        
+        
+        
         expect(screen.queryByText("Explore")).not.toBeInTheDocument();
     });
 
@@ -93,7 +93,7 @@ describe("Explore Component", () => {
 
         expect(screen.getByText("Failed to load drafts")).toBeInTheDocument();
 
-        // Test the retry button
+        
         const retryBtn = screen.getByText("Try Again");
         fireEvent.click(retryBtn);
         expect(mockRefetch).toHaveBeenCalled();
@@ -135,10 +135,10 @@ describe("Explore Component", () => {
             </MemoryRouter>
         );
 
-        // "Explore" heading should be visible
+        
         expect(screen.getByText("Explore")).toBeInTheDocument();
 
-        // Two draft cards should be rendered based on our mock
+        
         const cards = screen.getAllByTestId("draft-card");
         expect(cards).toHaveLength(2);
         expect(screen.getByText("Sci-Fi Epic")).toBeInTheDocument();
@@ -164,15 +164,15 @@ describe("Explore Component", () => {
             </MemoryRouter>
         );
 
-        // Initially both are visible
+        
         expect(screen.getByText("Sci-Fi Epic")).toBeInTheDocument();
         expect(screen.getByText("Romantic Comedy")).toBeInTheDocument();
 
-        // Type "sci" into our mocked search input
+        
         const searchInput = screen.getByTestId("search-input");
         fireEvent.change(searchInput, { target: { value: "sci" } });
 
-        // "Sci-Fi Epic" should still be there, but "Romantic Comedy" should be gone
+        
         expect(screen.getByText("Sci-Fi Epic")).toBeInTheDocument();
         expect(screen.queryByText("Romantic Comedy")).not.toBeInTheDocument();
     });

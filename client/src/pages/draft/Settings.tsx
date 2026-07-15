@@ -404,7 +404,7 @@ const DraftSettings: React.FC = () => {
           </div>
 
           <div className="flex flex-col relative z-10 text-left">
-            {/* CLEAR CONTENT SECTION */}
+            {
             <div className="p-4 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-red-900/30">
               <div className="w-full md:w-auto">
                 <p className="font-bold text-white text-sm">Clear All Content</p>
@@ -456,7 +456,7 @@ const DraftSettings: React.FC = () => {
               </div>
             </div>
 
-            {/* REMOVE MEMBERS SECTION */}
+            {
             {script?.collaborators && script.collaborators.length > 0 && (
               <div className="p-4 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-red-900/30">
                 <div className="w-full md:w-auto">
@@ -510,7 +510,7 @@ const DraftSettings: React.FC = () => {
               </div>
             )}
 
-            {/* DELETE DRAFT SECTION */}
+            {
             <div className="p-4 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="w-full md:w-auto">
                 <p className="font-bold text-white text-sm">Delete this Draft</p>

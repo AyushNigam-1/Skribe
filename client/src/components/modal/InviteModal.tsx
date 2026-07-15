@@ -29,7 +29,7 @@ const labelClass =
 export default function InviteCollaborator({ scriptId }: InviteCollaboratorProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // 🚨 THE FIX: Unified state for a single input field
+  
   const [inputValue, setInputValue] = useState("");
   const [debouncedValue, setDebouncedValue] = useState("");
   const [selectedUser, setSelectedUser] = useState<any>(null);
@@ -71,15 +71,15 @@ export default function InviteCollaborator({ scriptId }: InviteCollaboratorProps
 
   const handleSelectUser = (user: any) => {
     setSelectedUser(user);
-    // Visual feedback that a specific user was selected
+    
     setInputValue(`@${user.username}`);
   };
 
   const handleInvite = () => {
-    // If they selected a user, send the username. Otherwise, send whatever raw text is in the input (like an email)
+    
     let identifierToSend = inputValue.trim();
 
-    // Clean up the '@' symbol if they typed it manually or if we added it during selection
+    
     if (identifierToSend.startsWith('@')) {
       identifierToSend = identifierToSend.slice(1);
     }
@@ -181,7 +181,7 @@ export default function InviteCollaborator({ scriptId }: InviteCollaboratorProps
 
             <div className="p-6 flex flex-col gap-6">
 
-              {/* 🚨 THE FIX: Single Unified Input Field */}
+              {
               <div className="flex flex-col gap-2 relative z-30">
                 <label className={labelClass}>
                   Username or Email

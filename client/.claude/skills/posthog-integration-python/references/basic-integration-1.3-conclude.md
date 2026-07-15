@@ -10,19 +10,19 @@ Search for a file called `.posthog-events.json` and read it for available events
 Create the file posthog-setup-report.md. It should include a summary of the integration edits, a table with the event names, event descriptions, and files where events were added, along with a list of links for the dashboard and insights created. Follow this format:
 
 <wizard-report>
-# PostHog post-wizard report
+
 
 The wizard has completed a deep integration of your project. [Detailed summary of changes]
 
 [table of events/descriptions/files]
 
-## Next steps
+
 
 We've built some insights and a dashboard for you to keep an eye on user behavior, based on the events we just instrumented:
 
 [links]
 
-### Agent skill
+
 
 We've left an agent skill folder in your project. You can use this context for further agent development when using Claude Code. This will help ensure the model provides the most up-to-date approaches for integrating PostHog.
 
@@ -30,7 +30,7 @@ We've left an agent skill folder in your project. You can use this context for f
 
 Upon completion, remove .posthog-events.json.
 
-## Status
+
 
 Status to report in this phase:
 

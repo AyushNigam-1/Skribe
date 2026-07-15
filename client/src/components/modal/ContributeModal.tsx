@@ -77,7 +77,7 @@ const ContributeModal = ({
   };
 
   const onSubmit = async (data: ContributeFormValues) => {
-    // 🚨 Payload is now just the pure content without injecting a markdown heading
+    
     const finalPayload = data.content.trim();
 
     try {

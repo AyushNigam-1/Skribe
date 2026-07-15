@@ -74,7 +74,7 @@ export const userQueries = {
     const cachedScripts = await context.redis.get(cacheKey);
     if (cachedScripts) return JSON.parse(cachedScripts);
 
-    // 🚨 REPOSITORY CALL
+    
     const scripts = await ScriptRepository.findUserScripts(userId, isOwner);
 
     const formattedScripts = scripts.map((script: any) => {
@@ -104,7 +104,7 @@ export const userQueries = {
     const cachedContributions = await context.redis.get(cacheKey);
     if (cachedContributions) return JSON.parse(cachedContributions);
 
-    // 🚨 REPOSITORY CALL
+    
     const paragraphs = await ParagraphRepository.findContributionsByAuthor(userId);
 
     const filteredParagraphs = paragraphs.filter((p: any) => {
@@ -155,7 +155,7 @@ export const userQueries = {
     const ip = context.req?.ip || context.req?.socket?.remoteAddress || "unknown_ip";
     await enforceRateLimit(context.redis, ip, "get_user_favourites", 100, 60);
 
-    // 🚨 REPOSITORY CALL
+    
     const user = await UserRepository.findByIdWithFavourites(userId);
     if (!user) throw new GraphQLError("User not found");
 
@@ -192,7 +192,7 @@ export const userQueries = {
     if (!query || query.trim().length < 2) return [];
     try {
       const searchRegex = new RegExp(query, "i");
-      // 🚨 REPOSITORY CALL
+      
       return await UserRepository.search(searchRegex, currentUserId);
     } catch (error) {
       console.error("Search Users Error:", error);

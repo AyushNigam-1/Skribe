@@ -52,11 +52,11 @@ const Dropdown: React.FC<DropdownProps> = ({
                 <ChevronDown className={clsx("h-4 w-4 shrink-0", collapseOnMobile && "hidden sm:block")} />
               </div>
 
-              {/* 🚨 VISIBLE ELEMENT */}
+              {
               <div
                 className={clsx(
                   "absolute inset-0 flex items-center gap-2",
-                  // Synchronized to perfectly match the ghost element
+                  
                   collapseOnMobile
                     ? "justify-center sm:justify-between p-2.5 sm:py-2.5 sm:px-3.5"
                     : "justify-between py-2 px-3.5"

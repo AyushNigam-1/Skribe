@@ -4,13 +4,13 @@ test.describe('Draft Settings Component E2E', () => {
 
     let REAL_USER_ID = '';
 
-    // 1. BULLETPROOF ID SNIFFER: Intercept the Notification Query from the Navbar
+    
     test.beforeEach(async ({ page }) => {
         if (!REAL_USER_ID) {
-            // Navigate to a generic page to trigger the Navbar mounting
+            
             const navigationPromise = page.goto('/explore');
 
-            // Wait for the GetNotifications query (which we know contains the userId variable)
+            
             const request = await page.waitForRequest((req) => {
                 try {
                     return req.method() === 'POST' &&
@@ -26,7 +26,7 @@ test.describe('Draft Settings Component E2E', () => {
         }
     });
 
-    // --- HELPER FUNCTION FOR GRAPHQL MOCKING ---
+    
     const mockSettingsGraphql = async (page: any, isOwner: boolean = true) => {
         let mutationsFired = {
             updateScript: false,
@@ -49,7 +49,7 @@ test.describe('Draft Settings Component E2E', () => {
                 const opName = postData?.operationName;
                 const headers = { 'Access-Control-Allow-Origin': '*' };
 
-                // 1. Mock the Parent Context Query with a UNIQUE ID to bust Apollo Cache!
+                
                 if (opName === 'GetScriptById') {
                     return route.fulfill({
                         status: 200,
@@ -63,7 +63,7 @@ test.describe('Draft Settings Component E2E', () => {
                                     title: 'My E2E Masterpiece',
                                     description: 'A test script',
                                     visibility: 'Public',
-                                    // 🔥 If isOwner is true, we inject Playwright's actual session ID!
+                                    
                                     author: {
                                         id: isOwner ? REAL_USER_ID : 'stranger-danger-123',
                                         name: isOwner ? 'The Owner' : 'Some Stranger'
@@ -78,7 +78,7 @@ test.describe('Draft Settings Component E2E', () => {
                     });
                 }
 
-                // Mutation Trackers...
+                
                 if (opName === 'UpdateScript') {
                     mutationsFired.updateScript = true;
                     return route.fulfill({ status: 200, headers, body: JSON.stringify({ data: { updateScript: true } }) });
@@ -110,28 +110,28 @@ test.describe('Draft Settings Component E2E', () => {
         return mutationsFired;
     };
 
-    // 🔥 Using our new cache-busting unique ID in the URL
+    
     const PAGE_URL = '/settings/script-settings-999';
 
-    // --- ACCESS CONTROL TEST ---
+    
 
     test('should display Access Denied for unauthorized users', async ({ page }) => {
-        // Pass false so the mock uses 'stranger-danger-123'
+        
         await mockSettingsGraphql(page, false);
         await page.goto(PAGE_URL);
 
-        // Verify the security feature works and kicks us out!
+        
         await expect(page.getByTestId('access-denied-state')).toBeVisible();
         await expect(page.getByText('Access Denied')).toBeVisible();
 
-        // Verify the Danger Zone did NOT render
+        
         await expect(page.getByTestId('delete-draft-btn')).not.toBeVisible();
     });
 
-    // --- AUTHORIZED OWNER TESTS ---
+    
 
     test('should load visibility options and trigger update mutation on change', async ({ page }) => {
-        // True unlocks the Danger Zone by passing the REAL_USER_ID
+        
         const mutations = await mockSettingsGraphql(page, true);
         await page.goto(PAGE_URL);
 
@@ -144,7 +144,7 @@ test.describe('Draft Settings Component E2E', () => {
         await mockSettingsGraphql(page, true);
         await page.goto(PAGE_URL);
 
-        // Verify default visibility
+        
         await expect(page.getByTestId(`member-card-${REAL_USER_ID}`)).toBeVisible();
         await expect(page.getByTestId('member-card-user-bob')).toBeVisible();
         await expect(page.getByTestId('member-card-user-alice')).toBeVisible();
@@ -168,7 +168,7 @@ test.describe('Draft Settings Component E2E', () => {
         expect(mutations.updateRole).toBe(true);
     });
 
-    // --- DANGER ZONE TESTS ---
+    
 
     test('should execute Danger Zone: Clear Content', async ({ page }) => {
         const mutations = await mockSettingsGraphql(page, true);

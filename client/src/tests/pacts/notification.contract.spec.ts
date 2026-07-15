@@ -108,13 +108,13 @@ describe('GraphQL Notification Contracts', () => {
 
             const authContext = { headers: { Authorization: `Bearer ${MOCK_TOKEN}` } };
 
-            // Execute Query
+            
             await client.query({
                 query: gql(print(GET_NOTIFICATIONS)),
                 variables: { userId: TEST_USER_ID }
             });
 
-            // Execute Mutations
+            
             await client.mutate({
                 mutation: gql(print(MARK_ALL_READ)),
                 context: authContext

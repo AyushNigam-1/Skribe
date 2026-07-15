@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Contributors Component E2E', () => {
 
-    // --- HELPER FUNCTION FOR GRAPHQL MOCKING ---
+    
     const mockScriptContributorsGraphql = async (page: any, paragraphsData: any[]) => {
         await page.route('**/graphql', async (route: any) => {
             const request = route.request();
@@ -14,7 +14,7 @@ test.describe('Contributors Component E2E', () => {
             if (request.method() === 'POST') {
                 const postData = request.postDataJSON();
 
-                // Mock the parent route's query that feeds the useOutletContext
+                
                 if (postData && postData.operationName === 'GetScriptById') {
                     return route.fulfill({
                         status: 200,
@@ -37,7 +37,7 @@ test.describe('Contributors Component E2E', () => {
         });
     };
 
-    // Mock Data: Charlie has 5, Alice has 3, Bob has 1
+    
     const standardParagraphs = [
         ...Array(5).fill({ author: { id: 'user-c', name: 'Charlie' } }),
         ...Array(3).fill({ author: { id: 'user-a', name: 'Alice' } }),
@@ -50,17 +50,17 @@ test.describe('Contributors Component E2E', () => {
         await mockScriptContributorsGraphql(page, standardParagraphs);
         await page.goto(PAGE_URL);
 
-        // 1. Verify all 3 cards rendered
+        
         await expect(page.getByTestId('contributor-card-user-c')).toBeVisible();
         await expect(page.getByTestId('contributor-card-user-a')).toBeVisible();
         await expect(page.getByTestId('contributor-card-user-b')).toBeVisible();
 
-        // 2. Verify accurate counting logic
+        
         await expect(page.getByTestId('contributor-count-user-c')).toHaveText('5 Contributions');
         await expect(page.getByTestId('contributor-count-user-a')).toHaveText('3 Contributions');
         await expect(page.getByTestId('contributor-count-user-b')).toHaveText('1 Contribution');
 
-        // 3. Verify Highest First sorting (Charlie should be physically first in the DOM)
+        
         const cards = page.locator('[data-testid^="contributor-card-"]');
         await expect(cards.nth(0)).toHaveAttribute('data-testid', 'contributor-card-user-c');
         await expect(cards.nth(1)).toHaveAttribute('data-testid', 'contributor-card-user-a');
@@ -71,11 +71,11 @@ test.describe('Contributors Component E2E', () => {
         await mockScriptContributorsGraphql(page, standardParagraphs);
         await page.goto(PAGE_URL);
 
-        // Type into the search input
+        
         const searchInput = page.getByTestId('contributors-search').locator('input');
         await searchInput.fill('Alice');
 
-        // Verify visibility using strict IDs
+        
         await expect(page.getByTestId('contributor-card-user-a')).toBeVisible();
         await expect(page.getByTestId('contributor-card-user-c')).not.toBeVisible();
         await expect(page.getByTestId('contributor-card-user-b')).not.toBeVisible();
@@ -85,14 +85,14 @@ test.describe('Contributors Component E2E', () => {
         await mockScriptContributorsGraphql(page, standardParagraphs);
         await page.goto(PAGE_URL);
 
-        // Open dropdown
+        
         await page.getByTestId('contributors-dropdown').click();
 
-        // Note: Since we don't have the Dropdown source code to add test-ids to the options, 
-        // using .getByText is required just to click the internal menu option.
+        
+        
         await page.getByText('Lowest First').last().click();
 
-        // Verify sorting reversed (Bob [1] -> Alice [3] -> Charlie [5])
+        
         const cards = page.locator('[data-testid^="contributor-card-"]');
         await expect(cards.nth(0)).toHaveAttribute('data-testid', 'contributor-card-user-b');
         await expect(cards.nth(1)).toHaveAttribute('data-testid', 'contributor-card-user-a');
@@ -106,7 +106,7 @@ test.describe('Contributors Component E2E', () => {
         await page.getByTestId('contributors-dropdown').click();
         await page.getByText('A-Z').last().click();
 
-        // Verify alphabetical sorting (Alice -> Bob -> Charlie)
+        
         const cards = page.locator('[data-testid^="contributor-card-"]');
         await expect(cards.nth(0)).toHaveAttribute('data-testid', 'contributor-card-user-a');
         await expect(cards.nth(1)).toHaveAttribute('data-testid', 'contributor-card-user-b');
@@ -117,10 +117,10 @@ test.describe('Contributors Component E2E', () => {
         await mockScriptContributorsGraphql(page, standardParagraphs);
         await page.goto(PAGE_URL);
 
-        // Click Charlie's card explicitly
+        
         await page.getByTestId('contributor-card-user-c').click();
 
-        // Verify React Router navigation
+        
         await expect(page).toHaveURL(/.*\/profile\/user-c/);
     });
 

@@ -35,7 +35,7 @@ export const paragraphQueries = {
     const cachedParagraph = await context.redis.get(cacheKey);
     if (cachedParagraph) return JSON.parse(cachedParagraph);
 
-    // 🚨 REPOSITORY CALL
+    
     const paragraph = await ParagraphRepository.findByIdWithPopulate(paragraphId);
 
     if (!paragraph) throw new Error("Paragraph not found");
@@ -86,7 +86,7 @@ export const paragraphQueries = {
     const cachedRequests = await context.redis.get(cacheKey);
     if (cachedRequests) return JSON.parse(cachedRequests);
 
-    // 🚨 REPOSITORY CALL
+    
     const paragraphs = await ParagraphRepository.findFilteredRequests(scriptId, userId, status);
 
     const formattedParagraphs = paragraphs.map((p: any) => ({
@@ -128,7 +128,7 @@ export const paragraphQueries = {
     const cachedText = await context.redis.get(cacheKey);
     if (cachedText) return cachedText;
 
-    // 🚨 REPOSITORY CALL
+    
     const script = await ScriptRepository.findById(scriptId);
     if (!script) throw new Error("Script not found");
 
@@ -145,7 +145,7 @@ export const paragraphQueries = {
     const cachedPending = await context.redis.get(cacheKey);
     if (cachedPending) return JSON.parse(cachedPending);
 
-    // 🚨 REPOSITORY CALL
+    
     const paragraphs = await ParagraphRepository.findPendingByScript(scriptId);
 
     const formattedParagraphs = paragraphs.map((p: any) => ({
@@ -177,7 +177,7 @@ export const paragraphQueries = {
     if (cachedScript) {
       script = JSON.parse(cachedScript);
     } else {
-      // 🚨 REPOSITORY CALL
+      
       script = await ScriptRepository.findById(scriptId);
       if (!script) throw new Error("Script not found");
       await context.redis.setEx(cacheKey, 3600, JSON.stringify(script));

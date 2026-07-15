@@ -1,24 +1,24 @@
-# PostHog Python Example Project
 
-Repository: https://github.com/PostHog/context-mill
+
+Repository: https:
 Path: basics/python
 
 ---
 
-## README.md
 
-# PostHog Python Example - CLI Todo App
+
+
 
 A simple command-line todo application built with plain Python (no frameworks) demonstrating PostHog integration for CLIs, scripts, data pipelines, and non-web Python applications.
 
-## Purpose
+
 
 This example serves as:
 - **Verification** that the context-mill wizard works for plain Python projects
 - **Reference implementation** of PostHog best practices for non-framework Python code
 - **Working example** you can run and modify
 
-## Features Demonstrated
+
 
 - **Instance-based API** - Uses `Posthog(...)` class instead of module-level API
 - **Exception autocapture** - Automatic tracking of unhandled exceptions
@@ -27,50 +27,50 @@ This example serves as:
 - **User identification** - Sets properties on users via `identify()`, and updates them later with `set()` and `setOnce()`
 - **Error handling** - Manual exception capture for handled errors
 
-## Quick Start
 
-### 1. Install Dependencies
+
+
 
 ```bash
-# Create virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
+python -m venv venv
+source venv/bin/activate  
+
+
 pip install -r requirements.txt
 ```
 
-### 2. Configure PostHog
+
 
 ```bash
-# Copy environment template
+
 cp .env.example .env
 
-# Edit .env and add your PostHog API key
-# POSTHOG_API_KEY=phc_your_api_key_here
-# POSTHOG_HOST=https://us.i.posthog.com
+
+
+
 ```
 
-### 3. Run the App
+
 
 ```bash
-# Add a todo
+
 python todo.py add "Buy groceries"
 
-# List all todos
+
 python todo.py list
 
-# Complete a todo
+
 python todo.py complete 1
 
-# Delete a todo
+
 python todo.py delete 1
 
-# Show statistics
+
 python todo.py stats
 ```
 
-## What Gets Tracked
+
 
 The app tracks these events in PostHog:
 
@@ -82,20 +82,20 @@ The app tracks these events in PostHog:
 | `todo_deleted` | `todo_id`, `was_completed` | When user deletes a todo |
 | `stats_viewed` | `total_todos`, `completed_todos`, `pending_todos` | When user views stats |
 
-## Code Structure
+
 
 ```
 basics/python/
-├── todo.py              # Main CLI application
-├── requirements.txt     # Python dependencies
-├── .env.example        # Environment variable template
-├── .gitignore          # Git ignore rules
-└── README.md           # This file
+├── todo.py              
+├── requirements.txt     
+├── .env.example        
+├── .gitignore          
+└── README.md           
 ```
 
-## Key Implementation Patterns
 
-### 1. Instance-Based Initialization
+
+
 
 ```python
 from posthog import Posthog
@@ -103,14 +103,14 @@ from posthog import Posthog
 posthog = Posthog(
     api_key,
     host='https://us.i.posthog.com',
-    enable_exception_autocapture=True  # Automatically capture exceptions
+    enable_exception_autocapture=True  
 )
 ```
 
-### 2. Event Tracking Pattern
+
 
 ```python
-# Track events with distinct_id
+
 posthog_client.capture(
     distinct_id="user_123",
     event="event_name",
@@ -118,72 +118,72 @@ posthog_client.capture(
 )
 ```
 
-### 3. Proper Shutdown
+
 
 ```python
 try:
-    # Your application code
+    
     pass
 finally:
-    # Always call shutdown() to flush events and close connections
+    
     posthog.shutdown()
 ```
 
-### 4. Identifying Users
+
 
 ```python
-# Set person properties on a user profile
+
 posthog_client.set(
     distinct_id="user_123",
     properties={"email": "user@example.com", "plan": "pro"}
 )
 ```
 
-### 5. Exception Handling
+
 
 ```python
 try:
-    # Code that might fail
+    
     risky_operation()
 except Exception as e:
-    # Manually capture handled errors you want to track
+    
     posthog_client.capture_exception(e, distinct_id="user_123")
 ```
 
-## Running Without PostHog
+
 
 The app works fine without PostHog configured - it simply won't track analytics. You'll see a warning message but the app continues to function normally.
 
-## Next Steps
+
 
 - Modify `todo.py` to experiment with PostHog tracking
 - Add new commands and track their usage
 - Explore feature flags: `posthog.feature_enabled('flag-name', user_id)`
 - Check your PostHog dashboard to see tracked events
 
-## Learn More
 
-- [PostHog Python SDK Documentation](https://posthog.com/docs/libraries/python)
-- [PostHog Python SDK API Reference](https://posthog.com/docs/references/posthog-python)
-- [PostHog Product Analytics](https://posthog.com/docs/product-analytics)
+
+- [PostHog Python SDK Documentation](https:
+- [PostHog Python SDK API Reference](https:
+- [PostHog Product Analytics](https:
 
 ---
 
-## .env.example
+
 
 ```example
-# PostHog Configuration
-POSTHOG_API_KEY=phc_your_project_api_key_here
-POSTHOG_HOST=https://us.i.posthog.com
 
-# Optional: Enable debug mode to see PostHog requests
-# POSTHOG_DEBUG=true
+POSTHOG_API_KEY=phc_your_project_api_key_here
+POSTHOG_HOST=https:
+
+
+
 
 ```
 
 ---
 
-## requirements.txt
+
 
 ```txt
 posthog>=3.0.0
@@ -193,10 +193,10 @@ python-dotenv>=1.0.0
 
 ---
 
-## todo.py
+
 
 ```py
-#!/usr/bin/env python3
+
 """Simple CLI Todo App with PostHog Analytics
 
 A minimal plain Python CLI application demonstrating PostHog integration
@@ -212,10 +212,10 @@ from pathlib import Path
 from dotenv import load_dotenv
 from posthog import Posthog
 
-# Load environment variables
+
 load_dotenv()
 
-# Data file location
+
 DATA_FILE = Path.home() / ".todo_app.json"
 
 
@@ -231,12 +231,12 @@ def initialize_posthog():
         print("         App will work but analytics won't be tracked")
         return None
 
-    # Create PostHog instance with opinionated defaults
+    
     posthog = Posthog(
         api_key,
         host=os.getenv('POSTHOG_HOST', 'https://us.i.posthog.com'),
         debug=os.getenv('POSTHOG_DEBUG', 'False').lower() == 'true',
-        enable_exception_autocapture=True  # Auto-capture unhandled exceptions
+        enable_exception_autocapture=True  
     )
 
     return posthog
@@ -255,7 +255,7 @@ def get_user_id():
         if 'user_id' in data:
             return data['user_id']
 
-    # Create new user ID
+    
     return f"user_{uuid.uuid4().hex[:8]}"
 
 
@@ -303,7 +303,7 @@ def cmd_add(args, posthog):
 
     print(f"Added todo #{todo['id']}: {todo['text']}")
 
-    # Track the event
+    
     track_event(posthog, "todo_added", {
         "todo_id": todo["id"],
         "todo_length": len(todo["text"]),
@@ -327,7 +327,7 @@ def cmd_list(args, posthog):
 
     print()
 
-    # Track the event
+    
     track_event(posthog, "todos_viewed", {
         "total_todos": len(data["todos"]),
         "completed_todos": sum(1 for t in data["todos"] if t["completed"])
@@ -354,7 +354,7 @@ def cmd_complete(args, posthog):
 
     print(f"Completed todo #{todo['id']}: {todo['text']}")
 
-    # Track the event
+    
     track_event(posthog, "todo_completed", {
         "todo_id": todo["id"],
         "time_to_complete_hours": (
@@ -379,7 +379,7 @@ def cmd_delete(args, posthog):
 
     print(f"Deleted todo #{args.id}")
 
-    # Track the event
+    
     track_event(posthog, "todo_deleted", {
         "todo_id": todo["id"],
         "was_completed": todo["completed"]
@@ -401,7 +401,7 @@ def cmd_stats(args, posthog):
     print(f"  Completion rate: {(completed/total*100) if total > 0 else 0:.1f}%")
     print()
 
-    # Track the event
+    
     track_event(posthog, "stats_viewed", {
         "total_todos": total,
         "completed_todos": completed,
@@ -417,22 +417,22 @@ def main():
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    # Add command
+    
     add_parser = subparsers.add_parser("add", help="Add a new todo")
     add_parser.add_argument("text", help="Todo text")
 
-    # List command
+    
     subparsers.add_parser("list", help="List all todos")
 
-    # Complete command
+    
     complete_parser = subparsers.add_parser("complete", help="Mark todo as completed")
     complete_parser.add_argument("id", type=int, help="Todo ID")
 
-    # Delete command
+    
     delete_parser = subparsers.add_parser("delete", help="Delete a todo")
     delete_parser.add_argument("id", type=int, help="Todo ID")
 
-    # Stats command
+    
     subparsers.add_parser("stats", help="Show statistics")
 
     args = parser.parse_args()
@@ -441,11 +441,11 @@ def main():
         parser.print_help()
         return
 
-    # Initialize PostHog
+    
     posthog = initialize_posthog()
 
     try:
-        # Route to appropriate command
+        
         if args.command == "add":
             cmd_add(args, posthog)
         elif args.command == "list":
@@ -460,14 +460,14 @@ def main():
     except Exception as e:
         print(f"ERROR: {e}")
 
-        # Manually capture handled errors
+        
         if posthog:
             posthog.capture_exception(e, get_user_id())
 
         sys.exit(1)
 
     finally:
-        # IMPORTANT: Always shutdown PostHog to flush events
+        
         if posthog:
             posthog.shutdown()
 

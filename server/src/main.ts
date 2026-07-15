@@ -52,11 +52,11 @@ export const logger = pino({
     : undefined,
 });
 
-// 🚨 1. EXPORT APP AND HTTP SERVER AT THE TOP LEVEL
+
 export const app = express();
 export const httpServer = createServer(app);
 
-// 🚨 2. WRAP MIDDLEWARE AND DB SETUP IN AN ASYNC FUNCTION
+
 export const initServer = async () => {
   try {
     const activeMongoUri = process.env.MONGO_URI || env.MONGO_URI;
@@ -137,7 +137,7 @@ export const initServer = async () => {
   return app;
 };
 
-// 🚨 3. ONLY LISTEN ON THE PORT IF WE ARE NOT IN TEST MODE
+
 if (env.NODE_ENV !== "test") {
   initServer().then(() => {
     const port = Number(env.PORT);

@@ -3,13 +3,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import Contribution from "../../pages/draft/Contribution";
 
-// 1. Mock Global Window Methods
+
 const mockScrollTo = vi.fn();
 const mockConfirm = vi.fn();
 vi.stubGlobal("scrollTo", mockScrollTo);
 vi.stubGlobal("confirm", mockConfirm);
 
-// 2. Mock React Router
+
 const mockNavigate = vi.fn();
 let mockOutletContext: any = {};
 
@@ -23,7 +23,7 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
-// 3. Mock React Markdown
+
 vi.mock("react-markdown", () => ({
     default: ({ children }: any) => <div data-testid="markdown-content">{children}</div>,
 }));
@@ -31,7 +31,7 @@ vi.mock("remark-gfm", () => ({
     default: vi.fn(),
 }));
 
-// 4. Mock Store, Analytics, and Toasts
+
 vi.mock("../store/useAuthStore", () => ({
     useUserStore: vi.fn(),
 }));
@@ -44,7 +44,7 @@ vi.mock("sonner", () => ({
     toast: { success: vi.fn(), error: vi.fn() },
 }));
 
-// 5. Mock GraphQL Hooks
+
 const mockApprove = vi.fn();
 const mockReject = vi.fn();
 const mockDelete = vi.fn();
@@ -63,7 +63,7 @@ vi.mock("../graphql/generated/graphql", () => ({
     useAddCommentMutation: () => [mockAddComment, { loading: false }],
 }));
 
-// 6. Mock Framer Motion and Child Components
+
 vi.mock("framer-motion", async () => {
     const actual = await vi.importActual("framer-motion");
     return {
@@ -98,7 +98,7 @@ const mockUseUserStore = useUserStore as any;
 describe("Contribution Component", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        mockOutletContext = {}; // Reset permissions
+        mockOutletContext = {}; 
         mockUseUserStore.mockReturnValue({ user: { id: "user-123" } });
     });
 
@@ -113,7 +113,7 @@ describe("Contribution Component", () => {
         );
 
         expect(screen.queryByText("Failed to load contribution.")).not.toBeInTheDocument();
-        // The markdown content shouldn't be rendered yet
+        
         expect(screen.queryByTestId("markdown-content")).not.toBeInTheDocument();
     });
 
@@ -159,12 +159,12 @@ describe("Contribution Component", () => {
         expect(screen.getByTestId("markdown-content")).toHaveTextContent("Once upon a time in a galaxy far away...");
         expect(screen.getByText("Pending")).toBeInTheDocument();
 
-        // Regular users shouldn't see Approve/Reject buttons
+        
         expect(screen.queryByText("Approve")).not.toBeInTheDocument();
     });
 
     it("should show Approve and Reject buttons if user has manage access", () => {
-        mockOutletContext = { isEditorOrOwner: true }; // Give the user powers via Context
+        mockOutletContext = { isEditorOrOwner: true }; 
 
         mockUseGetParagraph.mockReturnValue({
             loading: false,
@@ -231,7 +231,7 @@ describe("Contribution Component", () => {
 
     it("should require confirmation to reject a paragraph", async () => {
         mockOutletContext = { isEditorOrOwner: true };
-        mockConfirm.mockReturnValue(true); // Simulate clicking "OK" on window.confirm
+        mockConfirm.mockReturnValue(true); 
 
         mockUseGetParagraph.mockReturnValue({
             loading: false,
@@ -290,10 +290,10 @@ describe("Contribution Component", () => {
             </MemoryRouter>
         );
 
-        // Find the thumbs up button (it has a zero next to it initially)
-        const likeBtn = screen.getAllByRole("button")[1]; // Depending on DOM order, usually index 1 or 2
+        
+        const likeBtn = screen.getAllByRole("button")[1]; 
 
-        // We can also find it by checking if it contains the thumbs up SVG, but clicking by role/index is faster here
+        
         fireEvent.click(likeBtn);
 
         await waitFor(() => {

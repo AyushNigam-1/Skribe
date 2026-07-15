@@ -125,7 +125,7 @@ const Requests: React.FC = () => {
     exit: { opacity: 0, transition: { duration: 0.2 } },
   };
 
-  // 🚨 FIXED: Pure, smooth slide-up animation without scale weirdness
+  
   const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -141,7 +141,7 @@ const Requests: React.FC = () => {
   return (
     <div className="w-full flex-1 flex flex-col">
       <AnimatePresence mode="wait">
-        {/* 🚨 FIXED: Check for !scriptId to prevent the empty state flash on mount */}
+        {
         {!scriptId || (loading && !data) ? (
           <motion.div
             key="loader"

@@ -11,7 +11,7 @@ From the project's file list, select between 10 and 15 files that might have int
 
 Look for opportunities to track client-side events.
 
-**IMPORTANT: Server-side events are REQUIRED** if the project includes any instrumentable server-side code. If the project has API routes (e.g., `app/api/**/route.ts`) or Server Actions, you MUST include server-side events for critical business operations like:
+**IMPORTANT: Server-side events are REQUIRED** if the project includes any instrumentable server-side code. If the project has API routes (e.g., `app/apiroute.ts`) or Server Actions, you MUST include server-side events for critical business operations like:
 
   - Payment/checkout completion
   - Webhook handlers
@@ -25,7 +25,7 @@ Track actions only, not pageviews. These can be captured automatically. Exceptio
 
 As you review files, make an internal note of opportunities to identify users and catch errors. We'll need them for the next step.
 
-## Status
+
 
 Before beginning a phase of the setup, you will send a status message with the exact prefix '[STATUS]', as in:
 

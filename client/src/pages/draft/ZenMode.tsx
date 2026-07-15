@@ -29,29 +29,29 @@ const ZenMode = () => {
   const handleDownload = () => {
     if (!script || paragraphs.length === 0) return;
 
-    // 1. Combine all paragraphs into a single text string
+    
     const combinedText = paragraphs.map((p: any) => p.text).join("\n\n");
 
-    // 2. Create a browser Blob with the markdown content
+    
     const blob = new Blob([combinedText], { type: "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);
 
-    // 3. Create a temporary anchor tag to trigger the download
+    
     const link = document.createElement("a");
     link.href = url;
 
-    // Sanitize the title for the filename
+    
     const safeTitle = (script.title || "Untitled_Draft").replace(/[^a-z0-9]/gi, '_').toLowerCase();
     link.download = `${safeTitle}.md`;
 
     document.body.appendChild(link);
     link.click();
 
-    // 4. Cleanup
+    
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    // 5. Show success animation for 2 seconds
+    
     setIsDownloaded(true);
     setTimeout(() => setIsDownloaded(false), 2000);
   };
@@ -137,7 +137,7 @@ const ZenMode = () => {
             </button>
           </div>
 
-          {/* --- Reading Area --- */}
+          {
           <div id="zen-content" className="w-full">
             {paragraphs.length > 0 ? (
               <div className="prose prose-lg dark:prose-invert prose-p:leading-relaxed prose-headings:font-bold text-gray-300 text-xl">

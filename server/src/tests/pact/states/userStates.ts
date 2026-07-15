@@ -139,7 +139,7 @@ export const userStateHandlers = {
             name: 'Target Profile',
             email: 'target@example.com',
             likes: [],
-            views: [] // Controller pushes to this array
+            views: [] 
         });
         return 'State Setup complete';
     },

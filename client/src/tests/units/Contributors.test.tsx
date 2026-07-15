@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import Contributors from "../../pages/draft/Contributors";
 
-// 1. Mock React Router's useOutletContext
+
 let mockOutletData: any = { data: null, loading: false };
 vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
@@ -13,7 +13,7 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
-// 2. Mock Framer Motion
+
 vi.mock("framer-motion", async () => {
     const actual = await vi.importActual("framer-motion");
     return {
@@ -25,7 +25,7 @@ vi.mock("framer-motion", async () => {
     };
 });
 
-// 3. Mock Child Components
+
 vi.mock("../components/layout/Search", () => ({
     default: ({ value, setSearch }: any) => (
         <input
@@ -72,7 +72,7 @@ describe("Contributors Component", () => {
         mockOutletData = { loading: true };
         renderComponent();
 
-        // Search input shouldn't be there yet
+        
         expect(screen.queryByTestId("search-input")).not.toBeInTheDocument();
     });
 
@@ -95,10 +95,10 @@ describe("Contributors Component", () => {
                     paragraphs: [
                         { id: "p1", author: { id: "u1", name: "Alice" } },
                         { id: "p2", author: { id: "u2", name: "Bob" } },
-                        { id: "p3", author: { id: "u1", name: "Alice" } }, // Alice has 2
+                        { id: "p3", author: { id: "u1", name: "Alice" } }, 
                         { id: "p4", author: { id: "u3", name: "Charlie" } },
-                        { id: "p5", author: { id: "u1", name: "Alice" } }, // Alice has 3
-                        { id: "p6", author: { id: "u3", name: "Charlie" } }, // Charlie has 2
+                        { id: "p5", author: { id: "u1", name: "Alice" } }, 
+                        { id: "p6", author: { id: "u3", name: "Charlie" } }, 
                     ],
                 },
             },
@@ -106,18 +106,18 @@ describe("Contributors Component", () => {
 
         renderComponent();
 
-        // Verify all names rendered
+        
         expect(screen.getByText("Alice")).toBeInTheDocument();
         expect(screen.getByText("Bob")).toBeInTheDocument();
         expect(screen.getByText("Charlie")).toBeInTheDocument();
 
-        // Verify counts (Alice = 3, Charlie = 2, Bob = 1)
+        
         expect(screen.getByText("3 Contributions")).toBeInTheDocument();
         expect(screen.getByText("2 Contributions")).toBeInTheDocument();
         expect(screen.getByText("1 Contribution")).toBeInTheDocument();
 
-        // Because default sort is "Highest First", the DOM order should be Alice -> Charlie -> Bob
-        // The easiest way to test order without querying specific DOM nodes is checking if the list is present
+        
+        
         const headings = screen.getAllByRole('heading', { level: 5 });
         expect(headings[0]).toHaveTextContent("Alice");
         expect(headings[1]).toHaveTextContent("Charlie");
@@ -130,10 +130,10 @@ describe("Contributors Component", () => {
             data: {
                 getScriptById: {
                     paragraphs: [
-                        { id: "p1", author: { id: "u1", name: "Zebra" } }, // 2
+                        { id: "p1", author: { id: "u1", name: "Zebra" } }, 
                         { id: "p3", author: { id: "u1", name: "Zebra" } },
-                        { id: "p2", author: { id: "u2", name: "Apple" } }, // 1
-                        { id: "p4", author: { id: "u3", name: "Banana" } }, // 3
+                        { id: "p2", author: { id: "u2", name: "Apple" } }, 
+                        { id: "p4", author: { id: "u3", name: "Banana" } }, 
                         { id: "p5", author: { id: "u3", name: "Banana" } },
                         { id: "p6", author: { id: "u3", name: "Banana" } },
                     ],
@@ -145,15 +145,15 @@ describe("Contributors Component", () => {
 
         const dropdown = screen.getByTestId("filter-dropdown");
 
-        // 1. Sort by Lowest First
-        fireEvent.change(dropdown, { target: { value: "2" } }); // ID 2 is Lowest First
+        
+        fireEvent.change(dropdown, { target: { value: "2" } }); 
         let headings = screen.getAllByRole('heading', { level: 5 });
-        expect(headings[0]).toHaveTextContent("Apple"); // 1 count
-        expect(headings[1]).toHaveTextContent("Zebra"); // 2 count
-        expect(headings[2]).toHaveTextContent("Banana"); // 3 count
+        expect(headings[0]).toHaveTextContent("Apple"); 
+        expect(headings[1]).toHaveTextContent("Zebra"); 
+        expect(headings[2]).toHaveTextContent("Banana"); 
 
-        // 2. Sort by A-Z
-        fireEvent.change(dropdown, { target: { value: "3" } }); // ID 3 is A-Z
+        
+        fireEvent.change(dropdown, { target: { value: "3" } }); 
         headings = screen.getAllByRole('heading', { level: 5 });
         expect(headings[0]).toHaveTextContent("Apple");
         expect(headings[1]).toHaveTextContent("Banana");

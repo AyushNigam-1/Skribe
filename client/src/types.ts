@@ -54,7 +54,7 @@ export interface TabItem {
     isRightStart?: boolean;
 }
 
-// --- Types & Hardcoded Data ---
+
 export interface VisibilityOption {
     id: number;
     name: string;

@@ -39,7 +39,7 @@ const NotificationModal = () => {
     const [markAllRead] = useMarkAllNotificationsReadMutation({
         update(cache) {
             const existingData: any = cache.readQuery({
-                query: GetNotificationsDocument, // Used generated Document
+                query: GetNotificationsDocument, 
                 variables: { userId: user?.id || "" },
             });
 

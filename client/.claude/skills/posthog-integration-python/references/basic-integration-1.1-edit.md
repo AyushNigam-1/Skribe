@@ -23,7 +23,7 @@ Remember: Do not alter the fundamental architecture of existing files. Make your
 
 Remember the documentation and example project resources you were provided at the beginning. Read them now.
 
-## Status
+
 
 Status to report in this phase:
 

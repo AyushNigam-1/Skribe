@@ -26,7 +26,7 @@ let redisContainer: StartedRedisContainer;
 let redisClient: RedisClientType;
 
 export const startTestServer = async (port: number = 4000): Promise<string> => {
-    // 1. Spin up MongoDB
+    
     console.log('⏳ Starting MongoDB Testcontainer...');
     mongoContainer = await new MongoDBContainer('mongo:6.0.11').start();
 
@@ -37,7 +37,7 @@ export const startTestServer = async (port: number = 4000): Promise<string> => {
 
     await connectDB(mongoUri);
 
-    // 2. Spin up Redis
+    
     console.log('⏳ Starting Redis Testcontainer...');
     redisContainer = await new RedisContainer('redis:7.4-alpine').start();
 
@@ -51,7 +51,7 @@ export const startTestServer = async (port: number = 4000): Promise<string> => {
 
     await redisClient.connect();
 
-    // 3. Create the app/server
+    
     const app = express();
     httpServer = http.createServer(app);
 

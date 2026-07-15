@@ -9,15 +9,15 @@ export const notificationStateHandlers = {
         await User.deleteMany({});
         await Notification.deleteMany({});
 
-        // Create both the receiver and the sender so GraphQL can populate it!
+        
         await createJane();
         await createAlice();
 
         await Notification.create({
             _id: TEST_NOTIFICATION_ID,
-            recipient: TEST_USER_ID, // 👈 FIX 1: Must be 'recipient', not 'userId'!
+            recipient: TEST_USER_ID, 
             sender: TEST_AUTHOR_ID,
-            type: 'COMMENT',         // 👈 FIX 2: Must be exact uppercase enum 'COMMENT'!
+            type: 'COMMENT',         
             message: 'You have a new comment.',
             draftTitle: 'The Quantum Draft',
             link: '/scripts/60c72b2f9b1d8b001c8e4a03',
@@ -35,8 +35,8 @@ export const notificationStateHandlers = {
 
         await Notification.create({
             _id: TEST_NOTIFICATION_ID,
-            recipient: TEST_USER_ID, // 👈 Must be recipient!
-            type: 'SYSTEM',          // 👈 Must be uppercase enum!
+            recipient: TEST_USER_ID, 
+            type: 'SYSTEM',          
             message: 'You have a system alert.',
             isRead: false,
         });

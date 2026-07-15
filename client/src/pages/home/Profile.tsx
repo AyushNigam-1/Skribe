@@ -183,7 +183,7 @@ const Profile = () => {
           sel?.removeAllRanges();
           sel?.addRange(range);
         } catch (e) {
-          // Ignore selection errors on empty nodes
+          
         }
       }
     });

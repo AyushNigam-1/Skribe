@@ -1,7 +1,7 @@
-# .github/workflows/ci.yml
+
 name: Skrible CI Pipeline
 
-# Trigger this pipeline every time you push to main, or open a Pull Request
+
 on:
   push:
     branches: [ "main" ]
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./client # Point to your frontend folder
+        working-directory: ./client 
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./server # Point to your backend folder
+        working-directory: ./server 
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -44,6 +44,6 @@ jobs:
           cache-dependency-path: './server/package-lock.json'
       - name: Install Dependencies
         run: npm install
-      # If you have a build step for your backend (like compiling TS to JS), run it here
+      
       - name: Build TypeScript (If applicable)
         run: npm run build --if-present

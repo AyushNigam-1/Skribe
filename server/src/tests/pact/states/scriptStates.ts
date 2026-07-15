@@ -11,7 +11,7 @@ import {
     TEST_PARAGRAPH_ID,
 } from "../utils/constants"
 
-// Helper to seed a valid script to avoid repetition
+
 const createMockScript = async (customId = TEST_SCRIPT_ID, overrides = {}) => {
     return Script.create({
         _id: customId,
@@ -20,7 +20,7 @@ const createMockScript = async (customId = TEST_SCRIPT_ID, overrides = {}) => {
         description: 'A time travel story.',
         languages: ['English'],
         genres: ['Sci-Fi'],
-        author: TEST_USER_ID, // Owned by Jane
+        author: TEST_USER_ID, 
         likes: [],
         dislikes: [],
         collaborators: [],
@@ -35,10 +35,10 @@ export const scriptStateHandlers = {
         await Script.deleteMany({});
         await Paragraph.deleteMany({});
 
-        // 1. Create the author/contributor
+        
         await createJane();
 
-        // 2. Create the Script
+        
         await Script.create({
             _id: TEST_SCRIPT_ID,
             title: 'The Quantum Draft',
@@ -55,7 +55,7 @@ export const scriptStateHandlers = {
             updatedAt: new Date(1704000000000)
         });
 
-        // 3. Create the Approved Paragraph (Contribution)
+        
         await Paragraph.create({
             _id: TEST_CONTRIB_ID,
             author: TEST_USER_ID,
@@ -252,7 +252,7 @@ export const scriptStateHandlers = {
         await User.deleteMany({});
         await Script.deleteMany({});
         await createJane();
-        await createAlice(); // Alice's username is 'alicewriter'
+        await createAlice(); 
         await createMockScript();
         return 'State Setup complete';
     },
@@ -264,7 +264,7 @@ export const scriptStateHandlers = {
         await createAlice();
         await createMockScript(TEST_SCRIPT_ID, {
             collaborators: [{
-                user: TEST_AUTHOR_ID, // Alice
+                user: TEST_AUTHOR_ID, 
                 role: 'EDITOR',
                 status: 'ACCEPTED'
             }]

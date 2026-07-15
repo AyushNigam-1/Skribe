@@ -1,0 +1,42 @@
+# otel-collector-config.yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 10s # Batches spans for better performance
+
+exporters:
+  # 1. Export to our local Jaeger instance
+  # otlp/jaeger:
+  #   endpoint: "jaeger:4317"
+  #   tls:
+  #     insecure: true
+  
+  otlphttp/openobserve:
+    # "default" is the default organization name in OpenObserve
+    endpoint: "http://openobserve:5080/api/default"
+    headers:
+      # Injects the Base64 Auth header
+      Authorization: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="
+  
+  # 2. Export to the terminal console (great for debugging)
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug,otlphttp/openobserve] # Sending to both Jaeger AND the console!
+
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/openobserve]

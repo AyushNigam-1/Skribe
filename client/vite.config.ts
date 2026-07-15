@@ -8,8 +8,8 @@ import autoprefixer from "autoprefixer";
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'jsdom', // 🚨 Simulates a browser!
-    setupFiles: ['./src/setupTests.ts'], // Runs before every test
+    environment: 'jsdom', 
+    setupFiles: ['./src/setupTests.ts'], 
   },
   css: {
     postcss: {

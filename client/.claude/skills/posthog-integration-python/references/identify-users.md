@@ -1,30 +1,30 @@
-# Identify users - Docs
+
 
 Linking events to specific users enables you to build a full picture of how they're using your product across different sessions, devices, and platforms.
 
 This is straightforward to do when [capturing backend events](/docs/product-analytics/capture-events?tab=Node.js.md), as you associate events to a specific user using a `distinct_id`, which is a required argument.
 
-However, in the frontend of a [web](/docs/libraries/js/features.md#capturing-events) or [mobile app](/docs/libraries/ios.md#capturing-events), a `distinct_id` is not a required argument — PostHog's SDKs will generate an anonymous `distinct_id` for you automatically and you can capture events anonymously, provided you use the appropriate [configuration](/docs/libraries/js/features.md#capturing-anonymous-events).
+However, in the frontend of a [web](/docs/libraries/js/features.md
 
 To link events to specific users, call `identify`:
 
 PostHog AI
 
-### Web
+
 
 ```javascript
 posthog.identify(
-  'distinct_id',  // Replace 'distinct_id' with your user's unique identifier
-  { email: 'max@hedgehogmail.com', name: 'Max Hedgehog' } // optional: set additional person properties
+  'distinct_id',  
+  { email: 'max@hedgehogmail.com', name: 'Max Hedgehog' } 
 );
 ```
 
-### Android
+
 
 ```kotlin
 PostHog.identify(
-    distinctId = distinctID, // Replace 'distinctID' with your user's unique identifier
-    // optional: set additional person properties
+    distinctId = distinctID, 
+    
     userProperties = mapOf(
         "name" to "Max Hedgehog",
         "email" to "max@hedgehogmail.com"
@@ -32,29 +32,29 @@ PostHog.identify(
 )
 ```
 
-### iOS
+
 
 ```swift
-PostHogSDK.shared.identify("distinct_id", // Replace "distinct_id" with your user's unique identifier
-                           userProperties: ["name": "Max Hedgehog", "email": "max@hedgehogmail.com"]) // optional: set additional person properties
+PostHogSDK.shared.identify("distinct_id", 
+                           userProperties: ["name": "Max Hedgehog", "email": "max@hedgehogmail.com"]) 
 ```
 
-### React Native
+
 
 ```jsx
-posthog.identify('distinct_id', { // Replace "distinct_id" with your user's unique identifier
-    email: 'max@hedgehogmail.com', // optional: set additional person properties
+posthog.identify('distinct_id', { 
+    email: 'max@hedgehogmail.com', 
     name: 'Max Hedgehog'
 })
 ```
 
-### Dart
+
 
 ```dart
 await Posthog().identify(
-  userId: 'distinct_id', // Replace "distinct_id" with your user's unique identifier
+  userId: 'distinct_id', 
   userProperties: {
-    email: "max@hedgehogmail.com", // optional: set additional person properties
+    email: "max@hedgehogmail.com", 
     name: "Max Hedgehog"
 });
 ```
@@ -63,7 +63,7 @@ Events captured after calling `identify` are identified events and this creates 
 
 Due to the cost of processing them, anonymous events can be up to 4x cheaper than identified events, so it's recommended you only capture identified events when needed.
 
-## How identify works
+
 
 When a user starts browsing your website or app, PostHog automatically assigns them an **anonymous ID**, which is stored locally.
 
@@ -79,9 +79,9 @@ Using identify in the backend
 
 Although you can call `identify` using our backend SDKs, it is used most in frontends. This is because there is no concept of anonymous sessions in the backend SDKs, so calling `identify` only updates person profiles.
 
-## Best practices when using `identify`
 
-### 1\. Call `identify` as soon as you're able to
+
+
 
 In your frontend, you should call `identify` as soon as you're able to.
 
@@ -93,7 +93,7 @@ You only need to call `identify` once per session, and you should avoid calling 
 
 If you call `identify` multiple times with the same data without reloading the page in between, PostHog will ignore the subsequent calls.
 
-### 2\. Use unique strings for distinct IDs
+
 
 If two users have the same distinct ID, their data is merged and they are considered one user in PostHog. Two common ways this can happen are:
 
@@ -102,7 +102,7 @@ If two users have the same distinct ID, their data is merged and they are consid
 
 PostHog also has built-in protections to stop the most common distinct ID mistakes.
 
-### 3\. Reset after logout
+
 
 If a user logs out on your frontend, you should call `reset()` to unlink any future events made on that device with that user.
 
@@ -114,31 +114,31 @@ You can do that like so:
 
 PostHog AI
 
-### Web
+
 
 ```javascript
 posthog.reset()
 ```
 
-### iOS
+
 
 ```swift
 PostHogSDK.shared.reset()
 ```
 
-### Android
+
 
 ```kotlin
 PostHog.reset()
 ```
 
-### React Native
+
 
 ```jsx
 posthog.reset()
 ```
 
-### Dart
+
 
 ```dart
 Posthog().reset()
@@ -154,7 +154,7 @@ PostHog AI
 posthog.reset(true)
 ```
 
-### 4\. Person profiles and properties
+
 
 You'll notice that one of the parameters in the `identify` method is a `properties` object.
 
@@ -166,7 +166,7 @@ Person properties can also be set being adding a `$set` property to a event `cap
 
 See our [person properties docs](/docs/product-analytics/person-properties.md) for more details on how to work with them and best practices.
 
-### 5\. Use deep links between platforms
+
 
 We recommend you call `identify` [as soon as you're able](#1-call-identify-as-soon-as-youre-able), typically when a user signs up or logs in.
 
@@ -176,27 +176,27 @@ This doesn't work if one or both platforms are unauthenticated. Some examples of
 -   Unauthenticated web pages redirecting to authenticated mobile apps.
 -   Authenticated web apps prompting an app download.
 
-In these cases, you can use a [deep link](https://developer.android.com/training/app-links/deep-linking) on Android and [universal links](https://developer.apple.com/documentation/xcode/supporting-universal-links-in-your-app) on iOS to identify users.
+In these cases, you can use a [deep link](https:
 
 1.  Use `posthog.get_distinct_id()` to get the current distinct ID. Even if you cannot call identify because the user is unauthenticated, this will return an anonymous distinct ID generated by PostHog.
 2.  Add the distinct ID to the deep link as query parameters, along with other properties like UTM parameters.
 3.  When the user is redirected to the app, parse the deep link and handle the following cases:
 
--   The user is already authenticated on the mobile app. In this case, call [`posthog.alias()`](/docs/libraries/js/features.md#alias) with the distinct ID from the web. This associates the two distinct IDs as a single person.
--   The user is unauthenticated. In this case, call [`posthog.identify()`](/docs/libraries/js/features.md#identifying-users) with the distinct ID from the web. Events will be associated with this distinct ID.
+-   The user is already authenticated on the mobile app. In this case, call [`posthog.alias()`](/docs/libraries/js/features.md
+-   The user is unauthenticated. In this case, call [`posthog.identify()`](/docs/libraries/js/features.md
 
 As long as you associate the distinct IDs with `posthog.identify()` or `posthog.alias()`, you can track events generated across platforms.
 
-## Further reading
+
 
 -   [Identifying users docs](/docs/product-analytics/identify.md)
--   [How person processing works](/docs/how-posthog-works/ingestion-pipeline.md#2-person-processing)
+-   [How person processing works](/docs/how-posthog-works/ingestion-pipeline.md
 -   [An introductory guide to identifying users in PostHog](/tutorials/identifying-users-guide.md)
 
-### Community questions
+
 
 Ask a question
 
-### Was this page useful?
+
 
 HelpfulCould be better

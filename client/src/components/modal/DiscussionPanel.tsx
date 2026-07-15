@@ -98,7 +98,7 @@ const DiscussionPanel: React.FC<DiscussionPanelProps> = ({
               </button>
             </div>
 
-            {/* Modal Content Area */}
+            {
             <div className="flex-1 flex flex-col h-full w-full bg-transparent overflow-hidden">
 
               <div
@@ -109,7 +109,7 @@ const DiscussionPanel: React.FC<DiscussionPanelProps> = ({
                   {comments.length > 0 ? (
                     comments.map((comment, i) => {
                       const authorName = comment.author?.name || comment.author?.username || "Unknown";
-                      // Exact ID match using Better Auth
+                      
                       const isCurrentUser = currentUserId && comment.author?.id === currentUserId;
 
                       return (
@@ -166,7 +166,7 @@ const DiscussionPanel: React.FC<DiscussionPanelProps> = ({
                 </AnimatePresence>
               </div>
 
-              {/* Input Area */}
+              {
               <div className="p-4 sm:p-5 bg-white/5 flex gap-2 shrink-0 border-t border-white/10 backdrop-blur-md">
                 <div className="relative flex items-center w-full">
                   <input

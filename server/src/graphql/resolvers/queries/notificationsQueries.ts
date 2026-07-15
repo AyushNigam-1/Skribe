@@ -8,7 +8,7 @@ export const notificationQueries = {
         }
 
         try {
-            // 🚨 REPOSITORY CALL
+            
             const notifications = await NotificationRepository.findUserNotifications(userId);
 
             if (!notifications) return [];

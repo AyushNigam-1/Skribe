@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import DraftSettings from "../../pages/draft/Settings";
 
-// 1. Mock React Router
+
 const mockNavigate = vi.fn();
 let mockOutletContext: any = {};
 
@@ -16,12 +16,12 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
-// 2. Mock Zustand Store
+
 vi.mock("../store/useAuthStore", () => ({
     useUserStore: () => ({ user: { id: "user-1", name: "Alice" } }),
 }));
 
-// 3. Mock Sonner
+
 vi.mock("sonner", () => ({
     toast: {
         promise: vi.fn(),
@@ -30,7 +30,7 @@ vi.mock("sonner", () => ({
     },
 }));
 
-// 4. Mock Framer Motion
+
 vi.mock("framer-motion", async () => {
     const actual = await vi.importActual("framer-motion");
     return {
@@ -47,7 +47,7 @@ vi.mock("framer-motion", async () => {
     };
 });
 
-// 5. Mock GraphQL Mutations
+
 const mockDeleteScript = vi.fn();
 const mockUpdateScript = vi.fn();
 const mockRemoveCollab = vi.fn();
@@ -64,7 +64,7 @@ vi.mock("../graphql/generated/graphql", () => ({
     useRemoveAllCollaboratorsMutation: () => [mockRemoveAllCollabs, { loading: false }],
 }));
 
-// 6. Mock Child Components
+
 vi.mock("../components/layout/Search", () => ({
     default: ({ value, setSearch }: any) => (
         <input data-testid="search-input" value={value} onChange={(e) => setSearch(e.target.value)} />
@@ -118,7 +118,7 @@ describe("DraftSettings Component", () => {
     beforeEach(() => {
         vi.clearAllMocks();
 
-        // Setup default context for an OWNER
+        
         mockOutletContext = {
             data: { getScriptById: defaultScript },
             isEditorOrOwner: true,
@@ -127,7 +127,7 @@ describe("DraftSettings Component", () => {
             setTab: vi.fn(),
         };
 
-        // Ensure mocked mutations return promises since toast.promise wraps them
+        
         mockUpdateScript.mockResolvedValue({ data: {} });
         mockDeleteScript.mockResolvedValue({ data: {} });
         mockClearParagraphs.mockResolvedValue({ data: {} });
@@ -135,7 +135,7 @@ describe("DraftSettings Component", () => {
         mockRemoveCollab.mockResolvedValue({ data: {} });
     });
 
-    // FIX: Only use fake timers during the hydration render, then immediately restore real timers!
+    
     const renderAndHydrate = () => {
         vi.useFakeTimers();
         render(
@@ -169,7 +169,7 @@ describe("DraftSettings Component", () => {
     it("should trigger an update when changing visibility", async () => {
         renderAndHydrate();
 
-        // Click the "Private" radio button
+        
         const privateRadio = screen.getByDisplayValue("Private");
         fireEvent.click(privateRadio);
 
@@ -179,7 +179,7 @@ describe("DraftSettings Component", () => {
                     scriptId: "script-123",
                     visibility: "Private",
                     title: "My Script",
-                    description: undefined, // description isn't in our mock script
+                    description: undefined, 
                 },
             });
             expect(toast.promise).toHaveBeenCalled();
@@ -189,21 +189,21 @@ describe("DraftSettings Component", () => {
     it("should filter members by name and role", () => {
         renderAndHydrate();
 
-        // Both should be visible initially
-        expect(screen.getByText("Alice")).toBeInTheDocument(); // Owner
-        expect(screen.getByText("Bob")).toBeInTheDocument(); // Editor
+        
+        expect(screen.getByText("Alice")).toBeInTheDocument(); 
+        expect(screen.getByText("Bob")).toBeInTheDocument(); 
 
-        // Search for Bob
+        
         const searchInput = screen.getByTestId("search-input");
         fireEvent.change(searchInput, { target: { value: "bob" } });
 
         expect(screen.getByText("Bob")).toBeInTheDocument();
         expect(screen.queryByText("Alice")).not.toBeInTheDocument();
 
-        // Clear search, test role filter
+        
         fireEvent.change(searchInput, { target: { value: "" } });
 
-        // FIX: Get the first dropdown (the main filter) instead of throwing an error on multiple dropdowns
+        
         const dropdown = screen.getAllByTestId("filter-dropdown")[0];
         fireEvent.change(dropdown, { target: { value: "OWNER" } });
 
@@ -213,7 +213,7 @@ describe("DraftSettings Component", () => {
 
     it("should hide the Danger Zone if the user is an EDITOR but not the AUTHOR", () => {
         mockOutletContext.isEditorOrOwner = true;
-        mockOutletContext.currentUserRole = "EDITOR"; // Editors can change roles/visibility, but not delete
+        mockOutletContext.currentUserRole = "EDITOR"; 
         renderAndHydrate();
 
         expect(screen.getByText("Access & Visibility")).toBeInTheDocument();
@@ -223,11 +223,11 @@ describe("DraftSettings Component", () => {
     it("should handle deleting the draft via the Danger Zone", async () => {
         renderAndHydrate();
 
-        // 1. Click initial "Delete Draft" button
+        
         const deleteInitBtn = screen.getAllByText("Delete Draft").find(el => el.tagName === "BUTTON");
         fireEvent.click(deleteInitBtn!);
 
-        // 2. Click "Yes, Delete It" confirmation button
+        
         const confirmBtn = screen.getByText("Yes, Delete It");
         fireEvent.click(confirmBtn);
 
@@ -259,15 +259,15 @@ describe("DraftSettings Component", () => {
     it("should handle removing a collaborator", async () => {
         renderAndHydrate();
 
-        // Find Bob's "Remove Member" button (represented by the trash icon/LogOut button)
+        
         const removeBtns = screen.getAllByRole("button").filter(b => b.className.includes("text-red-400"));
         fireEvent.click(removeBtns[0]);
 
-        // Modal should appear
+        
         expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
         expect(screen.getByText("Remove Member?")).toBeInTheDocument();
 
-        // Confirm removal
+        
         fireEvent.click(screen.getByTestId("modal-confirm-btn"));
 
         await waitFor(() => {

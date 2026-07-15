@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.cursor-pin {
+    cursor: url('/cursor-pin.png'), auto;
+}
+
+.cursor-default {
+    cursor: auto;
+}
+
+::-webkit-scrollbar-button {
+    display: none;
+}
+
+@layer base {
+
+    html {
+        @apply scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/5 hover:scrollbar-thumb-white/10 scrollbar-thumb-rounded-full scrollbar-track-rounded-full;
+    }
+
+    body {
+        @apply bg-[#0A0A12] text-white;
+    }
+}

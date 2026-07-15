@@ -28,7 +28,7 @@ const TEST_PARAGRAPH_ID = '60c72b2f9b1d8b001c8e4a05';
 describe('GraphQL Paragraph Contracts', () => {
     it('generates contracts for all Paragraph queries', async () => {
 
-        // 1. GET_PARAGRAPH_BY_ID
+        
         provider
             .given(`a paragraph with ID ${TEST_PARAGRAPH_ID} exists`)
             .uponReceiving('a request for a specific paragraph')
@@ -66,7 +66,7 @@ describe('GraphQL Paragraph Contracts', () => {
                 },
             });
 
-        // 2. GET_FILTERED_REQUESTS
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} has pending paragraph requests`)
             .uponReceiving('a request for filtered paragraph requests')
@@ -99,7 +99,7 @@ describe('GraphQL Paragraph Contracts', () => {
                 },
             });
 
-        // 3. GET_PENDING_PARAGRAPHS
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} has pending paragraph requests`)
             .uponReceiving('a request for pending paragraphs')
@@ -129,7 +129,7 @@ describe('GraphQL Paragraph Contracts', () => {
                 },
             });
 
-        // 4. EXPORT_DOCUMENT_QUERY
+        
         provider
             .given(`script ${TEST_SCRIPT_ID} is ready for export`)
             .uponReceiving('a request to export a script document')
@@ -186,7 +186,7 @@ describe('GraphQL Paragraph Contracts', () => {
                 },
             });
 
-        // 2. DELETE_PARAGRAPH
+        
         provider
             .given(`paragraph ${TEST_PARAGRAPH_ID} exists to be deleted`)
             .uponReceiving('a request to delete a paragraph')
@@ -211,7 +211,7 @@ describe('GraphQL Paragraph Contracts', () => {
                 },
             });
 
-        // 3. LIKE_PARAGRAPH
+        
         provider
             .given(`paragraph ${TEST_PARAGRAPH_ID} exists to be liked`)
             .uponReceiving('a request to like a paragraph')
@@ -236,7 +236,7 @@ describe('GraphQL Paragraph Contracts', () => {
                 },
             });
 
-        // 4. DISLIKE_PARAGRAPH
+        
         provider
             .given(`paragraph ${TEST_PARAGRAPH_ID} exists to be disliked`)
             .uponReceiving('a request to dislike a paragraph')
@@ -261,7 +261,7 @@ describe('GraphQL Paragraph Contracts', () => {
                 },
             });
 
-        // 5. ADD_COMMENT
+        
         provider
             .given(`paragraph ${TEST_PARAGRAPH_ID} exists to receive a comment`)
             .uponReceiving('a request to add a comment to a paragraph')
@@ -294,7 +294,7 @@ describe('GraphQL Paragraph Contracts', () => {
                 },
             });
 
-        // EXECUTE
+        
         await provider.executeTest(async (mockServer) => {
             const client = new ApolloClient({
                 link: new HttpLink({ uri: mockServer.url + '/graphql', fetch: fetch as any }),

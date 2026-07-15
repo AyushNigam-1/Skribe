@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import Requests from "../../pages/draft/Requests";
 
-// 1. Mock React Router
+
 const mockNavigate = vi.fn();
 let mockSearchParams = new URLSearchParams();
 let mockOutletContext: any = { data: { getScriptById: { id: "script-1" } } };
@@ -18,7 +18,7 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
-// 2. Mock GraphQL Query
+
 const mockRefetch = vi.fn();
 vi.mock("../graphql/generated/graphql", () => ({
     useGetFilteredRequestsQuery: vi.fn(),
@@ -26,7 +26,7 @@ vi.mock("../graphql/generated/graphql", () => ({
 import { useGetFilteredRequestsQuery } from "../../graphql/generated/graphql";
 const mockUseGetFilteredRequests = useGetFilteredRequestsQuery as any;
 
-// 3. Mock React Markdown
+
 vi.mock("react-markdown", () => ({
     default: ({ children }: any) => <div data-testid="markdown-content">{children}</div>,
 }));
@@ -34,7 +34,7 @@ vi.mock("remark-gfm", () => ({
     default: vi.fn(),
 }));
 
-// 4. Mock Framer Motion
+
 vi.mock("framer-motion", async () => {
     const actual = await vi.importActual("framer-motion");
     return {
@@ -48,7 +48,7 @@ vi.mock("framer-motion", async () => {
     };
 });
 
-// 5. Mock Child Components
+
 vi.mock("../components/layout/Search", () => ({
     default: ({ value, setSearch, placeholder }: any) => (
         <input
@@ -84,7 +84,7 @@ vi.mock("../components/modal/ContributeModal", () => ({
 describe("Requests Component", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        mockSearchParams = new URLSearchParams(); // Reset params
+        mockSearchParams = new URLSearchParams(); 
         mockOutletContext = { data: { getScriptById: { id: "script-1" } } };
     });
 
@@ -113,7 +113,7 @@ describe("Requests Component", () => {
 
         expect(screen.getByText(/Error loading requests/i)).toBeInTheDocument();
 
-        // Test the retry button
+        
         fireEvent.click(screen.getByText("Retry"));
         expect(mockRefetch).toHaveBeenCalled();
     });
@@ -167,10 +167,10 @@ describe("Requests Component", () => {
 
         const searchInput = screen.getByTestId("search-input");
 
-        // Type "Apple"
+        
         fireEvent.change(searchInput, { target: { value: "Apple" } });
 
-        expect(screen.getByText("Alice")).toBeInTheDocument(); // Alice's text is "Apple"
+        expect(screen.getByText("Alice")).toBeInTheDocument(); 
         expect(screen.queryByText("Bob")).not.toBeInTheDocument();
     });
 
@@ -182,18 +182,18 @@ describe("Requests Component", () => {
         });
         renderComponent();
 
-        // Verify initial call variables
+        
         expect(mockUseGetFilteredRequests).toHaveBeenCalledWith(
             expect.objectContaining({ variables: { scriptId: "script-1" } })
         );
 
         const dropdown = screen.getByTestId("status-dropdown");
 
-        // Change to "Approved"
+        
         fireEvent.change(dropdown, { target: { value: "approved" } });
 
-        // Since changing the dropdown updates state, the component re-renders
-        // and calls the hook again with the new variables.
+        
+        
         expect(mockUseGetFilteredRequests).toHaveBeenCalledWith(
             expect.objectContaining({ variables: { scriptId: "script-1", status: "approved" } })
         );
@@ -214,11 +214,11 @@ describe("Requests Component", () => {
 
         renderComponent();
 
-        // The useEffect should trigger and set the search input to "author:john-doe"
+        
         const searchInput = screen.getByTestId("search-input") as HTMLInputElement;
         expect(searchInput.value).toBe("author:john-doe");
 
-        // The placeholder should also reflect the user filtering mode
+        
         expect(searchInput.placeholder).toBe("Filtering by user...");
     });
 
@@ -234,13 +234,13 @@ describe("Requests Component", () => {
         });
         renderComponent();
 
-        // Find the card (we can click the author name or the text, since the whole div is clickable)
-        const card = screen.getByText("Click me").closest(".group"); // Assuming .group is on the wrapper div
+        
+        const card = screen.getByText("Click me").closest(".group"); 
 
         if (card) {
             fireEvent.click(card);
         } else {
-            // Fallback: just click the text, assuming motion.div passes onClick down
+            
             fireEvent.click(screen.getByText("Click me"));
         }
 

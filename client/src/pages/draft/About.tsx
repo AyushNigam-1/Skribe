@@ -114,7 +114,7 @@ const EditableCard = ({
           {isArray && <span className="ml-1 px-1.5 py-0.5 rounded-md bg-black/20 text-[10px] text-gray-500 normal-case tracking-normal">max {MAX_TAGS}</span>}
           <EditingBadge isEditing={isEditing} field={field} />
         </h3>
-        {/* 🚨 UPDATED: Only show EditControls if the user is Author OR Editor */}
+        {
         {isAuthorized && <EditControls field={field} {...editControlProps} />}
       </div>
 

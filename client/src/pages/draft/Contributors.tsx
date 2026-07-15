@@ -54,7 +54,7 @@ const Contributors: React.FC = () => {
 
     let result = Object.values(grouped);
 
-    // 2. Search Filter
+    
     if (searchQuery.trim()) {
       const lowerQuery = searchQuery.toLowerCase();
       result = result.filter((c) =>
@@ -62,7 +62,7 @@ const Contributors: React.FC = () => {
       );
     }
 
-    // 3. Sort based on selected filter
+    
     result.sort((a, b) => {
       if (selectedFilter.name === "Highest First") return b.count - a.count;
       if (selectedFilter.name === "Lowest First") return a.count - b.count;
@@ -74,7 +74,7 @@ const Contributors: React.FC = () => {
     return result;
   }, [paragraphs, searchQuery, selectedFilter]);
 
-  // --- Animation Variants ---
+  
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -93,7 +93,7 @@ const Contributors: React.FC = () => {
     exit: { opacity: 0, y: -15, transition: { duration: 0.2 } },
   };
 
-  // Helper to render special icons/colors for the Top 3
+  
   const renderRankBadge = (index: number) => {
     if (selectedFilter.name !== "Highest First") {
       return (

@@ -101,7 +101,7 @@ scriptSchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
-/* ✅ Make virtuals appear in JSON */
+
 scriptSchema.set("toJSON", {
   virtuals: true,
 });

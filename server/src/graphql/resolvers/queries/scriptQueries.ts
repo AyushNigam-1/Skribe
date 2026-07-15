@@ -34,7 +34,7 @@ export const scriptQueries = {
     const cachedScripts = await context.redis.get(cacheKey);
     if (cachedScripts) return JSON.parse(cachedScripts);
 
-    // 🚨 REPOSITORY CALL
+    
     const scripts = await ScriptRepository.findAll();
 
     const formattedScripts = scripts.map((script: any) => {
@@ -58,14 +58,14 @@ export const scriptQueries = {
     const cachedScript = await context.redis.get(cacheKey);
     if (cachedScript) return JSON.parse(cachedScript);
 
-    // 🚨 REPOSITORY CALL
+    
     const script = await ScriptRepository.findByIdWithDetails(id);
 
     if (!script) throw new Error("Script not found");
 
     const obj: any = script.toObject({ virtuals: true });
 
-    // Filter out pending/declined collaborators
+    
     if (obj.collaborators) {
       obj.collaborators = obj.collaborators.filter((c: any) => c.status === "ACCEPTED");
     }
@@ -100,7 +100,7 @@ export const scriptQueries = {
     const cachedScripts = await context.redis.get(cacheKey);
     if (cachedScripts) return JSON.parse(cachedScripts);
 
-    // 🚨 REPOSITORY CALL
+    
     const scripts = await ScriptRepository.findPublicScriptsByGenres(genres);
 
     const formattedScripts = scripts.map((script: any) => {
@@ -124,7 +124,7 @@ export const scriptQueries = {
     const cachedContributors = await context.redis.get(cacheKey);
     if (cachedContributors) return JSON.parse(cachedContributors);
 
-    // 🚨 REPOSITORY CALL
+    
     const paragraphs = await ParagraphRepository.findApprovedByScript(scriptId);
 
     const formattedParagraphs = paragraphs.map((p: any) => {
@@ -169,7 +169,7 @@ export const scriptQueries = {
 
     if (cachedContributions) return JSON.parse(cachedContributions);
 
-    // 🚨 REPOSITORY CALL
+    
     const contributions = await ParagraphRepository.findByAuthorAndScript(userId, scriptId);
 
     const formattedContributions = contributions.map((contribution: any) => {

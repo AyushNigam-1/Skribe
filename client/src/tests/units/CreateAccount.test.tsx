@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import CreateAccount from "../../pages/auth/Signup";  // Adjust path if needed
+import CreateAccount from "../../pages/auth/Signup";  
 
-// 1. Mock React Router
+
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
@@ -13,7 +13,7 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
-// 2. Mock BetterAuth / authClient
+
 vi.mock("../lib/authClient", () => ({
     authClient: {
         signUp: {
@@ -25,7 +25,7 @@ vi.mock("../lib/authClient", () => ({
     },
 }));
 
-// 3. Mock PostHog Analytics
+
 vi.mock("../providers/PostHogProvider", () => ({
     posthog: {
         capture: vi.fn(),
@@ -33,7 +33,7 @@ vi.mock("../providers/PostHogProvider", () => ({
     },
 }));
 
-// 4. Mock Sonner Toasts
+
 vi.mock("sonner", () => ({
     toast: {
         success: vi.fn(),
@@ -41,7 +41,7 @@ vi.mock("sonner", () => ({
     },
 }));
 
-// 5. Mock Framer Motion
+
 vi.mock("framer-motion", async () => {
     const actual = await vi.importActual("framer-motion");
     return {
@@ -79,7 +79,7 @@ describe("CreateAccount Component", () => {
         expect(screen.getByPlaceholderText("you@example.com")).toBeInTheDocument();
         expect(screen.getByPlaceholderText("••••••••")).toBeInTheDocument();
 
-        // Check for buttons
+        
         expect(screen.getByText("Google")).toBeInTheDocument();
         expect(screen.getByText("Github")).toBeInTheDocument();
         expect(screen.getByText("Create Account")).toBeInTheDocument();
@@ -96,25 +96,25 @@ describe("CreateAccount Component", () => {
         const emailInput = screen.getByPlaceholderText("you@example.com");
         const passwordInput = screen.getByPlaceholderText("••••••••");
 
-        // Type invalid data
-        fireEvent.change(nameInput, { target: { value: "Al" } }); // Too short
+        
+        fireEvent.change(nameInput, { target: { value: "Al" } }); 
         fireEvent.change(emailInput, { target: { value: "invalid-email" } });
-        fireEvent.change(passwordInput, { target: { value: "123" } }); // Too short
+        fireEvent.change(passwordInput, { target: { value: "123" } }); 
 
-        // Because react-hook-form runs asynchronously, we wait for errors to appear
+        
         await waitFor(() => {
             expect(screen.getByText("Name must be at least 3 characters")).toBeInTheDocument();
             expect(screen.getByText("Please enter a valid email address")).toBeInTheDocument();
             expect(screen.getByText("Password must be at least 6 characters")).toBeInTheDocument();
         });
 
-        // Create Account button should be disabled due to invalid form state
+        
         const submitBtn = screen.getByText("Create Account");
         expect(submitBtn).toBeDisabled();
     });
 
     it("should successfully create an account with email and track analytics", async () => {
-        // Mock a successful response from your auth client
+        
         mockEmailSignUp.mockResolvedValue({
             data: { user: { id: "new-user-123", name: "Alice Wonderland" } },
             error: null,
@@ -126,37 +126,37 @@ describe("CreateAccount Component", () => {
             </MemoryRouter>
         );
 
-        // Fill out valid form data
+        
         fireEvent.change(screen.getByPlaceholderText("Your Name"), { target: { value: "Alice Wonderland" } });
         fireEvent.change(screen.getByPlaceholderText("you@example.com"), { target: { value: "alice@example.com" } });
         fireEvent.change(screen.getByPlaceholderText("••••••••"), { target: { value: "securepassword" } });
 
-        // The button might still be briefly disabled from the initial render, wait for it to be enabled
+        
         const submitBtn = await screen.findByText("Create Account");
         await waitFor(() => expect(submitBtn).not.toBeDisabled());
 
         fireEvent.click(submitBtn);
 
-        // Verify exactly what happens after clicking submit
+        
         await waitFor(() => {
-            // 1. Auth client called with correct credentials
+            
             expect(mockEmailSignUp).toHaveBeenCalledWith({
                 name: "Alice Wonderland",
                 email: "alice@example.com",
                 password: "securepassword",
             });
-            // 2. PostHog identified the user and tracked the event
+            
             expect(posthog.identify).toHaveBeenCalledWith("new-user-123", { name: "Alice Wonderland" });
             expect(posthog.capture).toHaveBeenCalledWith("user_signed_up", { signup_method: "email" });
-            // 3. Success toast shown
+            
             expect(toast.success).toHaveBeenCalledWith("Account created successfully!");
-            // 4. Navigated to home/landing page
+            
             expect(mockNavigate).toHaveBeenCalledWith("/");
         });
     });
 
     it("should handle signup failure and track the error", async () => {
-        // Mock a failed response
+        
         mockEmailSignUp.mockResolvedValue({
             data: null,
             error: { message: "Email already in use." },
@@ -179,7 +179,7 @@ describe("CreateAccount Component", () => {
         await waitFor(() => {
             expect(posthog.capture).toHaveBeenCalledWith("signup_failed", { error_message: "Email already in use." });
             expect(toast.error).toHaveBeenCalledWith("Email already in use.");
-            expect(mockNavigate).not.toHaveBeenCalled(); // Should not navigate away
+            expect(mockNavigate).not.toHaveBeenCalled(); 
         });
     });
 

@@ -10,14 +10,14 @@ import {
 } from '@opentelemetry/semantic-conventions';
 import dotenv from 'dotenv';
 
-// 👇 1. Import the Logs SDK and Exporter
+
 import { SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
 
 dotenv.config();
 
 const traceExporter = new OTLPTraceExporter();
-const logExporter = new OTLPLogExporter(); // 👈 2. Initialize the Log Exporter
+const logExporter = new OTLPLogExporter(); 
 
 const resource = resourceFromAttributes({
     [ATTR_SERVICE_NAME]: process.env.SERVICE_NAME || 'scriptdrafts-api',

@@ -33,7 +33,7 @@ const HomeLayout = () => {
   const pathSegments = location.pathname.split("/").filter(Boolean);
   const path = pathSegments[0];
 
-  // 🚨 THE FIX: Show sidebar permanently, except in zen mode
+  
   const shouldShowSidebar = path !== "zen";
 
   return (
@@ -51,7 +51,7 @@ const HomeLayout = () => {
         </button>
       )}
 
-      {/* Mobile Backdrop Overlay */}
+      {
       <AnimatePresence>
         {shouldShowSidebar && isSidebarOpen && (
           <motion.div
@@ -65,7 +65,7 @@ const HomeLayout = () => {
         )}
       </AnimatePresence>
 
-      {/* Sidebar Component */}
+      {
       {shouldShowSidebar && (
         <div
           className={`

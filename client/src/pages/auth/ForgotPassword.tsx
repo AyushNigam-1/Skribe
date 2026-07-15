@@ -73,7 +73,7 @@ const ForgotPassword: React.FC = () => {
                     exit="exit"
                     className="w-full max-w-[420px] mx-auto flex flex-col gap-8 p-8 sm:p-10 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl relative"
                 >
-                    {/* Header */}
+                    {
                     <motion.div variants={itemVariants} className="flex flex-col items-center text-center gap-4">
                         <div>
                             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-mono">
@@ -86,7 +86,7 @@ const ForgotPassword: React.FC = () => {
                     </motion.div>
 
                     <motion.form variants={itemVariants} onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-                        {/* Email Field */}
+                        {
                         <div className="flex flex-col gap-1.5 w-full">
                             <label htmlFor="email" className="text-[10px] sm:text-xs font-mono text-gray-400 uppercase tracking-widest ml-1">
                                 Email Address
@@ -138,7 +138,7 @@ const ForgotPassword: React.FC = () => {
                     exit="exit"
                     className="w-full max-w-[420px] mx-auto flex flex-col gap-8 p-8 sm:p-10 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl relative"
                 >
-                    {/* Header */}
+                    {
                     <motion.div variants={itemVariants} className="flex flex-col items-center text-center gap-4">
                         <div>
                             <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight font-mono">
